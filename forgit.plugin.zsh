@@ -6,7 +6,7 @@ glo() {
     git rev-parse --is-inside-work-tree 1>/dev/null
     [ $? -ne 0 ] && return 1
     # diff is fancy with diff-so-fancy!
-    local cmd="<<< {} grep -o '[a-f0-9]\{7\}' | head -1 | xargs -i% git show --color=always % $emojify $fancy"
+    local cmd="<<< {} grep -o '[a-f0-9]\{7\}' | head -1 | xargs -I% git show --color=always % $emojify $fancy"
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" \
         | fzf -e +s --tiebreak=index \
                     --bind="enter:execute($cmd | less -R)" \
@@ -33,7 +33,7 @@ ga() {
         | cut -d] -f2 \
         | sed 's/.* -> //g') # for rename case
     git config color.status $original
-    [[ -n $files ]] && echo $files | xargs -i{} git add {}
+    [[ -n $files ]] && echo $files | xargs -I{} git add {}
     git status
 }
 # git ignore
@@ -52,7 +52,7 @@ gi-update-index() {
 }
 gi-get() {
     mkdir -p $giCache
-    echo $@ | xargs -i{} bash -c "cat $giCache/{} 2>/dev/null || (curl -sL https://www.gitignore.io/api/{} | tee $giCache/{})"
+    echo $@ | xargs -I{} bash -c "cat $giCache/{} 2>/dev/null || (curl -sL https://www.gitignore.io/api/{} | tee $giCache/{})"
 }
 gi-clean() {
     setopt localoptions rmstarsilent
