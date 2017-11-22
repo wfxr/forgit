@@ -43,7 +43,7 @@ unalias gi 2>/dev/null
 gi() {
     [ -f $giIndex ] || gi-update-index
     IFS=$'\n'
-    [[ $# -gt 0 ]] && args=$@ || args=$(cat $giIndex |nl -nrn -w4 -s'  ' |fzf -m | awk '{print $2}')
+    [[ $# -gt 0 ]] && args="$@" || args="$(cat $giIndex |nl -nrn -w4 -s'  ' |fzf -m | awk '{print $2}')"
     gi-get $args
 }
 gi-update-index() {
