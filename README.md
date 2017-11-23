@@ -2,7 +2,7 @@
 
 `forgit` is a utility tool for git taking advantage of fuzzy finder [`fzf`](https://github.com/junegunn/fzf).
 
-## Demo
+## Screenshot
 
 ![screenshot](screenshot.png)
 
@@ -12,7 +12,7 @@
 
 Just add this line to your zshrc:
 
-    `zplug 'wfxr/forgit', defer:1`
+    zplug 'wfxr/forgit', defer:1
 
 ### Manually
 
