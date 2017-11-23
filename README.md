@@ -2,10 +2,6 @@
 
 `forgit` is a utility tool for git taking advantage of fuzzy finder [`fzf`](https://github.com/junegunn/fzf).
 
-## Screenshot
-
-![screenshot](screenshot.png)
-
 ## Install
 
 ### zplug([Recommand](https://github.com/zplug/zplug))
@@ -24,6 +20,8 @@ Clone this repo somewhere and source the `forgit.plugin.zsh` at ~/.zshrc.
 
 Interactive `git add`
 
+![screenshot](screenshot-ga.png)
+
     <Tab>          Mark/Unmark(and move down)
     <C-r>          Reverse selection
     <Enter>        Confirml and quit
@@ -36,6 +34,8 @@ Interactive `git add`
 ### glo
 
 Interactive `git log`
+
+![screenshot](screenshot-glo.png)
 
     <Enter>        Fullscreen preview
     <C-j/n><C-k/p> Selection down/up
@@ -58,6 +58,8 @@ Interactive `git diff`
 ### gi
 
 Interactive `.gitignore` generator
+
+![screenshot](screenshot-gi.png)
 
 ### Tips
 
