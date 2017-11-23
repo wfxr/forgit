@@ -1,6 +1,6 @@
 # forgit
 
-`forgit` is a utility tool for git taking advantage of fuzzy finder [`fzf`](https://github.com/junegunn/fzf)
+`forgit` is a utility tool for git taking advantage of fuzzy finder [`fzf`](https://github.com/junegunn/fzf).
 
 ## Demo
 
