@@ -56,8 +56,8 @@ ga() {
     git status
 }
 # git ignore
-local giCache=~/.giCache
-local giIndex=$giCache/.list
+export giCache=~/.giCache
+export giIndex=$giCache/.list
 unalias gi 2>/dev/null
 gi() {
     [ -f $giIndex ] || gi-update-index
