@@ -1,5 +1,24 @@
 (( $+commands[diff-so-fancy] )) && fancy='|diff-so-fancy'
 (( $+commands[emojify] )) && emojify='|emojify'
+
+wfxr::fzf() {
+    fzf --border \
+        --height '80%' \
+        --extended \
+        --ansi \
+        --reverse \
+        --bind='alt-v:page-up' \
+        --bind='ctrl-v:page-down' \
+        --bind='alt-k:preview-up' \
+        --bind='alt-j:preview-down' \
+        --bind='alt-a:select-all' \
+        --bind='ctrl-r:toggle-all' \
+        --bind='ctrl-s:toggle-sort' \
+        --bind='?:toggle-preview' \
+        --bind='alt-w:toggle-preview-wrap' \
+        --preview="(highlight -lO ansi {} || cat {} || tree -L2 {} || head -200) 2>/dev/null" "$@"
+}
+
 # git commit browser
 unalias glo 2>/dev/null
 glo() {
@@ -8,7 +27,7 @@ glo() {
     # diff is fancy with diff-so-fancy!
     local cmd="<<< {} grep -o '[a-f0-9]\{7\}' | head -1 | xargs -I% git show --color=always % $emojify $fancy"
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" \
-        | fzf --ansi -e +s --tiebreak=index \
+        | wfxr::fzf -e +s --tiebreak=index \
                     --bind="enter:execute($cmd | less -R)" \
                     --preview="$cmd" \
                     --preview-window="right:60%"
@@ -17,7 +36,7 @@ unalias gd 2>/dev/null
 gd() {
     local cmd="git diff --color=always -- {} $emojify $fancy"
     git ls-files --modified \
-        | fzf -e -0 --bind="enter:execute($cmd | less -R)" \
+        | wfxr::fzf -e -0 --bind="enter:execute($cmd | less -R)" \
                     --preview="$cmd" \
                     --preview-window="right:60%"
 }
@@ -27,7 +46,7 @@ ga() {
     git config color.status always
     IFS=$'\n' local files=$(git status --short \
         | grep 31m | awk '{printf "[%10s]  ", $1; $1=""; print $0 }' | sort \
-        | fzf -e -0 -m \
+        | wfxr::fzf -e -0 -m \
             --preview="echo {} | cut -d] -f2 | xargs git diff --color=always -- $emojify $fancy" \
             --preview-window="right:60%" \
         | cut -d] -f2 \
