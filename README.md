@@ -24,26 +24,36 @@ Clone this repo somewhere and source the `forgit.plugin.zsh` at ~/.zshrc.
 
 Interactive `git add`
 
-    <Ctrl + N/P> Selection down/up
-    <Alt + N/P>  Preview down/up
-    <Tab>        Mark/Unmark and move down
-    <Enter>      Confirml and quit
+    <Tab>          Mark/Unmark and move down
+    <C-r>          Reverse selection
+    <Enter>        Confirml and quit
+    <C-j/n><C-k/p> Selection down/up
+
+    <?>            Toogle preview window
+    <A-w>          Toggle preview wrap
+    <A-j><C-k>     Preview down/up
 
 ### glo
 
 Interactive `git log`
 
-    <Ctrl + N/P> Selection down/up
-    <Alt + N/P>  Preview down/up
-    <Enter>      Fullscreen preview
+    <Enter>        Fullscreen preview
+    <C-j/n><C-k/p> Selection down/up
+
+    <?>            Toogle preview window
+    <A-w>          Toggle preview wrap
+    <A-j><C-k>     Preview down/up
 
 ### gd
 
 Interactive `git diff`
 
-    <Ctrl + N/P> Selection down/up
-    <Alt + N/P>  Preview down/up
-    <Enter>      Fullscreen preview
+    <Enter>        Fullscreen preview
+    <C-j/n><C-k/p> Selection down/up
+
+    <?>            Toogle preview window
+    <A-w>          Toggle preview wrap
+    <A-j><C-k>     Preview down/up
 
 ### gi
 
