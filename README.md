@@ -24,7 +24,7 @@ Clone this repo somewhere and source the `forgit.plugin.zsh` at ~/.zshrc.
 
 Interactive `git add`
 
-    <Tab>          Mark/Unmark and move down
+    <Tab>          Mark/Unmark(and move down)
     <C-r>          Reverse selection
     <Enter>        Confirml and quit
     <C-j/n><C-k/p> Selection down/up
