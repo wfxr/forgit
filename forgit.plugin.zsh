@@ -8,7 +8,7 @@ glo() {
     # diff is fancy with diff-so-fancy!
     local cmd="<<< {} grep -o '[a-f0-9]\{7\}' | head -1 | xargs -I% git show --color=always % $emojify $fancy"
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" \
-        | fzf -e +s --tiebreak=index \
+        | fzf --ansi -e +s --tiebreak=index \
                     --bind="enter:execute($cmd | less -R)" \
                     --preview="$cmd" \
                     --preview-window="right:60%"
