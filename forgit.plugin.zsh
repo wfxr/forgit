@@ -61,9 +61,10 @@ export giCache=~/.giCache
 export giIndex=$giCache/.list
 gi() {
     [ -f $giIndex ] || gi-update-index
+    local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $giCache/% 2>/dev/null || (curl -sL https://www.gitignore.io/api/% |tee $giCache/%)'"
     IFS=$'\n'
-    [[ $# -gt 0 ]] && args="$@" || args="$(cat $giIndex |nl -nrn -w4 -s'  ' |fzf -m |awk '{print $2}')"
-    gi-get $args
+    [[ $# -gt 0 ]] && args=($@) || args=($(cat $giIndex |nl -nrn -w4 -s'  ' |fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
+    gi-get ${args[@]}
 }
 gi-update-index() {
     mkdir -p $giCache
