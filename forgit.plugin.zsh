@@ -20,9 +20,12 @@ wfxr::fzf() {
 
 unalias glo gd ga gi &>/dev/null
 
+inside_work_tree() {
+    git rev-parse --is-inside-work-tree >/dev/null
+}
 # git commit browser
 glo() {
-    git rev-parse --is-inside-work-tree &>/dev/null || return 1
+    inside_work_tree || return 1
     # diff is fancy with diff-so-fancy!
     local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $emojify $fancy"
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" \
@@ -33,6 +36,7 @@ glo() {
 }
 # git diff brower
 gd() {
+    inside_work_tree || return 1
     local cmd="git diff --color=always -- {} $emojify $fancy"
     git ls-files --modified \
         |wfxr::fzf -e -0 --bind="enter:execute($cmd |less -R)" \
@@ -41,6 +45,7 @@ gd() {
 }
 # git add selector
 ga() {
+    inside_work_tree || return 1
     original=$(git config color.status)
     git config color.status always
     IFS=$'\n'
