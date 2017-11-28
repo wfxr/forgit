@@ -64,7 +64,7 @@ Interactive `.gitignore` generator
 ### Tips
 
 - You can quit full screen preview by enter `q` and continue browsing.
-- Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) for better quality of diff output.
+- Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) will give you better quality of diff output.
 - `GI` works like `gi` but will **append** contents to `.gitignore` directly.
 
 ## License
