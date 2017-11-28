@@ -71,6 +71,9 @@ gi() {
     [[ $# -gt 0 ]] && args=($@) || args=($(cat $giIndex |nl -nrn -w4 -s'  ' |fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
     gi-get ${args[@]}
 }
+GI() {
+    gi >> .gitignore
+}
 gi-update-index() {
     mkdir -p $giCache
     curl -sL https://www.gitignore.io/api/list |tr ',' '\n' > $giIndex
