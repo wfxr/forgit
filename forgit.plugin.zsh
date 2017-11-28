@@ -6,15 +6,17 @@ wfxr::fzf() {
         --height '80%' \
         --bind='alt-v:page-up' \
         --bind='ctrl-v:page-down' \
-        --bind='alt-k:preview-up' \
-        --bind='alt-j:preview-down' \
+        --bind='alt-k:preview-up,alt-p:preview-up' \
+        --bind='alt-j:preview-down,alt-n:preview-down' \
         --bind='alt-a:select-all' \
         --bind='ctrl-r:toggle-all' \
         --bind='ctrl-s:toggle-sort' \
         --bind='?:toggle-preview' \
+        --preview-window="right:60%" \
         --bind='alt-w:toggle-preview-wrap' "$@"
 }
 
+# diff is fancy with diff-so-fancy!
 (( $+commands[diff-so-fancy] )) && fancy='|diff-so-fancy'
 (( $+commands[emojify] )) && emojify='|emojify'
 
@@ -26,39 +28,33 @@ inside_work_tree() {
 # git commit browser
 glo() {
     inside_work_tree || return 1
-    # diff is fancy with diff-so-fancy!
     local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $emojify $fancy"
-    eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" \
-        |wfxr::fzf -e +s --tiebreak=index \
+    eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" |
+        wfxr::fzf -e +s --tiebreak=index \
             --bind="enter:execute($cmd |less -R)" \
-            --preview="$cmd" \
-            --preview-window="right:60%"
+            --preview="$cmd"
 }
 # git diff brower
 gd() {
     inside_work_tree || return 1
     local cmd="git diff --color=always -- {} $emojify $fancy"
-    git ls-files --modified \
-        |wfxr::fzf -e -0 --bind="enter:execute($cmd |less -R)" \
-            --preview="$cmd" \
-            --preview-window="right:60%"
+    git ls-files --modified |
+        wfxr::fzf -e -0 \
+            --bind="enter:execute($cmd |less -R)" \
+            --preview="$cmd"
 }
 # git add selector
 ga() {
     inside_work_tree || return 1
-    original=$(git config color.status)
-    git config color.status always
-    IFS=$'\n'
-    local files=$(git status --short \
-        |grep 31m |awk '{printf "[%10s]  ", $1; $1=""; print $0}' |sort \
-        |wfxr::fzf -e -0 -m \
-            --preview="echo {} |cut -d] -f2 |xargs git diff --color=always -- $emojify $fancy" \
-            --preview-window="right:60%" \
-        |cut -d] -f2 \
-        |sed 's/.* -> //g') # for rename case
-    [[ -n $files ]] && echo $files |xargs -I{} git add {}
-    git status
-    git config color.status $original
+    # '31m' matches red color to filter out added files which is all green
+    local files=$(git -c color.status=always status --short |
+        grep 31m |
+        awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
+        wfxr::fzf -e -0 -m --nth 2..,.. \
+            --preview="git diff --color=always -- {-1} $emojify $fancy" |
+        cut -d] -f2 |
+        sed 's/.* -> //') # for rename case
+    [[ -n $files ]] && echo $files |xargs -I{} git add {} && git status
 }
 
 # git ignore generator
@@ -72,6 +68,7 @@ gi() {
     gi-get ${args[@]}
 }
 GI() {
+    inside_work_tree || return 1
     gi >> .gitignore
 }
 gi-update-index() {
