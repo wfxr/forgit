@@ -4,7 +4,7 @@
 
 ## Install
 
-### zplug([Recommand](https://github.com/zplug/zplug))
+### [zplug](https://github.com/zplug/zplug) (Recommend)
 
 Just add this line to your zshrc:
 
