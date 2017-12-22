@@ -31,7 +31,7 @@ glo() {
     local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $emojify $fancy"
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" |
         wfxr::fzf -e +s --tiebreak=index \
-            --bind="enter:execute($cmd |less -R)" \
+            --bind="enter:execute($cmd |LESS='-R' less)" \
             --preview="$cmd"
 }
 # git diff brower
@@ -40,7 +40,7 @@ gd() {
     local cmd="git diff --color=always -- {} $emojify $fancy"
     git ls-files --modified |
         wfxr::fzf -e -0 \
-            --bind="enter:execute($cmd |less -R)" \
+            --bind="enter:execute($cmd |LESS='-R' less)" \
             --preview="$cmd"
 }
 # git add selector
