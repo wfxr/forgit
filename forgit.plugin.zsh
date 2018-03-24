@@ -65,11 +65,23 @@ gi() {
     local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $giCache/% 2>/dev/null || (curl -sL https://www.gitignore.io/api/% |tee $giCache/%)'"
     IFS=$'\n'
     [[ $# -gt 0 ]] && args=($@) || args=($(cat $giIndex |nl -nrn -w4 -s'  ' |fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
-    gi-get ${args[@]}
-}
-GI() {
-    inside_work_tree || return 1
-    gi >> .gitignore
+    test -z "$args" && return 1
+    local options=(
+    '(1) Output to stdout'
+    '(2) Append to .gitignore'
+    '(3) Overwrite .gitignore')
+    opt=$(printf '%s\n' "${options[@]}" |fzf |awk '{print $1}')
+    case "$opt" in
+        '(1)' )
+            gi-get ${args[@]}
+            ;;
+        '(2)' )
+            gi-get ${args[@]} >> .gitignore
+            ;;
+        '(3)' )
+            gi-get ${args[@]} > .gitignore
+            ;;
+    esac
 }
 gi-update-index() {
     mkdir -p $giCache
