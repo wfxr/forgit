@@ -10,6 +10,12 @@ Just add this line to your zshrc:
 
     zplug 'wfxr/forgit', defer:1
 
+### [antigen](https//github.com/zsh-users/antigen)
+
+Just add this line to your zshrc:
+
+    antigen bundle wfxr/forgit
+
 ### Manually
 
 Clone this repo somewhere and source the `forgit.plugin.zsh` at ~/.zshrc.
@@ -29,7 +35,7 @@ Interactive `git add`
 
     <?>            Toogle preview window
     <A-w>          Toggle preview wrap
-    <A-j><C-k>     Preview down/up
+    <A-j><A-k>     Preview down/up
 
 ### glo
 
@@ -42,7 +48,7 @@ Interactive `git log`
 
     <?>            Toogle preview window
     <A-w>          Toggle preview wrap
-    <A-j><C-k>     Preview down/up
+    <A-j><A-k>     Preview down/up
 
 ### gd
 
@@ -53,7 +59,7 @@ Interactive `git diff`
 
     <?>            Toogle preview window
     <A-w>          Toggle preview wrap
-    <A-j><C-k>     Preview down/up
+    <A-j><A-k>     Preview down/up
 
 ### gi
 
