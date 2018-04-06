@@ -6,15 +6,15 @@
 
 ### [zplug](https://github.com/zplug/zplug) (Recommend)
 
-Just add this line to your zshrc:
-
-    zplug 'wfxr/forgit', defer:1
+``` zsh
+zplug 'wfxr/forgit', defer:1
+```
 
 ### [antigen](https//github.com/zsh-users/antigen)
 
-Just add this line to your zshrc:
-
-    antigen bundle wfxr/forgit
+``` zsh
+antigen bundle wfxr/forgit
+```
 
 ### Manually
 
@@ -28,14 +28,15 @@ Interactive `git add`
 
 ![screenshot](screenshot-ga.png)
 
-    <Tab>          Mark/Unmark(and move down)
-    <C-r>          Reverse selection
-    <Enter>        Confirml and quit
-    <C-j/n><C-k/p> Selection down/up
-
-    <?>            Toogle preview window
-    <A-w>          Toggle preview wrap
-    <A-j><A-k>     Preview down/up
+| Keybind          | Action                     |
+| ---------------- | -------------------------- |
+| `<Tab>`          | Mark/Unmark(and move down) |
+| `<C-r>`          | Reverse selection          |
+| `<Enter>`        | Confirm and quit           |
+| `<C-j/n><C-k/p>` | Selection down/up          |
+| `<?>`            | Toggle preview window      |
+| `<A-w>`          | Toggle preview wrap        |
+| `<A-j><A-k>`     | Preview down/up            |
 
 ### glo
 
@@ -43,23 +44,25 @@ Interactive `git log`
 
 ![screenshot](screenshot-glo.png)
 
-    <Enter>        Fullscreen preview
-    <C-j/n><C-k/p> Selection down/up
-
-    <?>            Toogle preview window
-    <A-w>          Toggle preview wrap
-    <A-j><A-k>     Preview down/up
+| Keybind          | Action                |
+| ---------------- | --------------------- |
+| `<Enter>`        | Fullscreen preview    |
+| `<C-j/n><C-k/p>` | Selection down/up     |
+| `<?>`            | Toggle preview window |
+| `<A-w>`          | Toggle preview wrap   |
+| `<A-j><A-k>`     | Preview down/up       |
 
 ### gd
 
 Interactive `git diff`
 
-    <Enter>        Fullscreen preview
-    <C-j/n><C-k/p> Selection down/up
-
-    <?>            Toogle preview window
-    <A-w>          Toggle preview wrap
-    <A-j><A-k>     Preview down/up
+| Keybind          | Action                |
+| ---------------- | --------------------- |
+| `<Enter>`        | Fullscreen preview    |
+| `<C-j/n><C-k/p>` | Selection down/up     |
+| `<?>`            | Toggle preview window |
+| `<A-w>`          | Toggle preview wrap   |
+| `<A-j><A-k>`     | Preview down/up       |
 
 ### gi
 
@@ -69,10 +72,9 @@ Interactive `.gitignore` generator
 
 ### Tips
 
-- Quit from full screen preview any time by hitting `q`.
-- Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) will give you better quality of diff output.
-- ~~`GI` works like `gi` but **appending** contents to `.gitignore` directly.~~ (Now gi has sub options to do this)
-- You can give `gi` arguments to get wanted `.gitignore` contents directly
+- Hit `q` to Quit from full screen preview any time.
+- Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) to have better `diff` output.
+- Call `gi` with arguments to get wanted `.gitignore` contents directly(eg, `gi c++`).
 
 ## License
 
