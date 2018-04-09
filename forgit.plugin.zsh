@@ -38,7 +38,7 @@ glo() {
 gd() {
     inside_work_tree || return 1
     local cmd="git diff --color=always -- {} $emojify $fancy"
-    git ls-files --modified |
+    git ls-files --modified $(git rev-parse --show-toplevel)|
         wfxr::fzf -e -0 \
             --bind="enter:execute($cmd |LESS='-R' less)" \
             --preview="$cmd"
