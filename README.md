@@ -2,19 +2,24 @@
 
 `forgit` is a utility tool for git taking advantage of fuzzy finder fzf.
 
-## Install
+## Installation
 
 Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.
 
-### [zplug](https://github.com/zplug/zplug) (Recommend)
+### for [zplug](https://github.com/zplug/zplug) (Recommend)
 
 ``` zsh
 zplug 'wfxr/forgit', defer:1
 ```
 
-### [antigen](https//github.com/zsh-users/antigen)
+### for [zgen](https://github.com/tarjoilija/zgen)
+```
+    zgen load wfxr/forgit
+```
 
-``` zsh
+### for [antigen](https//github.com/zsh-users/antigen)
+
+```
 antigen bundle wfxr/forgit
 ```
 
