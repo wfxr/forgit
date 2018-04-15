@@ -83,6 +83,8 @@ Interactive `.gitignore` generator
 - Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) to have better `diff` output.
 - Call `gi` with arguments to get wanted `.gitignore` contents directly(eg, `gi c++`).
 
-## License
+## [License](LICENSE.txt)
 
-[MIT](LICENSE.txt)
+The MIT License (MIT)
+
+Copyright (c) 2018 Wenxuan Zhang
