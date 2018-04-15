@@ -14,7 +14,7 @@ zplug 'wfxr/forgit', defer:1
 
 ### for [zgen](https://github.com/tarjoilija/zgen)
 ```
-    zgen load wfxr/forgit
+zgen load wfxr/forgit
 ```
 
 ### for [antigen](https//github.com/zsh-users/antigen)
