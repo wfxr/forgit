@@ -16,6 +16,36 @@ forgit::fzf() {
         --bind='alt-w:toggle-preview-wrap' "$@"
 }
 
+forgit::color_to_grep_code() {
+    case "$1" in
+        black)
+            echo -E '\[30m'
+            ;;
+        red)
+            echo -E '\[31m'
+            ;;
+        green)
+            echo -E '\[32m'
+            ;;
+        yellow)
+            echo -E '\[33m'
+            ;;
+        blue)
+            echo -E '\[34m'
+            ;;
+        magenta)
+            echo -E '\[35m'
+            ;;
+        cyan)
+            echo -E '\[36m'
+            ;;
+        white)
+            echo -E '\[97m'
+            ;;
+    esac
+}
+
+
 # diff is fancy with diff-so-fancy!
 (( $+commands[diff-so-fancy] )) && forgit_fancy='|diff-so-fancy'
 (( $+commands[emojify]       )) && forgit_emojify='|emojify'
@@ -47,9 +77,14 @@ forgit::diff() {
 # git add selector
 forgit::add() {
     forgit::inside_work_tree || return 1
-    # '31m' matches red color to filter out added files which is all green
+    local added=${$(git config color.status.untracked):-red}
+    added=$(forgit::color_to_grep_code "$added")
+    local changed=${$(git config color.status.changed):-red}
+    changed=$(forgit::color_to_grep_code "$changed")
+    local unmerged=${$(git config color.status.unmerged):-red}
+    unmerged=$(forgit::color_to_grep_code "$unmerged")
     local files=$(git -c color.status=always status --short |
-        grep 31m |
+        grep -e "$added" -e "$changed" -e "$unmerged" |
         awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
         forgit::fzf -e -0 -m --nth 2..,.. \
             --preview="git diff --color=always -- {-1} $forgit_emojify $forgit_fancy" |
