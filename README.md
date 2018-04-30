@@ -31,7 +31,7 @@ Clone this repo somewhere and source the `forgit.plugin.zsh` at ~/.zshrc.
 
 ### ga
 
-Interactive `git add`
+Interactive `git add` selector
 
 ![screenshot](screenshot-ga.png)
 
@@ -47,7 +47,7 @@ Interactive `git add`
 
 ### glo
 
-Interactive `git log`
+Interactive `git log` browser
 
 ![screenshot](screenshot-glo.png)
 
@@ -61,7 +61,7 @@ Interactive `git log`
 
 ### gd
 
-Interactive `git diff`
+Interactive `git diff` browser
 
 | Keybind          | Action                |
 | ---------------- | --------------------- |
@@ -77,15 +77,17 @@ Interactive `.gitignore` generator
 
 ![screenshot](screenshot-gi.png)
 
-### Custom aliases
+## Custom aliases
 
-You can redefine any of the default aliases by redefining any of the variables below before sourcing the plugin.
-The default values for the alias are shown.
+You can change the default aliases by redefining these variables below.
 
-    forgit_log_alias=glo
-    forgit_diff_alias=gd
-    forgit_add_alias=ga
-    forgit_ignore_alias=gi
+``` bash
+# Put them before sourcing the plugin if you don't use any plugin manager.
+forgit_log=glo
+forgit_diff=gd
+forgit_add=ga
+forgit_ignore=gi
+```
 
 ### Tips
 
