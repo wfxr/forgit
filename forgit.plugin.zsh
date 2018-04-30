@@ -20,13 +20,19 @@ wfxr::fzf() {
 (( $+commands[diff-so-fancy] )) && fancy='|diff-so-fancy'
 (( $+commands[emojify] )) && emojify='|emojify'
 
-unalias glo gd ga gi &>/dev/null
+# Set default aliases if not defined
+[ ! -z $forgit_log_alias ] || forgit_log_alias=glo
+[ ! -z $forgit_diff_alias ] || forgit_diff_alias=gd
+[ ! -z $forgit_add_alias ] || forgit_add_alias=ga
+[ ! -z $forgit_ignore_alias ] || forgit_ignore_alias=gi
+
+unalias $forgit_log_alias $forgit_diff_alias $forgit_add_alias $forgit_ignore_alias &>/dev/null
 
 inside_work_tree() {
     git rev-parse --is-inside-work-tree >/dev/null
 }
 # git commit browser
-glo() {
+forgit_log() {
     inside_work_tree || return 1
     local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $emojify $fancy"
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $emojify" |
@@ -34,8 +40,10 @@ glo() {
             --bind="enter:execute($cmd |LESS='-R' less)" \
             --preview="$cmd"
 }
+alias $forgit_log_alias=forgit_log
+
 # git diff brower
-gd() {
+forgit_diff() {
     inside_work_tree || return 1
     local cmd="git diff --color=always -- {} $emojify $fancy"
     git ls-files --modified $(git rev-parse --show-toplevel)|
@@ -43,8 +51,10 @@ gd() {
             --bind="enter:execute($cmd |LESS='-R' less)" \
             --preview="$cmd"
 }
+alias $forgit_diff_alias=forgit_diff
+
 # git add selector
-ga() {
+forgit_add() {
     inside_work_tree || return 1
     # '31m' matches red color to filter out added files which is all green
     local files=$(git -c color.status=always status --short |
@@ -56,11 +66,12 @@ ga() {
         sed 's/.* -> //') # for rename case
     [[ -n $files ]] && echo $files |xargs -I{} git add {} && git status
 }
+alias $forgit_add_alias=forgit_add
 
 # git ignore generator
 export giCache=~/.giCache
 export giIndex=$giCache/.list
-gi() {
+forgit_ignore() {
     [ -f $giIndex ] || gi-update-index
     local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $giCache/% 2>/dev/null || (curl -sL https://www.gitignore.io/api/% |tee $giCache/%)'"
     IFS=$'\n'
@@ -95,3 +106,4 @@ gi-clean() {
     setopt localoptions rmstarsilent
     [[ -d $giCache ]] && rm -rf $giCache/*
 }
+alias $forgit_ignore_alias=forgit_ignore

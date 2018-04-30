@@ -77,6 +77,16 @@ Interactive `.gitignore` generator
 
 ![screenshot](screenshot-gi.png)
 
+### Custom aliases
+
+You can redefine any of the default aliases by redefining any of the variables below before sourcing the plugin.
+The default values for the alias are shown.
+
+    forgit_log_alias=glo
+    forgit_diff_alias=gd
+    forgit_add_alias=ga
+    forgit_ignore_alias=gi
+
 ### Tips
 
 - Hit `q` to Quit from full screen preview any time.
