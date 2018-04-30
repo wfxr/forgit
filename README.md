@@ -79,10 +79,10 @@ Interactive `.gitignore` generator
 
 ## Custom aliases
 
-You can change the default aliases by redefining these variables below.
+You can change the default aliases by defining these variables below.
 
 ``` bash
-# Put them before sourcing the plugin if you don't use any plugin manager.
+# Define them before sourcing the plugin if you don't use any plugin manager.
 forgit_log=glo
 forgit_diff=gd
 forgit_add=ga
