@@ -77,7 +77,7 @@ Interactive `.gitignore` generator
 
 ![screenshot](screenshot-gi.png)
 
-## Custom aliases
+## Custom options
 
 You can change the default aliases by defining these variables below.
 
@@ -89,10 +89,24 @@ forgit_add=ga
 forgit_ignore=gi
 ```
 
+You can add custom fzf options for `forgit`, including keybinds, layout, etc.
+(No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
+
+``` bash
+FORGIT_FZF_DEFAULT_OPTS="
+--exact
+--border
+--cycle
+--reverse
+--height '80%'
+"
+```
+
 ### Tips
 
 - Hit `q` to Quit from full screen preview any time.
 - Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) to have better `diff` output.
+- Call `glo` with arguments to get logs only related to these files or directories(eg, `glo main.go test.go`).
 - Call `gi` with arguments to get wanted `.gitignore` contents directly(eg, `gi c++`).
 
 ## [License](LICENSE.txt)
