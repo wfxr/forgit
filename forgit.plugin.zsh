@@ -3,11 +3,8 @@ forgit::fzf() {
         $FZF_DEFAULT_OPTS
         --ansi
         --height '80%'
-        --bind='alt-v:page-up'
-        --bind='ctrl-v:page-down'
         --bind='alt-k:preview-up,alt-p:preview-up'
         --bind='alt-j:preview-down,alt-n:preview-down'
-        --bind='alt-a:select-all'
         --bind='ctrl-r:toggle-all'
         --bind='ctrl-s:toggle-sort'
         --bind='?:toggle-preview'
@@ -69,7 +66,8 @@ forgit::log() {
 forgit::diff() {
     forgit::inside_work_tree || return 1
     local cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
-    git ls-files --modified $(git rev-parse --show-toplevel)|
+    [[ $# -eq 0 ]] && local files=$(git rev-parse --show-toplevel) || local files="$@"
+    git ls-files --modified "$files"|
         forgit::fzf +m -0 \
             --bind="enter:execute($cmd |LESS='-R' less)" \
             --preview="$cmd"
@@ -91,7 +89,26 @@ forgit::add() {
             --preview="git diff --color=always -- {-1} $forgit_emojify $forgit_fancy" |
         cut -d] -f2 |
         sed 's/.* -> //') # for rename case
-    [[ -n $files ]] && echo $files |xargs -I{} git add {} && git status
+    [[ -n "$files" ]] && echo "$files" |xargs -I{} git add {} && git status --short && return
+    echo 'Nothing to add.'
+}
+
+# git checkout-restore selector
+forgit::restore() {
+    forgit::inside_work_tree || return 1
+    local cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
+    local files=$(git ls-files --modified $(git rev-parse --show-toplevel)|
+        forgit::fzf -m -0 --preview="$cmd")
+    [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
+    echo 'Nothing to restore.'
+}
+
+forgit::clean() {
+    forgit::inside_work_tree || return 1
+    # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
+    local files=$(git clean -xdfn "$@"| awk '{print $3}'| forgit::fzf -m -0 |sed 's#/$##')
+    [[ -n "$files" ]] && echo "$files" |xargs -I{} git clean -xdf {}
+    echo 'Nothing to clean.'
 }
 
 # git ignore generator
@@ -138,3 +155,5 @@ alias ${forgit_log:-ga}='forgit::add'
 alias ${forgit_log:-glo}='forgit::log'
 alias ${forgit_diff:-gd}='forgit::diff'
 alias ${forgit_ignore:-gi}='forgit:ignore'
+alias ${forgit_restore:-gcf}='forgit::restore'
+alias ${forgit_clean:-gclean}='forgit::clean'
