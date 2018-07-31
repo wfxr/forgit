@@ -109,6 +109,18 @@ __forgit_add() {
   fi
 }
 
+
+__forgit_restore() {
+  if [[ __forgit_inside_work_tree -ne 0 ]]; then
+    return 1
+  fi
+  local cmd="git diff --no-ext-diff --color=always -- {} $forgit_emojify $forgit_fancy"
+  local files=$(git ls-files --modified $(git rev-parse --show-toplevel)|
+    __forgit_fzf -m -0 --preview="$cmd")
+  [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
+  echo 'Nothing to restore.'
+}
+
 # git ignore generator
 export FORGIT_GI_CACHE=~/.gicache
 export FORGIT_GI_INDEX=${FORGIT_GI_CACHE}/.index
@@ -156,3 +168,4 @@ alias ${forgit_add:-ga}=__forgit_add
 alias ${forgit_log:-glo}=__forgit_log
 alias ${forgit_diff:-gd}=__forgit_diff
 alias ${forgit_ignore:-gi}=__forgit_ignore
+alias ${forgit_restore:-gcf}=__forgit_restore
