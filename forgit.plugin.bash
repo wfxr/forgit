@@ -98,15 +98,9 @@ __forgit_add() {
         __forgit_fzf -0 -m --nth 2..,.. \
         --preview="git diff --no-ext-diff --color=always -- {-1} $forgit_emojify $forgit_fancy" |
         cut -d] -f2 |
-        sed 's/.* -> //' | # for rename case
-        tr '\n' ' ' | tr -s ' ' | sed -e 's/^[[:space:]]*//')
-  if [[ -n "$files" ]]; then
-    cmd="git add $files"
-    bind '"\e[0n": "'"$cmd"'"';
-    printf '\e[5n'
-  else
-    echo 'Nothing to add.'
-  fi
+        sed 's/.* -> //') # for rename case
+  [[ -n "$files" ]] && echo "$files" |xargs -I{} git add {} && git status --short && return
+  echo 'Nothing to add.'
 }
 
 
