@@ -45,6 +45,7 @@ __forgit_color_to_grep_code() {
     esac
 }
 
+# diff is fancy with diff-so-fancy!
 command -v diff-so-fancy >/dev/null 2>&1 && forgit_fancy='|diff-so-fancy'
 command -v emojify >/dev/null 2>&1       && forgit_emojify='|emojify'
 
@@ -56,6 +57,19 @@ __forgit_get_git_color() {
   local color=$(git config $1);
   color=${color:-$2}
   echo $(__forgit_color_to_grep_code $color)
+}
+
+# git commit browser
+__forgit_log() {
+  if [[ __forgit_inside_work_tree -ne 0 ]]; then
+    return 1
+  fi
+  local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $forgit_emojify $forgit_fancy"
+  eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $forgit_emojify" |
+      __forgit_fzf +s +m --tiebreak=index \
+          --bind="enter:execute($cmd |LESS='-R' less)" \
+          --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' |pbcopy)+abort" \
+          --preview="$cmd"
 }
 
 __forgit_add() {
@@ -84,3 +98,4 @@ __forgit_add() {
 }
 
 alias ${forgit_add:-ga}=__forgit_add
+alias ${forgit_log:-glo}=__forgit_log
