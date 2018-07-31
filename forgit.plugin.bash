@@ -121,6 +121,16 @@ __forgit_restore() {
   echo 'Nothing to restore.'
 }
 
+__forgit_clean() {
+  if [[ __forgit_inside_work_tree -ne 0 ]]; then
+    return 1
+  fi
+  # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
+  local files=$(git clean -xdfn "$@"| awk '{print $3}'| __forgit_fzf -m -0 |sed 's#/$##')
+  [[ -n "$files" ]] && echo "$files" |xargs -I{} git clean -xdf {} && return
+  echo 'Nothing to clean.'
+}
+
 # git ignore generator
 export FORGIT_GI_CACHE=~/.gicache
 export FORGIT_GI_INDEX=${FORGIT_GI_CACHE}/.index
@@ -169,3 +179,4 @@ alias ${forgit_log:-glo}=__forgit_log
 alias ${forgit_diff:-gd}=__forgit_diff
 alias ${forgit_ignore:-gi}=__forgit_ignore
 alias ${forgit_restore:-gcf}=__forgit_restore
+alias ${forgit_clean:-gclean}=__forgit_clean
