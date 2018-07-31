@@ -169,8 +169,7 @@ __forgit_ignore_get() {
     echo $@ |xargs -I{} bash -c "cat $FORGIT_GI_CACHE/{} 2>/dev/null || (curl -sL https://www.gitignore.io/api/{} |tee $FORGIT_GI_CACHE/{})"
 }
 __forgit_ignore_clean() {
-    setopt localoptions rmstarsilent
-    [[ -d $FORGIT_GI_CACHE ]] && rm -rf $FORGIT_GI_CACHE/*
+    [[ -d $FORGIT_GI_CACHE ]] && rm -rf $FORGIT_GI_CACHE
 }
 
 
