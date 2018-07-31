@@ -72,6 +72,18 @@ __forgit_log() {
           --preview="$cmd"
 }
 
+__forgit_diff() {
+  if [[ __forgit_inside_work_tree -ne 0 ]]; then
+    return 1
+  fi
+  local cmd="git diff --no-ext-diff --color=always -- {} $forgit_emojify $forgit_fancy"
+  [[ $# -eq 0 ]] && local files=$(git rev-parse --show-toplevel) || local files="$@"
+  git ls-files --modified "$files"|
+      __forgit_fzf +m -0 \
+          --bind="enter:execute($cmd |LESS='-R' less)" \
+          --preview="$cmd"
+}
+
 __forgit_add() {
   if [[ __forgit_inside_work_tree -ne 0 ]]; then
     return 1
@@ -97,5 +109,50 @@ __forgit_add() {
   fi
 }
 
+# git ignore generator
+export FORGIT_GI_CACHE=~/.gicache
+export FORGIT_GI_INDEX=${FORGIT_GI_CACHE}/.index
+__forgit_ignore() {
+    [ -f $FORGIT_GI_INDEX ] || __forgit_ignore_update
+    local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $FORGIT_GI_CACHE/% 2>/dev/null || (curl -sL https://www.gitignore.io/api/% |tee $FORGIT_GI_CACHE/%)'"
+    OLDIFS=$IFS
+    IFS=$'\n'
+    [[ $# -gt 0 ]] && args=($@) || args=($(cat $FORGIT_GI_INDEX |nl -nrn -w4 -s'  ' |__forgit_fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
+    test -z "$args" && return 1
+    local options=(
+    '(1) Output to stdout'
+    '(2) Append to .gitignore'
+    '(3) Overwrite .gitignore')
+    opt=$(printf '%s\n' "${options[@]}" |__forgit_fzf +m |awk '{print $1}')
+    case "$opt" in
+        '(1)' )
+            __forgit_ignore_get ${args[@]}
+            ;;
+        '(2)' )
+            __forgit_ignore_get ${args[@]} >> .gitignore
+            ;;
+        '(3)' )
+            __forgit_ignore_get ${args[@]} > .gitignore
+            ;;
+    esac
+    IFS=$OLDIFS
+}
+
+__forgit_ignore_update() {
+  mkdir -p $FORGIT_GI_CACHE
+  curl -sL https://www.gitignore.io/api/list |tr ',' '\n' > $FORGIT_GI_INDEX
+}
+__forgit_ignore_get() {
+    mkdir -p $FORGIT_GI_CACHE
+    echo $@ |xargs -I{} bash -c "cat $FORGIT_GI_CACHE/{} 2>/dev/null || (curl -sL https://www.gitignore.io/api/{} |tee $FORGIT_GI_CACHE/{})"
+}
+__forgit_ignore_clean() {
+    setopt localoptions rmstarsilent
+    [[ -d $FORGIT_GI_CACHE ]] && rm -rf $FORGIT_GI_CACHE/*
+}
+
+
 alias ${forgit_add:-ga}=__forgit_add
 alias ${forgit_log:-glo}=__forgit_log
+alias ${forgit_diff:-gd}=__forgit_diff
+alias ${forgit_ignore:-gi}=__forgit_ignore
