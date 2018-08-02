@@ -131,9 +131,10 @@ export FORGIT_GI_INDEX=${FORGIT_GI_CACHE}/.index
 __forgit_ignore() {
     [ -f $FORGIT_GI_INDEX ] || __forgit_ignore_update
     local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $FORGIT_GI_CACHE/% 2>/dev/null || (curl -sL https://www.gitignore.io/api/% |tee $FORGIT_GI_CACHE/%)'"
-    OLDIFS=$IFS
+    ${IFS+"false"} && unset oldifs || oldifs="$IFS" #store IFS
     IFS=$'\n'
     [[ $# -gt 0 ]] && args=($@) || args=($(cat $FORGIT_GI_INDEX |nl -nrn -w4 -s'  ' |__forgit_fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
+    ${oldifs+"false"} && unset IFS || IFS="$oldifs" # restore IFS
     test -z "$args" && return 1
     local options=(
     '(1) Output to stdout'
@@ -151,7 +152,6 @@ __forgit_ignore() {
             __forgit_ignore_get ${args[@]} > .gitignore
             ;;
     esac
-    IFS=$OLDIFS
 }
 
 __forgit_ignore_update() {
