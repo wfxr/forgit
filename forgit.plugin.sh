@@ -61,7 +61,7 @@ __forgit_get_git_color() {
 
 # git commit browser
 __forgit_log() {
-  __forgit_inside_work_tree || return
+  __forgit_inside_work_tree || return 1
   local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $forgit_emojify $forgit_fancy"
   eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $forgit_emojify" |
       __forgit_fzf +s +m --tiebreak=index \
@@ -71,7 +71,7 @@ __forgit_log() {
 }
 
 __forgit_diff() {
-  __forgit_inside_work_tree || return
+  __forgit_inside_work_tree || return 1
   local cmd="git diff --no-ext-diff --color=always -- {} $forgit_emojify $forgit_fancy"
   [[ $# -eq 0 ]] && local files=$(git rev-parse --show-toplevel) || local files="$@"
   git ls-files --modified "$files"|
@@ -81,7 +81,7 @@ __forgit_diff() {
 }
 
 __forgit_add() {
-  __forgit_inside_work_tree || return
+  __forgit_inside_work_tree || return 1
   added=$(__forgit_get_git_color "color.status.untracked" "red")
   changed=$(__forgit_get_git_color "color.status.changed" "red")
   unmerged=$(__forgit_get_git_color "color.status.unmerged" "red")
@@ -99,7 +99,7 @@ __forgit_add() {
 
 
 __forgit_restore() {
-  __forgit_inside_work_tree || return
+  __forgit_inside_work_tree || return 1
   local cmd="git diff --no-ext-diff --color=always -- {} $forgit_emojify $forgit_fancy"
   local files=$(git ls-files --modified $(git rev-parse --show-toplevel)|
     __forgit_fzf -m -0 --preview="$cmd")
@@ -108,7 +108,7 @@ __forgit_restore() {
 }
 
 __forgit_clean() {
-  __forgit_inside_work_tree || return
+  __forgit_inside_work_tree || return 1
   # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
   local files=$(git clean -xdfn "$@"| awk '{print $3}'| __forgit_fzf -m -0 |sed 's#/$##')
   [[ -n "$files" ]] && echo "$files" |xargs -I{} git clean -xdf {} && return
