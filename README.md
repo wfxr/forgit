@@ -25,7 +25,13 @@ antigen bundle wfxr/forgit
 
 ### Manually
 
-Clone this repo somewhere and source the `forgit.plugin.zsh` at ~/.zshrc or source `forgit.plugin.sh` in ~/.bashrc.
+### for zsh
+
+Clone this repo and source `forgit.plugin.zsh` in ~/.zshrc.
+
+### for bash
+
+Clone this repo and source `forgit.plugin.sh` in ~/.bashrc.
 
 ## Commands
 
