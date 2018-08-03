@@ -39,13 +39,13 @@ Clone this repo and source `forgit.plugin.sh` in ~/.bashrc.
 
 Interactive `git add` selector
 
-![screenshot](screenshot-ga.png)
+![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-ga.png)
 
 ### glo
 
 Interactive `git log` browser
 
-![screenshot](screenshot-glo.png)
+![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-glo.png)
 
 ### gd
 
@@ -63,7 +63,7 @@ Interactive `git clean` selector
 
 Interactive `.gitignore` generator
 
-![screenshot](screenshot-gi.png)
+![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-gi.png)
 
 ## Default keybinds
 
