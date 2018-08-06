@@ -152,7 +152,7 @@ forgit::ignore::clean() {
 }
 
 # add aliases
-alias ${forgit_log:-ga}='forgit::add'
+alias ${forgit_add:-ga}='forgit::add'
 alias ${forgit_log:-glo}='forgit::log'
 alias ${forgit_diff:-gd}='forgit::diff'
 alias ${forgit_ignore:-gi}='forgit:ignore'
