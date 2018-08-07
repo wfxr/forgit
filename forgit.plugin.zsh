@@ -56,7 +56,7 @@ forgit::inside_work_tree() {
 forgit::log() {
     forgit::inside_work_tree || return 1
     local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $forgit_emojify $forgit_fancy"
-    eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $forgit_emojify" |
+    git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' "$@" |
         forgit::fzf +s +m --tiebreak=index \
             --bind="enter:execute($cmd |LESS='-R' less)" \
             --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' |pbcopy)+abort" \
