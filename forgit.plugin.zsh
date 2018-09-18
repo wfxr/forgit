@@ -52,7 +52,7 @@ forgit::inside_work_tree() {
     git rev-parse --is-inside-work-tree >/dev/null
 }
 
-# git commit browser
+# git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
     local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $forgit_emojify $forgit_fancy"
@@ -63,7 +63,7 @@ forgit::log() {
             --preview="$cmd"
 }
 
-# git diff brower
+# git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
     local cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
@@ -104,6 +104,17 @@ forgit::restore() {
     echo 'Nothing to restore.'
 }
 
+# git stash viewer
+forgit::stash::show() {
+    forgit::inside_work_tree || return 1
+    local cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    git stash list |
+        forgit::fzf +s +m -0 --tiebreak=index \
+        --bind="enter:execute($cmd |LESS='-R' less)" \
+        --preview="$cmd"
+}
+
+# git clean selector
 forgit::clean() {
     forgit::inside_work_tree || return 1
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
@@ -158,3 +169,4 @@ alias ${forgit_diff:-gd}='forgit::diff'
 alias ${forgit_ignore:-gi}='forgit:ignore'
 alias ${forgit_restore:-gcf}='forgit::restore'
 alias ${forgit_clean:-gclean}='forgit::clean'
+alias ${forgit_stash_show:-gss}='forgit::stash::show'

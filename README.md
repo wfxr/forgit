@@ -43,7 +43,7 @@ Interactive `git add` selector
 
 ### glo
 
-Interactive `git log` browser
+Interactive `git log` viewer
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-glo.png)
 
@@ -55,15 +55,20 @@ Interactive `.gitignore` generator
 
 ### gd
 
-Interactive `git diff` browser
+Interactive `git diff` viewer
 
 ### gcf
 
 Interactive `git checkout <file>` selector
 
+### gss
+
+Interactive `git stash` viewer
+
 ### gclean
 
 Interactive `git clean` selector
+
 
 ## Default keybinds
 
