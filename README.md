@@ -97,6 +97,7 @@ forgit_add=ga
 forgit_ignore=gi
 forgit_restore=gcf
 forgit_clean=gclean
+forgit_stash_show=gss
 ```
 
 You can add custom fzf options for `forgit`, including keybinds, layout, etc.
