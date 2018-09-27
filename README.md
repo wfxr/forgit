@@ -1,5 +1,7 @@
 # forgit
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 `forgit` is a utility tool for git taking advantage of fuzzy finder fzf.
 
 ## Installation
