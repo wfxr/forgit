@@ -115,6 +115,15 @@ __forgit_clean() {
   echo 'Nothing to clean.'
 }
 
+__forgit_stash_show() {
+  __forgit_inside_work_tree || return 1
+  local cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+  git stash list |
+    __forgit_fzf +s +m -0 --tiebreak=index \
+    --bind="enter:execute($cmd |LESS='-R' less)" \
+    --preview="$cmd"
+}
+
 # git ignore generator
 export FORGIT_GI_CACHE=~/.gicache
 export FORGIT_GI_INDEX=${FORGIT_GI_CACHE}/.index
@@ -163,3 +172,4 @@ alias ${forgit_diff:-gd}=__forgit_diff
 alias ${forgit_ignore:-gi}=__forgit_ignore
 alias ${forgit_restore:-gcf}=__forgit_restore
 alias ${forgit_clean:-gclean}=__forgit_clean
+alias ${forgit_stash_show:-gss}=__forgit_stash_show
