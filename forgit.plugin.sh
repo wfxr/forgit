@@ -166,10 +166,13 @@ __forgit_ignore_clean() {
 }
 
 
-alias ${forgit_add:-ga}=__forgit_add
-alias ${forgit_log:-glo}=__forgit_log
-alias ${forgit_diff:-gd}=__forgit_diff
-alias ${forgit_ignore:-gi}=__forgit_ignore
-alias ${forgit_restore:-gcf}=__forgit_restore
-alias ${forgit_clean:-gclean}=__forgit_clean
-alias ${forgit_stash_show:-gss}=__forgit_stash_show
+# add aliases
+if [[ -z "$FORGIT_NO_ALIASES" ]]; then
+  alias ${forgit_add:-ga}=__forgit_add
+  alias ${forgit_log:-glo}=__forgit_log
+  alias ${forgit_diff:-gd}=__forgit_diff
+  alias ${forgit_ignore:-gi}=__forgit_ignore
+  alias ${forgit_restore:-gcf}=__forgit_restore
+  alias ${forgit_clean:-gclean}=__forgit_clean
+  alias ${forgit_stash_show:-gss}=__forgit_stash_show
+fi
