@@ -102,6 +102,12 @@ forgit_clean=gclean
 forgit_stash_show=gss
 ```
 
+In `glo` - the alias binded to `__forgit_log` (or to `forgit::log` in ZSH) the <kbd>CTRL-Y</kbd> is binded to copying the current commit hash to the clipboard. It is supported by `xclip` or `xsel` on GNU/Linux and FreeBSD and even on [Termux](https://termux.com/) if you have [Termux API](https://wiki.termux.com/wiki/Termux:API) installed.
+
+If using GNU/Linux, You can customize the clipboard selection which will be used to copy the hash to, by setting `$FORGIT_CLIPBOARD_SELECTION` to `PRIMARY`.
+
+Additionally, you can set `$FORGIT_TMUX_CLIPBOARD` so when tmux is used, the commit hash will be copy to a tmux buffer.
+
 You can add custom fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
 
