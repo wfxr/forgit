@@ -90,6 +90,7 @@ Interactive `git clean` selector
 ## Custom options
 
 You can change the default aliases by defining these variables below.
+(To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
 
 ``` bash
 # Define them before sourcing the plugin if you don't use any plugin manager.
@@ -101,8 +102,6 @@ forgit_restore=gcf
 forgit_clean=gclean
 forgit_stash_show=gss
 ```
-
-Or you can set `$FORGIT_NO_ALIASES` so no aliases will be created at all.
 
 You can add custom fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
