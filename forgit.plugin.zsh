@@ -51,26 +51,26 @@ forgit::color_to_grep_code() {
 case "$OSTYPE" in
   darwin*)
     if command -v pbcopy 2>&1 >/dev/null; then
-      clip="|pbcopy"
+      FORGIT_CLIPBOARD="|pbcopy"
     fi
     ;;
   linux-android*)
     if command -v termux-clipboard-set 2>&1 >/dev/null; then
-      clip="|termux-clipboard-set"
+      FORGIT_CLIPBOARD="|termux-clipboard-set"
     fi
     ;;
   linux*|freebsd*)
     if command -v xclip 2>&1 >/dev/null; then
-      clip='|xsel'
-      [[ "$FORGIT_CLIPBOARD_SELECTION" == "PRIMARY" ]] && clip="$clip --primary" || clip="$clip --clipboard"
+      FORGIT_CLIPBOARD='|xsel'
+      [[ "$FORGIT_CLIPBOARD_SELECTION" == "PRIMARY" ]] && FORGIT_CLIPBOARD="$FORGIT_CLIPBOARD --primary" || FORGIT_CLIPBOARD="$FORGIT_CLIPBOARD --clipboard"
     elif command -v xsel 2>&1 >/dev/null; then
-      clip='|xclip'
-      [[ "$FORGIT_CLIPBOARD_SELECTION" == "PRIMARY" ]] && clip="$clip --selction primary" || clip="$clip --selction clipboard"
+      FORGIT_CLIPBOARD='|xclip'
+      [[ "$FORGIT_CLIPBOARD_SELECTION" == "PRIMARY" ]] && FORGIT_CLIPBOARD="$FORGIT_CLIPBOARD --selction primary" || FORGIT_CLIPBOARD="$FORGIT_CLIPBOARD --selction clipboard"
     fi
     [[ ! -z "$FORGIT_TMUX_CLIPBOARD" ]] && \
       command -v tmux 2>&1 > /dev/null && \
       [[ ! -z "$TMUX" ]] && \
-      clip='| tee >(tmux set-buffer $(cat -)) '"$clip"
+      FORGIT_CLIPBOARD='| tee >(tmux set-buffer $(cat -)) '"$FORGIT_CLIPBOARD"
     ;;
 esac
 
@@ -85,7 +85,7 @@ forgit::log() {
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $forgit_emojify" |
         forgit::fzf +s +m --tiebreak=index \
             --bind="enter:execute($cmd |LESS='-R' less)" \
-            --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' $clip)+abort" \
+            --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' $FORGIT_CLIPBOARD)+abort" \
             --preview="$cmd"
 }
 
