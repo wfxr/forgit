@@ -59,7 +59,7 @@ forgit::log() {
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $@ $forgit_emojify" |
         forgit::fzf +s +m --tiebreak=index \
             --bind="enter:execute($cmd |LESS='-R' less)" \
-            --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' |pbcopy)+abort" \
+            --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' |pbcopy)" \
             --preview="$cmd"
 }
 
