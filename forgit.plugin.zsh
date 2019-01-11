@@ -156,7 +156,7 @@ forgit::ignore::update() {
 forgit::ignore::get() {
     mkdir -p $FORGIT_GI_CACHE
     for item in "$@"; do
-        cat "$FORGIT_GI_CACHE/$item" 2>/dev/null || (curl -sL https://www.gitignore.io/api/{} |tee "$FORGIT_GI_CACHE/$item")
+        cat "$FORGIT_GI_CACHE/$item" 2>/dev/null || (curl -sL "https://www.gitignore.io/api/$item" |tee "$FORGIT_GI_CACHE/$item")
     done
 }
 forgit::ignore::clean() {
