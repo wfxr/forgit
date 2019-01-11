@@ -159,7 +159,9 @@ __forgit_ignore_update() {
 }
 __forgit_ignore_get() {
     mkdir -p $FORGIT_GI_CACHE
-    echo $@ |xargs -I{} bash -c "cat $FORGIT_GI_CACHE/{} 2>/dev/null || (curl -sL https://www.gitignore.io/api/{} |tee $FORGIT_GI_CACHE/{})"
+    for item in "$@"; do
+        cat "$FORGIT_GI_CACHE/$item" 2>/dev/null || (curl -sL "https://www.gitignore.io/api/$item" |tee "$FORGIT_GI_CACHE/$item")
+    done
 }
 __forgit_ignore_clean() {
     [[ -d $FORGIT_GI_CACHE ]] && rm -rf $FORGIT_GI_CACHE
