@@ -118,7 +118,7 @@ FORGIT_FZF_DEFAULT_OPTS="
 
 ### Tips
 
-- Hit `q` to Quit from full screen preview any time.
+- Hit `q` to quit from full screen preview any time.
 - Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) to have better `diff` output.
 - Commands like `glo`, `gd`, `gcf` and `gclean` accept path arguments to restrain the items listed in fzf(eg, `glo main.go test.go`, `gclean output/`).
 - Call `gi` with arguments to get wanted `.gitignore` contents directly(eg, `gi c++`).
