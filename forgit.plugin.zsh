@@ -14,6 +14,9 @@ forgit::fzf() {
     " fzf "$@"
 }
 
+COLOR_YELLOW='\e[1;33m'
+COLOR_NC='\e[0m' # No Color
+
 forgit::color_to_grep_code() {
     case "$1" in
         black)
@@ -45,8 +48,8 @@ forgit::color_to_grep_code() {
 
 
 # diff is fancy with diff-so-fancy!
-(( $+commands[diff-so-fancy] )) && forgit_fancy='|diff-so-fancy'
-(( $+commands[emojify]       )) && forgit_emojify='|emojify'
+hash diff-so-fancy &>/dev/null && forgit_fancy='|diff-so-fancy'
+hash emojify       &>/dev/null && forgit_emojify='|emojify'
 
 forgit::inside_work_tree() {
     git rev-parse --is-inside-work-tree >/dev/null
@@ -124,20 +127,19 @@ forgit::clean() {
 }
 
 # git ignore generator
-export FORGIT_GI_CACHE=~/.gicache
-export FORGIT_GI_INDEX=$FORGIT_GI_CACHE/.index
+export FORGIT_GI_REPO=~/.forgit/gi/repos/dvcs/gitignore # https://github.com/dvcs/gitignore.git
 
-if [[ -z "$FORGIT_GI_USE_LOCAL" ]]; then
 forgit:ignore() {
-    [ -f $FORGIT_GI_INDEX ] || forgit::ignore::update
-    local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $FORGIT_GI_CACHE/% 2>/dev/null || (curl -sL https://www.gitignore.io/api/% |tee $FORGIT_GI_CACHE/%)'"
-    IFS=$'\n'
-    [[ $# -gt 0 ]] && args=($@) || args=($(cat $FORGIT_GI_INDEX |nl -nrn -w4 -s'  ' |forgit::fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
+    [ -d $FORGIT_GI_REPO ] || forgit::ignore::update
+    local preview="cat $FORGIT_GI_REPO/templates/{2}.gitignore 2>/dev/null"
+    local IFS=$'\n'
+    [[ $# -gt 0 ]] && args=($@) ||
+        args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
+                forgit::fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
     test -z "$args" && return 1
-    local options=(
-    '(1) Output to stdout'
-    '(2) Append to .gitignore'
-    '(3) Overwrite .gitignore')
+    local options=('(1) Output to stdout'
+                   '(2) Append to .gitignore'
+                   '(3) Overwrite .gitignore')
     opt=$(printf '%s\n' "${options[@]}" |forgit::fzf +m |awk '{print $1}')
     case "$opt" in
         '(1)' )
@@ -152,73 +154,35 @@ forgit:ignore() {
     esac
 }
 forgit::ignore::update() {
-    mkdir -p $FORGIT_GI_CACHE
-    curl -sL https://www.gitignore.io/api/list |tr ',' '\n' > $FORGIT_GI_INDEX
-}
-forgit::ignore::get() {
-    mkdir -p $FORGIT_GI_CACHE
-    for item in "$@"; do
-        cat "$FORGIT_GI_CACHE/$item" 2>/dev/null || (curl -sL "https://www.gitignore.io/api/$item" |tee "$FORGIT_GI_CACHE/$item")
-    done
-}
-
-else
-
-forgit:ignore() {
-    [ -f $FORGIT_GI_INDEX ] || forgit::ignore::update
-    local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $FORGIT_GI_CACHE/gitignore/templates/%.gitignore 2>/dev/null'"
-    IFS=$'\n'
-    [[ $# -gt 0 ]] && args=($@) || args=($(cat $FORGIT_GI_INDEX |nl -nrn -w4 -s'  ' |forgit::fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
-    test -z "$args" && return 1
-    local options=(
-    '(1) Output to stdout'
-    '(2) Append to .gitignore'
-    '(3) Overwrite .gitignore')
-    opt=$(printf '%s\n' "${options[@]}" |forgit::fzf +m |awk '{print $1}')
-    case "$opt" in
-        '(1)' )
-            forgit::ignore::get ${args[@]}
-            ;;
-        '(2)' )
-            forgit::ignore::get ${args[@]} >> .gitignore
-            ;;
-        '(3)' )
-            forgit::ignore::get ${args[@]} > .gitignore
-            ;;
-    esac
-}
-forgit::ignore::update() {
-    mkdir -p "$FORGIT_GI_CACHE" 2>/dev/null
-    if [[ -d "$FORGIT_GI_CACHE/gitignore" ]]; then
-        pushd "$FORGIT_GI_CACHE/gitignore" >/dev/null || exit
-        git pull --no-rebase --ff
-        popd >/dev/null
+    if [[ -d "$FORGIT_GI_REPO" ]]; then
+        (cd $FORGIT_GI_REPO && git pull --no-rebase --ff) || return 1
     else
-        rm -rf "$FORGIT_GI_CACHE/gitignore" 2>/dev/null
-        git clone https://github.com/dvcs/gitignore.git "$FORGIT_GI_CACHE/gitignore"
+        echo 'Initializing gitignore repo...'
+        git clone --depth=1 https://github.com/dvcs/gitignore.git "$FORGIT_GI_REPO"
     fi
-    (for item in $FORGIT_GI_CACHE/gitignore/templates/*.gitignore; do
-        echo "${item##*/}"
-    done) | sed 's/.gitignore$//' | sort -f -u >| "$FORGIT_GI_INDEX"
 }
 forgit::ignore::get() {
     local item filename header
     for item in "$@"; do
-        filename=$(find "$FORGIT_GI_CACHE/gitignore/templates" -type f -iname "${item}.gitignore" -print -quit)
-        if [[ -n "$filename" ]]; then
+        if filename=$(find "$FORGIT_GI_REPO/templates" -type f -iname "${item}.gitignore" -print -quit); then
+            [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." >&2 && continue
             header="${filename##*/}" && header="${header%.gitignore}"
             echo "### $header"
-            cat "$filename"
-            echo ""
-            filename=
+            cat "$filename" && echo
         fi
     done
 }
-fi
-
+forgit::ignore::list() {
+    (for item in $FORGIT_GI_REPO/templates/*.gitignore; do
+        echo "${item##*/}"
+    done) | sed 's/.gitignore$//' | sort -f -u
+}
 forgit::ignore::clean() {
     setopt localoptions rmstarsilent
-    [[ -d $FORGIT_GI_CACHE ]] && rm -rf $FORGIT_GI_CACHE/*
+    [[ -d $FORGIT_GI_REPO ]] && rm -rf $FORGIT_GI_REPO
+}
+forgit::warn() {
+    printf "${COLOR_YELLOW}Warn${COLOR_NC}: $@\n"
 }
 
 # add aliases
