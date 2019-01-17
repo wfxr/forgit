@@ -126,6 +126,8 @@ forgit::clean() {
 # git ignore generator
 export FORGIT_GI_CACHE=~/.gicache
 export FORGIT_GI_INDEX=$FORGIT_GI_CACHE/.index
+
+if [[ -z "$FORGIT_GI_USE_LOCAL" ]]; then
 forgit:ignore() {
     [ -f $FORGIT_GI_INDEX ] || forgit::ignore::update
     local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $FORGIT_GI_CACHE/% 2>/dev/null || (curl -sL https://www.gitignore.io/api/% |tee $FORGIT_GI_CACHE/%)'"
@@ -159,6 +161,55 @@ forgit::ignore::get() {
         cat "$FORGIT_GI_CACHE/$item" 2>/dev/null || (curl -sL "https://www.gitignore.io/api/$item" |tee "$FORGIT_GI_CACHE/$item")
     done
 }
+
+else
+
+forgit:ignore() {
+    [ -f $FORGIT_GI_INDEX ] || forgit::ignore::update
+    local preview="echo {} |awk '{print \$2}' |xargs -I% bash -c 'cat $FORGIT_GI_CACHE/gitignore/templates/%.gitignore 2>/dev/null'"
+    IFS=$'\n'
+    [[ $# -gt 0 ]] && args=($@) || args=($(cat $FORGIT_GI_INDEX |nl -nrn -w4 -s'  ' |forgit::fzf -m --preview="$preview" --preview-window="right:70%" |awk '{print $2}'))
+    test -z "$args" && return 1
+    local options=(
+    '(1) Output to stdout'
+    '(2) Append to .gitignore'
+    '(3) Overwrite .gitignore')
+    opt=$(printf '%s\n' "${options[@]}" |forgit::fzf +m |awk '{print $1}')
+    case "$opt" in
+        '(1)' )
+            forgit::ignore::get ${args[@]}
+            ;;
+        '(2)' )
+            forgit::ignore::get ${args[@]} >> .gitignore
+            ;;
+        '(3)' )
+            forgit::ignore::get ${args[@]} > .gitignore
+            ;;
+    esac
+}
+forgit::ignore::update() {
+    mkdir -p "$FORGIT_GI_CACHE" 2>/dev/null
+    if [[ -d "$FORGIT_GI_CACHE/gitignore" ]]; then
+        pushd "$FORGIT_GI_CACHE/gitignore" >/dev/null || exit
+        git pull --no-rebase --ff
+        popd >/dev/null
+    else
+        rm -rf "$FORGIT_GI_CACHE/gitignore" 2>/dev/null
+        git clone https://github.com/dvcs/gitignore.git "$FORGIT_GI_CACHE/gitignore"
+    fi
+    (for item in $FORGIT_GI_CACHE/gitignore/templates/*.gitignore; do
+        echo "${item##*/}"
+    done) | sed 's/.gitignore$//' | sort -f -u >| "$FORGIT_GI_INDEX"
+}
+forgit::ignore::get() {
+    for item in "$@"; do
+        echo "### $item"
+        cat "$FORGIT_GI_CACHE/gitignore/templates/${item}.gitignore"
+        echo ""
+    done
+}
+fi
+
 forgit::ignore::clean() {
     setopt localoptions rmstarsilent
     [[ -d $FORGIT_GI_CACHE ]] && rm -rf $FORGIT_GI_CACHE/*
