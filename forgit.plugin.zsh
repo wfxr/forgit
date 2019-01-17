@@ -202,10 +202,16 @@ forgit::ignore::update() {
     done) | sed 's/.gitignore$//' | sort -f -u >| "$FORGIT_GI_INDEX"
 }
 forgit::ignore::get() {
+    local item filename header
     for item in "$@"; do
-        echo "### $item"
-        cat "$FORGIT_GI_CACHE/gitignore/templates/${item}.gitignore"
-        echo ""
+        filename=$(find "$FORGIT_GI_CACHE/gitignore/templates" -type f -iname "${item}.gitignore" -print -quit)
+        if [[ -n "$filename" ]]; then
+            header="${filename##*/}" && header="${header%.gitignore}"
+            echo "### $header"
+            cat "$filename"
+            echo ""
+            filename=
+        fi
     done
 }
 fi
