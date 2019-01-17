@@ -14,6 +14,7 @@ forgit::fzf() {
     " fzf "$@"
 }
 
+COLOR_GREEN='\e[0;32m'
 COLOR_YELLOW='\e[1;33m'
 COLOR_NC='\e[0m' # No Color
 
@@ -155,9 +156,10 @@ forgit:ignore() {
 }
 forgit::ignore::update() {
     if [[ -d "$FORGIT_GI_REPO" ]]; then
+        forgit::info 'Updating gitignore repo...'
         (cd $FORGIT_GI_REPO && git pull --no-rebase --ff) || return 1
     else
-        echo 'Initializing gitignore repo...'
+        forgit::info 'Initializing gitignore repo...'
         git clone --depth=1 https://github.com/dvcs/gitignore.git "$FORGIT_GI_REPO"
     fi
 }
@@ -165,10 +167,9 @@ forgit::ignore::get() {
     local item filename header
     for item in "$@"; do
         if filename=$(find "$FORGIT_GI_REPO/templates" -type f -iname "${item}.gitignore" -print -quit); then
-            [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." >&2 && continue
+            [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
             header="${filename##*/}" && header="${header%.gitignore}"
-            echo "### $header"
-            cat "$filename" && echo
+            echo "### $header" && cat "$filename" && echo
         fi
     done
 }
@@ -182,7 +183,10 @@ forgit::ignore::clean() {
     [[ -d $FORGIT_GI_REPO ]] && rm -rf $FORGIT_GI_REPO
 }
 forgit::warn() {
-    printf "${COLOR_YELLOW}Warn${COLOR_NC}: $@\n"
+    printf "${COLOR_YELLOW}[Warn]${COLOR_NC} $@\n" >&2
+}
+forgit::info() {
+    printf "${COLOR_GREEN}[Info]${COLOR_NC} $@\n" >&2
 }
 
 # add aliases
