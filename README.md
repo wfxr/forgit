@@ -119,7 +119,7 @@ FORGIT_FZF_DEFAULT_OPTS="
 
 - [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): Improve `git diff` output.
 
-- [`bat`](https://github.com/sharkdp/bat.git): Highlight support for `gitignore`.
+- [`bat`](https://github.com/sharkdp/bat.git): Syntex highlight for `gitignore`.
 
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
