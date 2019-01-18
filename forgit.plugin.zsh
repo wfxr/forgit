@@ -143,7 +143,7 @@ forgit::ignore::update() {
 forgit::ignore::get() {
     local item filename header
     for item in "$@"; do
-        if filename=$(find "$FORGIT_GI_REPO/templates" -type f -iname "${item}.gitignore" -print -quit); then
+        if filename=$(find -L "$FORGIT_GI_REPO/templates" -type f -iname "${item}.gitignore" -print -quit); then
             [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
             header="${filename##*/}" && header="${header%.gitignore}"
             echo "### $header" && cat "$filename" && echo
