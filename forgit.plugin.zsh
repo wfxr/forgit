@@ -28,7 +28,6 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 hash diff-so-fancy &>/dev/null && forgit_fancy='|diff-so-fancy'
 # https://github.com/wfxr/emoji-cli
 hash emojify &>/dev/null && forgit_emojify='|emojify'
-hash bat &>/dev/null && forgit_ignore_highlighter='|bat -l gitignore --style=numbers,grid'
 
 # git commit viewer
 forgit::log() {

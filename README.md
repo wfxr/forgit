@@ -115,13 +115,19 @@ FORGIT_FZF_DEFAULT_OPTS="
 --height '80%'
 "
 ```
+## Enhancements
 
-### Tips
+- [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): Improve `git diff` output.
+
+- [`bat`](https://github.com/sharkdp/bat.git): Highlight support for `gitignore`.
+
+- [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
+
+## Tips
 
 - Hit `q` to quit from full screen preview any time.
-- Install [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) to have better `diff` output.
 - Commands like `glo`, `gd`, `gcf` and `gclean` accept path arguments to restrain the items listed in fzf(eg, `glo main.go test.go`, `gclean output/`).
-- Call `gi` with arguments to get wanted `.gitignore` contents directly(eg, `gi c++`).
+- Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
 
 ## [License](LICENSE.txt)
 
