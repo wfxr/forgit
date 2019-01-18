@@ -14,10 +14,6 @@ forgit::fzf() {
     " fzf "$@"
 }
 
-COLOR_GREEN='\e[0;32m'
-COLOR_YELLOW='\e[1;33m'
-COLOR_NC='\e[0m' # No Color
-
 forgit::color_to_grep_code() {
     case "$1" in
         black)
@@ -182,12 +178,9 @@ forgit::ignore::clean() {
     setopt localoptions rmstarsilent
     [[ -d $FORGIT_GI_REPO ]] && rm -rf $FORGIT_GI_REPO
 }
-forgit::warn() {
-    printf "${COLOR_YELLOW}[Warn]${COLOR_NC} $@\n" >&2
-}
-forgit::info() {
-    printf "${COLOR_GREEN}[Info]${COLOR_NC} $@\n" >&2
-}
+
+forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
+forgit::info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 
 # add aliases
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
