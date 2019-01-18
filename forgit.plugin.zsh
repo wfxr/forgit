@@ -108,7 +108,7 @@ export FORGIT_GI_SRC=$FORGIT_GI_REPO/templates
 
 forgit:ignore() {
     [ -d $FORGIT_GI_REPO ] || forgit::ignore::update
-    local IFS cmd args options opt cat
+    local IFS cmd args cat
     # https://github.com/wfxr/emoji-cli
     hash bat &>/dev/null && cat='bat -l gitignore --color=always --theme=zenburn --style=numbers,grid' || cat="cat"
     cmd="$cat $FORGIT_GI_SRC/{2}{,.gitignore} 2>/dev/null"
@@ -116,26 +116,12 @@ forgit:ignore() {
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
         forgit::fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
-    options=('(1) Output to stdout'
-             '(2) Append to .gitignore'
-             '(3) Overwrite .gitignore')
-    opt=$(printf '%s\n' "${options[@]}" |forgit::fzf +m |awk '{print $1}')
     # shellcheck disable=SC2068
-    case "$opt" in
-        '(1)' )
-            if hash bat &>/dev/null; then
-                forgit::ignore::get ${args[@]} | bat -l gitignore --theme=zenburn --style=numbers,grid
-            else
-                forgit::ignore::get ${args[@]}
-            fi
-            ;;
-        '(2)' )
-            forgit::ignore::get ${args[@]} >> .gitignore
-            ;;
-        '(3)' )
-            forgit::ignore::get ${args[@]} > .gitignore
-            ;;
-    esac
+    if hash bat &>/dev/null; then
+        forgit::ignore::get ${args[@]} | bat -l gitignore --theme=zenburn --style=numbers,grid
+    else
+        forgit::ignore::get ${args[@]}
+    fi
 }
 forgit::ignore::update() {
     if [[ -d "$FORGIT_GI_REPO" ]]; then
