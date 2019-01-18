@@ -28,6 +28,7 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 hash diff-so-fancy &>/dev/null && forgit_fancy='|diff-so-fancy'
 # https://github.com/wfxr/emoji-cli
 hash emojify &>/dev/null && forgit_emojify='|emojify'
+hash bat &>/dev/null && forgit_ignore_highlighter='|bat -l gitignore --style=numbers,grid'
 
 # git commit viewer
 forgit::log() {
@@ -108,11 +109,13 @@ export FORGIT_GI_SRC=$FORGIT_GI_REPO/templates
 
 forgit:ignore() {
     [ -d $FORGIT_GI_REPO ] || forgit::ignore::update
-    local IFS preview args options opt
-    preview="cat $FORGIT_GI_SRC/{2}{,.gitignore} 2>/dev/null"
+    local IFS cmd args options opt cat
+    # https://github.com/wfxr/emoji-cli
+    hash bat &>/dev/null && cat='bat -l gitignore --color=always --style=numbers,grid' || cat="cat"
+    cmd="$cat $FORGIT_GI_SRC/{2}{,.gitignore} 2>/dev/null"
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
-        forgit::fzf -m --preview="$preview" --preview-window="right:70%" | awk '{print $2}'))
+        forgit::fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
     options=('(1) Output to stdout'
              '(2) Append to .gitignore'
@@ -121,7 +124,11 @@ forgit:ignore() {
     # shellcheck disable=SC2068
     case "$opt" in
         '(1)' )
-            forgit::ignore::get ${args[@]}
+            if hash bat &>/dev/null; then
+                forgit::ignore::get ${args[@]} | bat -l gitignore --style=numbers,grid
+            else
+                forgit::ignore::get ${args[@]}
+            fi
             ;;
         '(2)' )
             forgit::ignore::get ${args[@]} >> .gitignore
