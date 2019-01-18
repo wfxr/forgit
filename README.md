@@ -8,18 +8,25 @@
 
 Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.
 
-### for [zplug](https://github.com/zplug/zplug) (Recommend)
+### Try Online
+
+Run following command to try it without installing(for both `bash` and `zsh`):
+``` bash
+source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
+```
+
+### [zplug](https://github.com/zplug/zplug) (Recommend)
 
 ``` zsh
 zplug 'wfxr/forgit', defer:1
 ```
 
-### for [zgen](https://github.com/tarjoilija/zgen)
+### [zgen](https://github.com/tarjoilija/zgen)
 ```
 zgen load wfxr/forgit
 ```
 
-### for [antigen](https//github.com/zsh-users/antigen)
+### [antigen](https//github.com/zsh-users/antigen)
 
 ```
 antigen bundle wfxr/forgit
