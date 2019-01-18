@@ -111,7 +111,7 @@ forgit:ignore() {
     [ -d $FORGIT_GI_REPO ] || forgit::ignore::update
     local IFS cmd args options opt cat
     # https://github.com/wfxr/emoji-cli
-    hash bat &>/dev/null && cat='bat -l gitignore --color=always --style=numbers,grid' || cat="cat"
+    hash bat &>/dev/null && cat='bat -l gitignore --color=always --theme=zenburn --style=numbers,grid' || cat="cat"
     cmd="$cat $FORGIT_GI_SRC/{2}{,.gitignore} 2>/dev/null"
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
@@ -125,7 +125,7 @@ forgit:ignore() {
     case "$opt" in
         '(1)' )
             if hash bat &>/dev/null; then
-                forgit::ignore::get ${args[@]} | bat -l gitignore --style=numbers,grid
+                forgit::ignore::get ${args[@]} | bat -l gitignore --theme=zenburn --style=numbers,grid
             else
                 forgit::ignore::get ${args[@]}
             fi
