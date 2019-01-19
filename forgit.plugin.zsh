@@ -111,7 +111,7 @@ forgit:ignore() {
     local IFS cmd args cat
     # https://github.com/wfxr/emoji-cli
     hash bat &>/dev/null && cat='bat -l gitignore --color=always --theme=zenburn --style=numbers,grid' || cat="cat"
-    cmd="$cat $FORGIT_GI_SRC/{2}{,.gitignore} 2>/dev/null"
+    cmd="$cat $FORGIT_GI_SRC/{2}{.gitignore,.patch} 2>/dev/null; $cat $FORGIT_GI_SRC/{2}*.stack 2>/dev/null"
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
         forgit::fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
@@ -133,17 +133,25 @@ forgit::ignore::update() {
     fi
 }
 forgit::ignore::get() {
-    local item filename header
+    local item filename header stack
     for item in "$@"; do
-        if filename=$(find -L "$FORGIT_GI_SRC" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
+        if filename=$(find -L "$FORGIT_GI_SRC" -type f -iname "${item}.gitignore" -print -quit); then
             [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
             header="${filename##*/}" && header="${header%.gitignore}"
-            echo "### $header" && cat "$filename" && echo
+            echo "### $header ###" && cat "$filename" && echo
+            if [[ -e "${filename%.gitignore}.patch" ]]; then
+                echo "### $header Patch ###" && cat "$filename" && echo
+            else
+                for stack in "${filename%.gitignore}".*.stack; do
+                    header="${stack##*/}" && header="${header%.stack}"
+                    echo "### $header Stack ###" && cat "$stack" && echo
+                done
+            fi
         fi
     done
 }
 forgit::ignore::list() {
-    find $FORGIT_GI_SRC/* -print |sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
+    command find $FORGIT_GI_SRC/* -print |sed -e 's#\.[^/]*$##' -e 's#.*/##' | sort -fu
 }
 forgit::ignore::clean() {
     setopt localoptions rmstarsilent
