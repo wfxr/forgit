@@ -135,18 +135,23 @@ forgit::ignore::update() {
 forgit::ignore::get() {
     local item filename header stack
     for item in "$@"; do
-        if filename=$(find -L "$FORGIT_GI_SRC" -type f -iname "${item}.gitignore" -print -quit); then
-            [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
-            header="${filename##*/}" && header="${header%.gitignore}"
-            echo "### $header ###" && cat "$filename" && echo
+        filename=$(find -L "$FORGIT_GI_SRC" -type f \( -iname "${item}.gitignore" -o -iname "${item}.stack" \) -print -quit)
+        if [[ -z "$filename" ]]; then
+            forgit::warn "No gitignore template found for '$item'." && continue
+        elif [[ "$filename" == *.gitignore ]]; then
+            header="${filename##*/}"; header="${header%.gitignore}"
+            echo "### $header ###"; cat "$filename"; echo
             if [[ -e "${filename%.gitignore}.patch" ]]; then
-                echo "### $header Patch ###" && cat "${filename%.gitignore}.patch" && echo
+                echo "### $header Patch ###"; cat "${filename%.gitignore}.patch"; echo
             else
                 for stack in "${filename%.gitignore}".*.stack; do
-                    header="${stack##*/}" && header="${header%.stack}"
-                    echo "### $header Stack ###" && cat "$stack" && echo
+                    header="${stack##*/}"; header="${header%.stack}"
+                    echo "### $header Stack ###"; cat "$stack"; echo
                 done
             fi
+        else # particularly for Code.stack
+            header="${filename##*/}"; header="${header%.stack}"
+            echo "### $header ###"; cat "$filename"; echo
         fi
     done
 }
