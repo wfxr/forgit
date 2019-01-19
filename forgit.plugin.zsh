@@ -140,7 +140,7 @@ forgit::ignore::get() {
             header="${filename##*/}" && header="${header%.gitignore}"
             echo "### $header ###" && cat "$filename" && echo
             if [[ -e "${filename%.gitignore}.patch" ]]; then
-                echo "### $header Patch ###" && cat "$filename" && echo
+                echo "### $header Patch ###" && cat "${filename%.gitignore}.patch" && echo
             else
                 for stack in "${filename%.gitignore}".*.stack; do
                     header="${stack##*/}" && header="${header%.stack}"
