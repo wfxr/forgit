@@ -133,7 +133,7 @@ forgit::ignore::update() {
     fi
 }
 forgit::ignore::get() {
-    local item filename header stack
+    local item filename header stack stacks IFS=$'\t\n'
     for item in "$@"; do
         filename=$(find -L "$FORGIT_GI_SRC" -type f \( -iname "${item}.gitignore" -o -iname "${item}.stack" \) -print -quit)
         if [[ -z "$filename" ]]; then
@@ -144,7 +144,8 @@ forgit::ignore::get() {
             if [[ -e "${filename%.gitignore}.patch" ]]; then
                 echo "### $header Patch ###"; cat "${filename%.gitignore}.patch"; echo
             else
-                for stack in "${filename%.gitignore}".*.stack; do
+                stacks=($(command find -L "$FORGIT_GI_SRC" -type f -iname "${item}.*.stack" -print))
+                [[ ${#stacks[@]} -ne 0 ]] && for stack in "${stacks[@]}"; do
                     header="${stack##*/}"; header="${header%.stack}"
                     echo "### $header Stack ###"; cat "$stack"; echo
                 done
