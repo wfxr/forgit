@@ -111,7 +111,7 @@ forgit:ignore() {
     local IFS cmd args cat
     # https://github.com/wfxr/emoji-cli
     hash bat &>/dev/null && cat='bat -l gitignore --color=always --theme=zenburn --style=numbers,grid' || cat="cat"
-    cmd="$cat $FORGIT_GI_SRC/{2}{.gitignore,.patch} 2>/dev/null; $cat $FORGIT_GI_SRC/{2}*.stack 2>/dev/null"
+    cmd="{ $cat $FORGIT_GI_SRC/{2}{.gitignore,.patch}; $cat $FORGIT_GI_SRC/{2}*.stack } 2>/dev/null"
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
         forgit::fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
