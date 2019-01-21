@@ -4,6 +4,10 @@
 
 `forgit` is a utility tool for git taking advantage of fuzzy finder fzf.
 
+## Installation
+
+*Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.*
+
 ### Try Online
 
 Run following command in your shell to try it without installing(for both `bash` and `zsh`):
@@ -11,30 +15,24 @@ Run following command in your shell to try it without installing(for both `bash`
 source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
 ```
 
-## Installation
-
-*Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.*
-
-### [zplug](https://github.com/zplug/zplug)
-
+### [Zplug](https://github.com/zplug/zplug)
 ``` zsh
 zplug 'wfxr/forgit'
 ```
 
-### [zgen](https://github.com/tarjoilija/zgen)
-```
+### [Zgen](https://github.com/tarjoilija/zgen)
+``` zsh
 zgen load wfxr/forgit
 ```
 
-### [antigen](https//github.com/zsh-users/antigen)
-
-```
+### [Antigen](https//github.com/zsh-users/antigen)
+``` zsh
 antigen bundle wfxr/forgit
 ```
 
 ### Manually
 
-Source `forgit.plugin.zsh` or `forgit.plugin.sh` in your shell config.
+Download and source `forgit.plugin.zsh` or `forgit.plugin.sh` in your shell config.
 
 ## Commands
 
