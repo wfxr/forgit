@@ -106,7 +106,7 @@ forgit::clean() {
 export FORGIT_GI_REPO=~/.forgit/gi/repos/dvcs/gitignore # https://github.com/dvcs/gitignore.git
 export FORGIT_GI_SRC=$FORGIT_GI_REPO/templates
 
-forgit:ignore() {
+forgit::ignore() {
     [ -d $FORGIT_GI_REPO ] || forgit::ignore::update
     local IFS cmd args cat
     # https://github.com/wfxr/emoji-cli
@@ -172,7 +172,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_add:-ga}"='forgit::add'
     alias "${forgit_log:-glo}"='forgit::log'
     alias "${forgit_diff:-gd}"='forgit::diff'
-    alias "${forgit_ignore:-gi}"='forgit:ignore'
+    alias "${forgit_ignore:-gi}"='forgit::ignore'
     alias "${forgit_restore:-gcf}"='forgit::restore'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
