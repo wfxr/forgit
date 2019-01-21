@@ -4,21 +4,21 @@
 
 `forgit` is a utility tool for git taking advantage of fuzzy finder fzf.
 
-## Installation
-
-Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.
-
 ### Try Online
 
-Run following command to try it without installing(for both `bash` and `zsh`):
+Run following command in your shell to try it without installing(for both `bash` and `zsh`):
 ``` bash
 source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
 ```
 
-### [zplug](https://github.com/zplug/zplug) (Recommend)
+## Installation
+
+*Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.*
+
+### [zplug](https://github.com/zplug/zplug)
 
 ``` zsh
-zplug 'wfxr/forgit', defer:1
+zplug 'wfxr/forgit'
 ```
 
 ### [zgen](https://github.com/tarjoilija/zgen)
@@ -34,13 +34,7 @@ antigen bundle wfxr/forgit
 
 ### Manually
 
-**zsh**
-
-Clone this repo and source `forgit.plugin.zsh` in `~/.zshrc`.
-
-**bash**
-
-Clone this repo and source `forgit.plugin.sh` in `~/.bashrc`.
+Source `forgit.plugin.zsh` or `forgit.plugin.sh` in your shell config.
 
 ## Commands
 
@@ -122,9 +116,9 @@ FORGIT_FZF_DEFAULT_OPTS="
 --height '80%'
 "
 ```
-## Enhancements
+## Optional
 
-- [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): Improve `git diff` output.
+- [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): Improve the `git diff` output.
 
 - [`bat`](https://github.com/sharkdp/bat.git): Syntex highlight for `gitignore`.
 
