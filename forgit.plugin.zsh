@@ -89,7 +89,7 @@ export FORGIT_GI_SRC=$FORGIT_GI_REPO/templates
 forgit::ignore() {
     [ -d $FORGIT_GI_REPO ] || forgit::ignore::update
     local IFS cmd args cat
-    # https://github.com/wfxr/emoji-cli
+    # https://github.com/sharkdp/bat.git
     hash bat &>/dev/null && cat='bat -l gitignore --color=always' || cat="cat"
     cmd="$cat $FORGIT_GI_SRC/{2}{,.gitignore} 2>/dev/null"
     # shellcheck disable=SC2206,2207
