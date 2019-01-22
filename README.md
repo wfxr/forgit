@@ -1,6 +1,6 @@
 # forgit
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://wfxr.mit-license.org/2017)
 
 `forgit` is a utility tool for git taking advantage of fuzzy finder fzf.
 
@@ -10,7 +10,7 @@
 
 ### Try Online
 
-Run following command in your shell to try it without installing(for both `bash` and `zsh`):
+Run following command in your shell to try `forgit` without installing(for both `bash` and `zsh`):
 ``` bash
 source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
 ```
@@ -128,8 +128,6 @@ FORGIT_FZF_DEFAULT_OPTS="
 - Commands like `glo`, `gd`, `gcf` and `gclean` accept path arguments to restrain the items listed in fzf(eg, `glo main.go test.go`, `gclean output/`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
 
-## [License](LICENSE.txt)
+## License
 
-The MIT License (MIT)
-
-Copyright (c) 2018 Wenxuan Zhang
+[MIT](https://wfxr.mit-license.org/2017) (c) Wenxuan Zhang
