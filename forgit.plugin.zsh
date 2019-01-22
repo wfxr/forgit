@@ -98,7 +98,7 @@ forgit::ignore() {
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
     if hash bat &>/dev/null; then
-        forgit::ignore::get ${args[@]} | bat -l gitignore --theme=zenburn --style=numbers,grid
+        forgit::ignore::get ${args[@]} | bat -l gitignore
     else
         forgit::ignore::get ${args[@]}
     fi
