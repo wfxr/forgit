@@ -73,18 +73,18 @@ Interactive `git clean` selector
 
 ## Default keybinds
 
-| Keybind    | Action                |
-| ---------- | --------------------- |
-| `<Enter>`  | Confirm               |
-| `<Tab>`    | Toggle mark           |
-| `<C-k/p>`  | Selection up          |
-| `<C-j/n>`  | Selection down        |
-| `<A-k/p>`  | Preview up            |
-| `<A-j/n>`  | Preview down          |
-| `<A-w>`    | Toggle preview wrap   |
-| `<?>`      | Toggle preview window |
-| `<C-r>`    | Toggle selection      |
-| `<C-s>`    | Toggle sort           |
+| Keybind                                       | Action                  |
+| :-------------------------------------------: | ----------------------- |
+| <kbd>Enter</kbd>                              | Confirm                 |
+| <kbd>Tab</kbd>                                | Toggle mark             |
+| <kbd>?</kbd>                                  | Toggle preview window   |
+| <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort             |
+| <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection        |
+| <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap     |
+| <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection up            |
+| <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection down          |
+| <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview up              |
+| <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview down            |
 
 ## Custom options
 
