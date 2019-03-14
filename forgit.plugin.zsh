@@ -83,15 +83,16 @@ forgit::clean() {
 }
 
 # git ignore generator
-export FORGIT_GI_REPO=~/.forgit/gi/repos/dvcs/gitignore # https://github.com/dvcs/gitignore.git
-export FORGIT_GI_SRC=$FORGIT_GI_REPO/templates
+export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
+export FORGIT_GI_REPO_LOCAL=${FORGIT_GI_REPO_LOCAL:-~/.forgit/gi/repos/dvcs/gitignore}
+export FORGIT_GI_TEMPLATES=${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/templates}
 
 forgit::ignore() {
-    [ -d $FORGIT_GI_REPO ] || forgit::ignore::update
+    [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
     local IFS cmd args cat
     # https://github.com/sharkdp/bat.git
     hash bat &>/dev/null && cat='bat -l gitignore --color=always' || cat="cat"
-    cmd="$cat $FORGIT_GI_SRC/{2}{,.gitignore} 2>/dev/null"
+    cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
         forgit::fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
@@ -104,18 +105,18 @@ forgit::ignore() {
     fi
 }
 forgit::ignore::update() {
-    if [[ -d "$FORGIT_GI_REPO" ]]; then
+    if [[ -d "$FORGIT_GI_REPO_LOCAL" ]]; then
         forgit::info 'Updating gitignore repo...'
-        (cd $FORGIT_GI_REPO && git pull --no-rebase --ff) || return 1
+        (cd "$FORGIT_GI_REPO_LOCAL" && git pull --no-rebase --ff) || return 1
     else
         forgit::info 'Initializing gitignore repo...'
-        git clone --depth=1 https://github.com/dvcs/gitignore.git "$FORGIT_GI_REPO"
+        git clone --depth=1 "$FORGIT_GI_REPO_REMOTE" "$FORGIT_GI_REPO_LOCAL"
     fi
 }
 forgit::ignore::get() {
     local item filename header
     for item in "$@"; do
-        if filename=$(find -L "$FORGIT_GI_SRC" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
+        if filename=$(find -L "$FORGIT_GI_TEMPLATES" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
             [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
             header="${filename##*/}" && header="${header%.gitignore}"
             echo "### $header" && cat "$filename" && echo
@@ -123,11 +124,11 @@ forgit::ignore::get() {
     done
 }
 forgit::ignore::list() {
-    find $FORGIT_GI_SRC/* -print |sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
+    find "$FORGIT_GI_TEMPLATES" -print |sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
 }
 forgit::ignore::clean() {
     setopt localoptions rmstarsilent
-    [[ -d $FORGIT_GI_REPO ]] && rm -rf $FORGIT_GI_REPO
+    [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
 }
 
 forgit::fzf() {
