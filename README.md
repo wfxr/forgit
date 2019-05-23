@@ -22,12 +22,12 @@ zplug 'wfxr/forgit'
 
 ### [Zgen](https://github.com/tarjoilija/zgen)
 ``` zsh
-zgen load wfxr/forgit
+zgen load 'wfxr/forgit'
 ```
 
 ### [Antigen](https//github.com/zsh-users/antigen)
 ``` zsh
-antigen bundle wfxr/forgit
+antigen bundle 'wfxr/forgit'
 ```
 
 ### Manually
