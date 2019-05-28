@@ -12,25 +12,33 @@ hash emojify &>/dev/null && forgit_emojify='|emojify'
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
-    local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $* $forgit_emojify $forgit_fancy"
+    if [ -z "$FORGIT_LOG_PREVIEW" ]; then
+      local preview_cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $* $forgit_emojify $forgit_fancy"
+    else
+      local preview_cmd="$FORGIT_LOG_PREVIEW"
+    fi
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
         forgit::fzf +s +m --tiebreak=index \
             --bind="enter:execute($cmd |LESS='-R' less)" \
             --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' |${FORGIT_COPY_CMD:-pbcopy})" \
-            --preview="$cmd"
+            --preview="$preview_cmd"
 }
 
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
+    if [ -z "$FORGIT_DIFF_PREVIEW" ]; then
+      local preview_cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
+    else
+      local preview_cmd="$FORGIT_DIFF_PREVIEW"
+    fi
     local cmd files
-    cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
     files="$*"
     [[ $# -eq 0 ]] && files=$(git rev-parse --show-toplevel)
     git ls-files --modified "$files"|
         forgit::fzf +m -0 \
             --bind="enter:execute($cmd |LESS='-R' less)" \
-            --preview="$cmd"
+            --preview="$preview_cmd"
 }
 
 # git add selector
@@ -42,9 +50,14 @@ forgit::add() {
     untracked=$(git config --get-color color.status.untracked red)
     files=$(git -c color.status=always status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked"|
+    if [ -z "$FORGIT_ADD_PREVIEW" ]; then
+      local preview_cmd="git diff --color=always -- {-1} $forgit_emojify $forgit_fancy"
+    else
+      local preview_cmd="$FORGIT_ADD_PREVIEW"
+    fi
         awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
         forgit::fzf -0 -m --nth 2..,.. \
-            --preview="git diff --color=always -- {-1} $forgit_emojify $forgit_fancy" |
+            --preview="$preview_cmd" |
         cut -d] -f2 |
         sed 's/.* -> //') # for rename case
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git add {} && git status --short && return
@@ -54,8 +67,12 @@ forgit::add() {
 # git checkout-restore selector
 forgit::restore() {
     forgit::inside_work_tree || return 1
+    if [ -z "$FORGIT_RESTORE_PREVIEW" ]; then
+      local preview_cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
+    else
+      local preview_cmd="$FORGIT_RESTORE_PREVIEW"
+    fi
     local cmd files
-    cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"|
         forgit::fzf -m -0 --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
@@ -65,11 +82,15 @@ forgit::restore() {
 # git stash viewer
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
-    local cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    if [ -z "$FORGIT_STASH_PREVIEW" ]; then
+      local preview_cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    else
+      local preview_cmd="$FORGIT_STASH_PREVIEW"
+    fi
     git stash list |
         forgit::fzf +s +m -0 --tiebreak=index \
         --bind="enter:execute($cmd |LESS='-R' less)" \
-        --preview="$cmd"
+        --preview="$preview_cmd"
 }
 
 # git clean selector
