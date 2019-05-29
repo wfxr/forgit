@@ -102,7 +102,7 @@ forgit_clean=gclean
 forgit_stash_show=gss
 ```
 
-You can add custom fzf options for `forgit`, including keybinds, layout, etc.
+You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
 
 ``` bash
@@ -115,15 +115,19 @@ FORGIT_FZF_DEFAULT_OPTS="
 "
 ```
 
-You can also customize options fzf will use for each command individually:
+Customizing fzf options for each command individually is also supported:
 
-- `ga`: `FORGIT_ADD_FZF_OPTS`
-- `glo`: `FORGIT_LOG_FZF_OPTS`
-- `gi`: `FORGIT_IGNORE_FZF_OPTS`
-- `gd`: `FORGIT_DIFF_FZF_OPTS`
-- `gcf`: `FORGIT_CHECKOUT_FZF_OPTS`
-- `gss`: `FORGIT_STASH_FZF_OPTS`
-- `gclean`: `FORGIT_CLEAN_FZF_OPTS`
+| Command  | Option                     |
+| :------: | -------------------------- |
+| `ga`     | `FORGIT_ADD_FZF_OPTS`      |
+| `glo`    | `FORGIT_LOG_FZF_OPTS`      |
+| `gi`     | `FORGIT_IGNORE_FZF_OPTS`   |
+| `gd`     | `FORGIT_DIFF_FZF_OPTS`     |
+| `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS` |
+| `gss`    | `FORGIT_STASH_FZF_OPTS`    |
+| `gclean` | `FORGIT_CLEAN_FZF_OPTS`    |
+
+The full loading order of fzf options is `FZF_DEFAULT_OPTS`(`fzf` global) -> `FORGIT_FZF_DEFAULT_OPTS`(`forgit` global) -> `FORGIT_CMD_FZF_OPTS`(command specific).
 
 ## Optional
 
