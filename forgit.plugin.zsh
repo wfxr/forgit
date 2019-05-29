@@ -19,7 +19,7 @@ forgit::log() {
     fi
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
         forgit::fzf +s +m --tiebreak=index \
-            --bind="enter:execute($cmd |LESS='-R' less)" \
+            --bind="enter:execute($preview_cmd |LESS='-R' less)" \
             --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' |${FORGIT_COPY_CMD:-pbcopy})" \
             --preview="$preview_cmd"
 }
@@ -37,7 +37,7 @@ forgit::diff() {
     [[ $# -eq 0 ]] && files=$(git rev-parse --show-toplevel)
     git ls-files --modified "$files"|
         forgit::fzf +m -0 \
-            --bind="enter:execute($cmd |LESS='-R' less)" \
+            --bind="enter:execute($preview_cmd |LESS='-R' less)" \
             --preview="$preview_cmd"
 }
 
@@ -74,7 +74,7 @@ forgit::restore() {
     fi
     local cmd files
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"|
-        forgit::fzf -m -0 --preview="$cmd")"
+        forgit::fzf -m -0 --preview="$preview_cmd")"
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
     echo 'Nothing to restore.'
 }
@@ -89,7 +89,7 @@ forgit::stash::show() {
     fi
     git stash list |
         forgit::fzf +s +m -0 --tiebreak=index \
-        --bind="enter:execute($cmd |LESS='-R' less)" \
+        --bind="enter:execute($preview_cmd |LESS='-R' less)" \
         --preview="$preview_cmd"
 }
 
@@ -116,7 +116,7 @@ forgit::ignore() {
     cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
-        forgit::fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
+        forgit::fzf -m --preview="$preview_cmd" --preview-window="right:70%" | awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
     if hash bat &>/dev/null; then
