@@ -62,7 +62,7 @@ forgit::restore() {
     local cmd files
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"|
         forgit::fzf -m -0 --preview="$preview_cmd" |
-        "$FORGIT_RESTORE_FZF_OPTS")"
+        "$FORGIT_CHECKOUT_FZF_OPTS")"
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
     echo 'Nothing to restore.'
 }
@@ -83,7 +83,7 @@ forgit::clean() {
     forgit::inside_work_tree || return 1
     local files
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdfn "$@"| awk '{print $3}'| forgit::fzf -m -0 |sed 's#/$##')
+    files=$(git clean -xdfn "$@"| awk '{print $3}'| forgit::fzf -m -0 "$FORGIT_CLEAN_FZF_OPTS" |sed 's#/$##')
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git clean -xdf {}
     echo 'Nothing to clean.'
 }
