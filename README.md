@@ -114,6 +114,17 @@ FORGIT_FZF_DEFAULT_OPTS="
 --height '80%'
 "
 ```
+
+You can also customize options fzf will use for each command individually:
+
+- `ga`: `FORGIT_ADD_FZF_OPTS`
+- `glo`: `FORGIT_LOG_FZF_OPTS`
+- `gi`: `FORGIT_IGNORE_FZF_OPTS`
+- `gd`: `FORGIT_DIFF_FZF_OPTS`
+- `gcf`: `FORGIT_CHECKOUT_FZF_OPTS`
+- `gss`: `FORGIT_STASH_FZF_OPTS`
+- `gclean`: `FORGIT_CLEAN_FZF_OPTS`
+
 ## Optional
 
 - [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): Improve the `git diff` output.
