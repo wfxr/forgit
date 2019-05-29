@@ -12,27 +12,25 @@ hash emojify &>/dev/null && forgit_emojify='|emojify'
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
-    local preview_cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $* $forgit_emojify $forgit_fancy"
+    local cmd="echo {} |grep -o '[a-f0-9]\{7\}' |head -1 |xargs -I% git show --color=always % $* $forgit_emojify $forgit_fancy"
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
         forgit::fzf +s +m --tiebreak=index \
-            --bind="enter:execute($preview_cmd |LESS='-R' less)" \
+            --bind="enter:execute($cmd |LESS='-R' less)" \
             --bind="ctrl-y:execute-silent(echo {} |grep -o '[a-f0-9]\{7\}' |${FORGIT_COPY_CMD:-pbcopy})" \
-            --preview="$preview_cmd" \
-            "$FORGIT_LOG_FZF_OPTS"
+            --preview="$cmd" $FORGIT_LOG_FZF_OPTS
 }
 
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
-    local preview_cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
     local cmd files
+    cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
     files="$*"
     [[ $# -eq 0 ]] && files=$(git rev-parse --show-toplevel)
     git ls-files --modified "$files"|
         forgit::fzf +m -0 \
-            --bind="enter:execute($preview_cmd |LESS='-R' less)" \
-            --preview="$preview_cmd" \
-            "$FORGIT_DIFF_FZF_OPTS"
+            --bind="enter:execute($cmd |LESS='-R' less)" \
+            --preview="$cmd" $FORGIT_DIFF_FZF_OPTS
 }
 
 # git add selector
@@ -44,11 +42,9 @@ forgit::add() {
     untracked=$(git config --get-color color.status.untracked red)
     files=$(git -c color.status=always status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked"|
-    local preview_cmd="git diff --color=always -- {-1} $forgit_emojify $forgit_fancy"
         awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
         forgit::fzf -0 -m --nth 2..,.. \
-            --preview="$preview_cmd" |
-            "$FORGIT_ADD_FZF_OPTS" |
+            --preview="git diff --color=always -- {-1} $forgit_emojify $forgit_fancy" $FORGIT_ADD_FZF_OPTS |
         cut -d] -f2 |
         sed 's/.* -> //') # for rename case
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git add {} && git status --short && return
@@ -58,11 +54,10 @@ forgit::add() {
 # git checkout-restore selector
 forgit::restore() {
     forgit::inside_work_tree || return 1
-    local preview_cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
     local cmd files
+    cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"|
-        forgit::fzf -m -0 --preview="$preview_cmd" |
-        "$FORGIT_CHECKOUT_FZF_OPTS")"
+        forgit::fzf -m -0 --preview="$cmd" $FORGIT_CHECKOUT_FZF_OPTS)"
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
     echo 'Nothing to restore.'
 }
@@ -70,12 +65,11 @@ forgit::restore() {
 # git stash viewer
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
-    local preview_cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    local cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
     git stash list |
         forgit::fzf +s +m -0 --tiebreak=index \
-        --bind="enter:execute($preview_cmd |LESS='-R' less)" \
-        --preview="$preview_cmd" \
-        "$FORGIT_STASH_FZF_OPTS"
+        --bind="enter:execute($cmd |LESS='-R' less)" \
+        --preview="$cmd" $FORGIT_STASH_FZF_OPTS
 }
 
 # git clean selector
@@ -83,7 +77,7 @@ forgit::clean() {
     forgit::inside_work_tree || return 1
     local files
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdfn "$@"| awk '{print $3}'| forgit::fzf -m -0 "$FORGIT_CLEAN_FZF_OPTS" |sed 's#/$##')
+    files=$(git clean -xdfn "$@"| awk '{print $3}'| forgit::fzf -m -0 $FORGIT_CLEAN_FZF_OPTS |sed 's#/$##')
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git clean -xdf {}
     echo 'Nothing to clean.'
 }
@@ -98,10 +92,10 @@ forgit::ignore() {
     local IFS cmd args cat
     # https://github.com/sharkdp/bat.git
     hash bat &>/dev/null && cat='bat -l gitignore --color=always' || cat="cat"
-    local preview_cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
+    cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
-        forgit::fzf -m --preview-window="right:70%" --preview="$preview_cmd" "$FORGIT_IGNORE_FZF_OPTS" | awk '{print $2}'))
+        forgit::fzf -m --preview="$cmd" --preview-window="right:70%" $FORGIT_IGNORE_FZF_OPTS |awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
     if hash bat &>/dev/null; then
