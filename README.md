@@ -127,7 +127,9 @@ Customizing fzf options for each command individually is also supported:
 | `gss`    | `FORGIT_STASH_FZF_OPTS`    |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`    |
 
-The full loading order of fzf options is `FZF_DEFAULT_OPTS`(`fzf` global) -> `FORGIT_FZF_DEFAULT_OPTS`(`forgit` global) -> `FORGIT_CMD_FZF_OPTS`(command specific).
+The full loading order of fzf options is:
+
+`FZF_DEFAULT_OPTS`(`fzf` global) -> `FORGIT_FZF_DEFAULT_OPTS`(`forgit` global) -> `FORGIT_CMD_FZF_OPTS`(command specific).
 
 ## Optional
 
