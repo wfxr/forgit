@@ -42,6 +42,10 @@ Interactive `git add` selector
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-ga.png)
 
+### grh
+
+Interactive `git reset HEAD <file>` selector
+
 ### glo
 
 Interactive `git log` viewer
@@ -96,6 +100,7 @@ You can change the default aliases by defining these variables below.
 forgit_log=glo
 forgit_diff=gd
 forgit_add=ga
+forgit_reset_head=grh
 forgit_ignore=gi
 forgit_restore=gcf
 forgit_clean=gclean
@@ -117,15 +122,16 @@ FORGIT_FZF_DEFAULT_OPTS="
 
 Customizing fzf options for each command individually is also supported:
 
-| Command  | Option                     |
-| :------: | -------------------------- |
-| `ga`     | `FORGIT_ADD_FZF_OPTS`      |
-| `glo`    | `FORGIT_LOG_FZF_OPTS`      |
-| `gi`     | `FORGIT_IGNORE_FZF_OPTS`   |
-| `gd`     | `FORGIT_DIFF_FZF_OPTS`     |
-| `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS` |
-| `gss`    | `FORGIT_STASH_FZF_OPTS`    |
-| `gclean` | `FORGIT_CLEAN_FZF_OPTS`    |
+| Command  | Option                       |
+|----------|------------------------------|
+| `ga`     | `FORGIT_ADD_FZF_OPTS`        |
+| `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS` |
+| `glo`    | `FORGIT_LOG_FZF_OPTS`        |
+| `gi`     | `FORGIT_IGNORE_FZF_OPTS`     |
+| `gd`     | `FORGIT_DIFF_FZF_OPTS`       |
+| `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS`   |
+| `gss`    | `FORGIT_STASH_FZF_OPTS`      |
+| `gclean` | `FORGIT_CLEAN_FZF_OPTS`      |
 
 The full loading order of fzf options is:
 
