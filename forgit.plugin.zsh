@@ -65,6 +65,21 @@ forgit::add() {
     echo 'Nothing to add.'
 }
 
+# git reset HEAD (unstage) selector
+forgit::reset::head() {
+    forgit::inside_work_tree || return 1
+    local cmd files opts
+    cmd="git diff --cached --color=always -- {} $forgit_emojify $forgit_fancy"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0 --preview=\"$cmd\"
+        $FORGIT_RESET_HEAD_FZF_OPTS
+    "
+    files="$(git diff --cached --name-only | FZF_DEFAULT_OPTS="$opts" fzf)"
+    [[ -n "$files" ]] && echo "$files" |xargs -I{} git reset HEAD {} && git status --short && return
+    echo 'Nothing to unstage.'
+}
+
 # git checkout-restore selector
 forgit::restore() {
     forgit::inside_work_tree || return 1
@@ -180,6 +195,7 @@ $FORGIT_FZF_DEFAULT_OPTS
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_add:-ga}"='forgit::add'
+    alias "${forgit_reset_head:-grh}"='forgit::reset::head'
     alias "${forgit_log:-glo}"='forgit::log'
     alias "${forgit_diff:-gd}"='forgit::diff'
     alias "${forgit_ignore:-gi}"='forgit::ignore'
