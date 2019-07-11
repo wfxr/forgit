@@ -42,10 +42,6 @@ Interactive `git add` selector
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-ga.png)
 
-### grh
-
-Interactive `git reset HEAD <file>` selector
-
 ### glo
 
 Interactive `git log` viewer
@@ -61,6 +57,10 @@ Interactive `.gitignore` generator
 ### gd
 
 Interactive `git diff` viewer
+
+### grh
+
+Interactive `git reset HEAD <file>` selector
 
 ### gcf
 
