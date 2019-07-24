@@ -125,10 +125,10 @@ Customizing fzf options for each command individually is also supported:
 | Command  | Option                       |
 |----------|------------------------------|
 | `ga`     | `FORGIT_ADD_FZF_OPTS`        |
-| `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS` |
 | `glo`    | `FORGIT_LOG_FZF_OPTS`        |
 | `gi`     | `FORGIT_IGNORE_FZF_OPTS`     |
 | `gd`     | `FORGIT_DIFF_FZF_OPTS`       |
+| `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS` |
 | `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS`   |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`      |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`      |
