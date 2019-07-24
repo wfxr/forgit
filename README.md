@@ -25,7 +25,7 @@ zplug 'wfxr/forgit'
 zgen load 'wfxr/forgit'
 ```
 
-### [Antigen](https//github.com/zsh-users/antigen)
+### [Antigen](https://github.com/zsh-users/antigen)
 ``` zsh
 antigen bundle 'wfxr/forgit'
 ```
