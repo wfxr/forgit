@@ -149,6 +149,7 @@ The full loading order of fzf options is:
 
 - Hit `q` to quit from full screen preview any time.
 - Commands like `glo`, `gd`, `gcf` and `gclean` accept path arguments to restrain the items listed in fzf(eg, `glo main.go test.go`, `gclean output/`).
+- `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`)
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
 
 ## License
