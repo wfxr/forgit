@@ -28,17 +28,22 @@ forgit::log() {
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
-    local cmd files opts
-    cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
-    files="$*"
-    [[ $# -eq 0 ]] && files=$(git rev-parse --show-toplevel)
+    local cmd files opts commit
+    [[ $# -ne 0 ]] && {
+        if git rev-parse "$1" -- &>/dev/null ; then
+            commit="$1" && files=("${@:2}")
+        else
+            files=("$@")
+        fi
+    }
 
+    cmd="git diff --color=always $commit -- {} $forgit_emojify $forgit_fancy"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    git ls-files --modified "$files" |
+    eval "git diff --name-only $commit -- ${files[*]}"|
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
