@@ -43,7 +43,7 @@ forgit::diff() {
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "git diff --name-only $commit -- ${files[*]}"|
+    eval "git diff --name-only --relative $commit -- ${files[*]}"|
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
