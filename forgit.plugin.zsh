@@ -13,7 +13,7 @@ hash emojify &>/dev/null && forgit_emojify='|emojify'
 forgit::log() {
     forgit::inside_work_tree || return 1
     local cmd opts
-    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $* $forgit_emojify $forgit_fancy"
+    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $* $forgit_fancy"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --preview=\"$cmd\"
@@ -37,7 +37,7 @@ forgit::diff() {
         fi
     }
 
-    cmd="git diff --color=always $commit -- {} $forgit_emojify $forgit_fancy"
+    cmd="git diff --color=always $commit -- {} $forgit_fancy"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
@@ -58,7 +58,7 @@ forgit::add() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"git diff --color=always -- {-1} $forgit_emojify $forgit_fancy\"
+        --preview=\"git diff --color=always -- {-1} $forgit_fancy\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=$(git -c color.status=always status --short |
@@ -74,7 +74,7 @@ forgit::add() {
 forgit::reset::head() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    cmd="git diff --cached --color=always -- {} $forgit_emojify $forgit_fancy"
+    cmd="git diff --cached --color=always -- {} $forgit_fancy"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
@@ -89,7 +89,7 @@ forgit::reset::head() {
 forgit::restore() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    cmd="git diff --color=always -- {} $forgit_emojify $forgit_fancy"
+    cmd="git diff --color=always -- {} $forgit_fancy"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
