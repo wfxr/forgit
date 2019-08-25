@@ -61,7 +61,7 @@ forgit::add() {
         --preview=\"git diff --color=always -- {-1} $forgit_fancy\"
         $FORGIT_ADD_FZF_OPTS
     "
-    files=$(git -c color.status=always status --short |
+    files=$(git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
         FZF_DEFAULT_OPTS="$opts" fzf | cut -d] -f2 |
@@ -80,7 +80,7 @@ forgit::reset::head() {
         -m -0 --preview=\"$cmd\"
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
-    files="$(git diff --cached --name-only | FZF_DEFAULT_OPTS="$opts" fzf)"
+    files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf)"
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git reset HEAD {} && git status --short && return
     echo 'Nothing to unstage.'
 }
