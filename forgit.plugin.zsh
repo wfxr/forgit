@@ -81,7 +81,7 @@ forgit::reset::head() {
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
     files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" |xargs -I{} git reset HEAD {} && git status --short && return
+    [[ -n "$files" ]] && echo "$files" |xargs -I{} git reset -q HEAD {} && git status --short && return
     echo 'Nothing to unstage.'
 }
 
