@@ -40,7 +40,7 @@ forgit::diff() {
     cmd="git diff --color=always $commit -- {} $forgit_fancy"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less),ctrl-e:execute($FORGIT_DIFF_OPEN_CMD {})\"
         $FORGIT_DIFF_FZF_OPTS
     "
     eval "git diff --name-only --relative $commit -- ${files[*]}"|
@@ -195,6 +195,8 @@ $FZF_DEFAULT_OPTS
 --preview-window='right:60%'
 $FORGIT_FZF_DEFAULT_OPTS
 "
+
+FORGIT_DIFF_OPEN_CMD=${FORGIT_DIFF_OPEN_CMD:=tmux split vim}
 
 # register aliases
 # shellcheck disable=SC2139
