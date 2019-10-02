@@ -47,6 +47,31 @@ forgit::diff() {
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
+
+forgit::icdiff() {
+    forgit::inside_work_tree || return 1
+    local cmd files opts commit
+    [[ $# -ne 0 ]] && {
+        if git rev-parse "$1" -- &>/dev/null ; then
+            commit="$1" && files=("${@:2}")
+        else
+            files=("$@")
+        fi
+    }
+
+    cmd="git icdiff --color=always $commit -- {}"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +m -0 --preview=\"$cmd\" --preview-window=hidden --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        $FORGIT_DIFF_FZF_OPTS
+    "
+
+        # +m -0 --preview=\"$cmd\" --preview-window=down:90% --bind=\"enter:execute($cmd |LESS='-R' less)\"
+    eval "git diff --name-only --relative $commit -- ${files[*]}"|
+        FZF_DEFAULT_OPTS="$opts" fzf
+}
+
+
 # git add selector
 forgit::add() {
     forgit::inside_work_tree || return 1
@@ -182,18 +207,17 @@ forgit::ignore::clean() {
     [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
 }
 
+
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
 --ansi
---height='80%'
---bind='alt-k:preview-up,alt-p:preview-up'
---bind='alt-j:preview-down,alt-n:preview-down'
+--bind='ctrl-p:preview-up,ctrl-n:preview-down'
 --bind='ctrl-r:toggle-all'
 --bind='ctrl-s:toggle-sort'
 --bind='?:toggle-preview'
---bind='alt-w:toggle-preview-wrap'
+--bind='ctrl-w:toggle-preview-wrap'
+--height='80%'
 --preview-window='right:60%'
-$FORGIT_FZF_DEFAULT_OPTS
 "
 
 # register aliases
