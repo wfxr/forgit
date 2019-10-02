@@ -66,7 +66,6 @@ forgit::icdiff() {
         $FORGIT_DIFF_FZF_OPTS
     "
 
-        # +m -0 --preview=\"$cmd\" --preview-window=down:90% --bind=\"enter:execute($cmd |LESS='-R' less)\"
     eval "git diff --name-only --relative $commit -- ${files[*]}"|
         FZF_DEFAULT_OPTS="$opts" fzf
 }
