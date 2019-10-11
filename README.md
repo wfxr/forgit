@@ -10,7 +10,7 @@
 
 ### Try Online
 
-Run following command in your shell to try `forgit` without installing(for both `bash` and `zsh`):
+Run the following command in your shell to try `forgit` without installing(for both `bash` and `zsh`):
 ``` bash
 source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
 ```
