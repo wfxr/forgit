@@ -43,7 +43,7 @@ forgit::diff() {
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "git diff --name-only --relative $commit -- ${files[*]}"|
+    eval "git diff --name-only $commit -- ${files[*]} | xargs -I% realpath --relative-to=. '$(git rev-parse --show-toplevel)/%'"|
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
