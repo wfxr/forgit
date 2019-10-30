@@ -141,7 +141,7 @@ The full loading order of fzf options is:
 
 - [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): Improve the `git diff` output.
 
-- [`bat`](https://github.com/sharkdp/bat.git): Syntex highlight for `gitignore`.
+- [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore`.
 
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
