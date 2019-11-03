@@ -26,7 +26,7 @@ function forgit::log
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --preview=\"$cmd\"
-        --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        --bind=\"enter:execute($cmd |env LESS='-R' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' | pbcopy)\"
         $FORGIT_LOG_FZF_OPTS
     "
@@ -119,22 +119,23 @@ function forgit::restore
     echo 'Nothing to restore.'
 end
 
-## git stash viewer
-#forgit::stash::show() {
-#    forgit::inside_work_tree || return 1
-#    set cmd "git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
-#    set opts"
-#        $FORGIT_FZF_DEFAULT_OPTS
-#        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
-#        $FORGIT_STASH_FZF_OPTS
-#    "
-#    git stash list | env FZF_DEFAULT_OPTS="$opts" fzf
-#}
+# git stash viewer
+function forgit::stash::show
+    forgit::inside_work_tree || return 1
+    set cmd "git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
+        $FORGIT_STASH_FZF_OPTS
+    "
+    git stash list | env FZF_DEFAULT_OPTS="$opts" fzf
+end
+
 #
 ## git clean selector
 #forgit::clean() {
 #    forgit::inside_work_tree || return 1
-#    set opts"
+#    set opts "
 #        $FORGIT_FZF_DEFAULT_OPTS
 #        -m -0
 #        $FORGIT_CLEAN_FZF_OPTS
@@ -155,7 +156,7 @@ end
 #    # https://github.com/sharkdp/bat.git
 #    hash bat > /dev/null 2>&1 && cat='bat -l gitignore --color=always' || cat="cat"
 #    set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
-#    set opts"
+#    set opts "
 #        $FORGIT_FZF_DEFAULT_OPTS
 #        -m --preview=\"$cmd\" --preview-window='right:70%'
 #        $FORGIT_IGNORE_FZF_OPTS
