@@ -4,6 +4,8 @@ forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 forgit::info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 
+dumb dumb dumb test
+
 # https://github.com/so-fancy/diff-so-fancy
 hash diff-so-fancy &>/dev/null && forgit_fancy='|diff-so-fancy'
 # https://github.com/wfxr/emoji-cli
