@@ -54,7 +54,7 @@ function forgit::diff
         $FORGIT_DIFF_FZF_OPTS
     "
     set cmd "echo" && hash realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
-    #eval "git diff --name-only $commit -- ${files[*]}| xargs -I% $cmd '$(git rev-parse --show-toplevel)/%'"|
+    #eval "git diff --name-only $commit -- ${files[*]}| xargs -I% $cmd '(git rev-parse --show-toplevel)/%'"|
     set git_rev_parse (git rev-parse --show-toplevel)
     eval "git diff --name-only $commit -- $files*| xargs -I% $cmd '$git_rev_parse/%'"|
         env FZF_DEFAULT_OPTS="$opts" fzf
@@ -122,7 +122,7 @@ end
 # git stash viewer
 function forgit::stash::show
     forgit::inside_work_tree || return 1
-    set cmd "git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    set cmd "git stash show \(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
@@ -131,48 +131,54 @@ function forgit::stash::show
     git stash list | env FZF_DEFAULT_OPTS="$opts" fzf
 end
 
-#
-## git clean selector
-#forgit::clean() {
-#    forgit::inside_work_tree || return 1
-#    set opts "
-#        $FORGIT_FZF_DEFAULT_OPTS
-#        -m -0
-#        $FORGIT_CLEAN_FZF_OPTS
-#    "
-#    # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-#    set files $(git clean -xdfn "$argv"| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
-#    [[ -n "$files" ]] && echo "$files" |xargs -I% git clean -xdf % && return
-#    echo 'Nothing to clean.'
-#}
-#
-## git ignore generator
-#export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
-#export FORGIT_GI_REPO_LOCAL=${FORGIT_GI_REPO_LOCAL:-~/.forgit/gi/repos/dvcs/gitignore}
-#export FORGIT_GI_TEMPLATES=${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/templates}
-#
-#forgit::ignore() {
-#    [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
-#    # https://github.com/sharkdp/bat.git
-#    hash bat > /dev/null 2>&1 && cat='bat -l gitignore --color=always' || cat="cat"
-#    set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
-#    set opts "
-#        $FORGIT_FZF_DEFAULT_OPTS
-#        -m --preview=\"$cmd\" --preview-window='right:70%'
-#        $FORGIT_IGNORE_FZF_OPTS
-#    "
-#    # shellcheck disable=SC2206,2207
-#    IFS=$'\n' args=($argv) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
-#        env FZF_DEFAULT_OPTS="$opts" fzf  |awk '{print $2}'))
-#    [ ${#args[@]} -eq 0 ] && return 1
-#    # shellcheck disable=SC2068
-#    if hash bat > /dev/null 2>&1; then
-#        forgit::ignore::get ${args[@]} | bat -l gitignore
-#    else
-#        forgit::ignore::get ${args[@]}
-#    fi
-#}
-#forgit::ignore::update() {
+
+# git clean selector
+function forgit::clean
+    forgit::inside_work_tree || return 1
+
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+        $FORGIT_CLEAN_FZF_OPTS
+    "
+    # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
+    # TODO removed $argv here
+    set files (git clean -xdfn | awk '{print $3}' | env FZF_DEFAULT_OPTS="$opts" fzf | sed 's#/$##')
+
+    if test -n $files
+        echo "$files" |xargs -I% git clean -xdf % && return
+    end
+    echo 'Nothing to clean.'
+end
+
+# git ignore generator
+set -x FORGIT_GI_REPO_REMOTE ${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
+set -x FORGIT_GI_REPO_LOCAL ${FORGIT_GI_REPO_LOCAL:-~/.forgit/gi/repos/dvcs/gitignore}
+set -x FORGIT_GI_TEMPLATES ${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/templates}
+
+function forgit::ignore
+    [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
+    # https://github.com/sharkdp/bat.git
+    hash bat > /dev/null 2>&1 && cat='bat -l gitignore --color=always' || cat="cat"
+    set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m --preview=\"$cmd\" --preview-window='right:70%'
+        $FORGIT_IGNORE_FZF_OPTS
+    "
+    # shellcheck disable=SC2206,2207
+    IFS=$'\n' args=($argv) && [[ $# -eq 0 ]] && args=((forgit::ignore::list | nl -nrn -w4 -s'  ' |
+        env FZF_DEFAULT_OPTS="$opts" fzf  |awk '{print $2}'))
+    [ ${#args[@]} -eq 0 ] && return 1
+    # shellcheck disable=SC2068
+    if hash bat > /dev/null 2>&1; then
+        forgit::ignore::get ${args[@]} | bat -l gitignore
+    else
+        forgit::ignore::get ${args[@]}
+    fi
+end
+
+#function forgit::ignore::update
 #    if [[ -d "$FORGIT_GI_REPO_LOCAL" ]]; then
 #        forgit::info 'Updating gitignore repo...'
 #        (cd "$FORGIT_GI_REPO_LOCAL" && git pull --no-rebase --ff) || return 1
@@ -180,23 +186,23 @@ end
 #        forgit::info 'Initializing gitignore repo...'
 #        git clone --depth=1 "$FORGIT_GI_REPO_REMOTE" "$FORGIT_GI_REPO_LOCAL"
 #    fi
-#}
-#forgit::ignore::get() {
+#end
+#function forgit::ignore::get
 #    for item in "$argv"; do
-#        if filename=$(find -L "$FORGIT_GI_TEMPLATES" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
+#        if filename=(find -L "$FORGIT_GI_TEMPLATES" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
 #            [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
 #            header="${filename##*/}" && header="${header%.gitignore}"
 #            echo "### $header" && cat "$filename" && echo
 #        fi
 #    done
-#}
-#forgit::ignore::list() {
+#end
+#function forgit::ignore::list
 #    find "$FORGIT_GI_TEMPLATES" -print |sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
-#}
-#forgit::ignore::clean() {
+#end
+#function forgit::ignore::clean
 #    setopt localoptions rmstarsilent
 #    [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
-#}
+#end
 #
 #FORGIT_FZF_DEFAULT_OPTS="
 #$FZF_DEFAULT_OPTS
