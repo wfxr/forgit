@@ -78,6 +78,7 @@ function forgit::add
         awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
         env FZF_DEFAULT_OPTS="$opts" fzf | cut -d] -f2 |
         sed 's/.* -> //') # for rename case
+
     if test -n $files
         echo "$files" |xargs -I{} git add {} && git status --short && return
     end
@@ -100,45 +101,46 @@ function forgit::reset::head
     echo 'Nothing to unstage.'
 end
 
-## git checkout-restore selector
-#forgit::restore() {
-#    forgit::inside_work_tree || return 1
-#    local cmd files opts
-#    cmd="git diff --color=always -- {} $forgit_fancy"
-#    opts="
-#        $FORGIT_FZF_DEFAULT_OPTS
-#        -m -0 --preview=\"$cmd\"
-#        $FORGIT_CHECKOUT_FZF_OPTS
-#    "
-#    files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf)"
-#    [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
-#    echo 'Nothing to restore.'
-#}
-#
+# git checkout-restore selector
+function forgit::restore
+    forgit::inside_work_tree || return 1
+
+    set cmd "git diff --color=always -- {} $forgit_fancy"
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0 --preview=\"$cmd\"
+        $FORGIT_CHECKOUT_FZF_OPTS
+    "
+    set git_rev_parse (git rev-parse --show-toplevel)
+    set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf)
+    if test -n $files
+        echo "$files" |xargs -I{} git checkout {} && git status --short && return
+    end
+    echo 'Nothing to restore.'
+end
+
 ## git stash viewer
 #forgit::stash::show() {
 #    forgit::inside_work_tree || return 1
-#    local cmd opts
-#    cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
-#    opts="
+#    set cmd "git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+#    set opts"
 #        $FORGIT_FZF_DEFAULT_OPTS
 #        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
 #        $FORGIT_STASH_FZF_OPTS
 #    "
-#    git stash list | FZF_DEFAULT_OPTS="$opts" fzf
+#    git stash list | env FZF_DEFAULT_OPTS="$opts" fzf
 #}
 #
 ## git clean selector
 #forgit::clean() {
 #    forgit::inside_work_tree || return 1
-#    local files opts
-#    opts="
+#    set opts"
 #        $FORGIT_FZF_DEFAULT_OPTS
 #        -m -0
 #        $FORGIT_CLEAN_FZF_OPTS
 #    "
 #    # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-#    files=$(git clean -xdfn "$argv"| awk '{print $3}'| FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+#    set files $(git clean -xdfn "$argv"| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
 #    [[ -n "$files" ]] && echo "$files" |xargs -I% git clean -xdf % && return
 #    echo 'Nothing to clean.'
 #}
@@ -150,18 +152,17 @@ end
 #
 #forgit::ignore() {
 #    [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
-#    local IFS cmd args cat opts
 #    # https://github.com/sharkdp/bat.git
 #    hash bat > /dev/null 2>&1 && cat='bat -l gitignore --color=always' || cat="cat"
-#    cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
-#    opts="
+#    set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
+#    set opts"
 #        $FORGIT_FZF_DEFAULT_OPTS
 #        -m --preview=\"$cmd\" --preview-window='right:70%'
 #        $FORGIT_IGNORE_FZF_OPTS
 #    "
 #    # shellcheck disable=SC2206,2207
 #    IFS=$'\n' args=($argv) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
-#        FZF_DEFAULT_OPTS="$opts" fzf  |awk '{print $2}'))
+#        env FZF_DEFAULT_OPTS="$opts" fzf  |awk '{print $2}'))
 #    [ ${#args[@]} -eq 0 ] && return 1
 #    # shellcheck disable=SC2068
 #    if hash bat > /dev/null 2>&1; then
@@ -180,7 +181,6 @@ end
 #    fi
 #}
 #forgit::ignore::get() {
-#    local item filename header
 #    for item in "$argv"; do
 #        if filename=$(find -L "$FORGIT_GI_TEMPLATES" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
 #            [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
