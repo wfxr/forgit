@@ -1,4 +1,5 @@
 # MIT (c) Wenxuan Zhang
+hash fzf > /dev/null 2>&1 || {echo "FZF not found and is requried for forgit" && return 1}
 
 forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 forgit::info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
