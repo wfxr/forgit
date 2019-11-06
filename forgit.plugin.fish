@@ -1,11 +1,6 @@
 #!/usr/local/bin/fish
 # MIT (c) Chris Apple 
 
-if not hash fzf > /dev/null 2>&1
-     echo "FZF not found and is requried for forgit"
-     exit 1
-end
-
 function forgit::warn
     printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$argv" >&2;
 end
@@ -16,6 +11,11 @@ end
 
 function forgit::inside_work_tree 
     git rev-parse --is-inside-work-tree >/dev/null; 
+end
+
+if not hash fzf > /dev/null 2>&1
+     forgit::warn "FZF not found and is requried for forgit"
+     exit 1
 end
 
 # https://github.com/so-fancy/diff-so-fancy
