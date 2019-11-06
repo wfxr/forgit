@@ -10,11 +10,19 @@
 
 ### Try Online
 
-Run the following command in your shell to try `forgit` without installing(for both `bash` and `zsh`):
+Run the following command in your shell to try `forgit` without installing:
+
+##### Bash and ZSH 
+
 ``` bash
 source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
 ```
+##### Fish
+``` fish
+source (curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.fish | psub)
+```
 
+### Installation using a ZSH Plugin manager
 ### [Zplug](https://github.com/zplug/zplug)
 ``` zsh
 zplug 'wfxr/forgit'
@@ -30,9 +38,9 @@ zgen load 'wfxr/forgit'
 antigen bundle 'wfxr/forgit'
 ```
 
-### Manually
+### Manual Installation
 
-Download and source `forgit.plugin.zsh` or `forgit.plugin.sh` in your shell config.
+Download and source `forgit.plugin.zsh`, `forgit.plugin.sh`, or `forgit.plugin.fish` in your shell config.
 
 ## Commands
 
