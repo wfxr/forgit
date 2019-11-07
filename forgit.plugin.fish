@@ -91,7 +91,7 @@ function forgit::add
         sed 's/.* -> //') # for rename case
 
     if test -n "$files"
-        echo "$files" |xargs -I{} git add {} && git status --short && return
+        echo $files | tr ' ' '\n' |xargs -I{} git add {} && git status --short && return
     end
     echo 'Nothing to add.'
 end
@@ -107,8 +107,7 @@ function forgit::reset::head
     "
     set files (git diff --cached --name-only --relative | env FZF_DEFAULT_OPTS="$opts" fzf)
     if test -n "$files"
-        echo herer
-        echo "$files" |xargs -I{} git reset -q HEAD {} && git status --short && return
+        echo $files | tr ' ' '\n' |xargs -I{} git reset -q HEAD {} && git status --short && return
     end
     echo 'Nothing to unstage.'
 end
@@ -126,7 +125,7 @@ function forgit::restore
     set git_rev_parse (git rev-parse --show-toplevel)
     set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf)
     if test -n "$files"
-        echo "$files" |xargs -I{} git checkout {} && git status --short && return
+        echo $files | tr ' ' '\n' |xargs -I{} git checkout {} && git status --short && return
     end
     echo 'Nothing to restore.'
 end
@@ -156,7 +155,7 @@ function forgit::clean
     set files (git clean -xdfn $argv| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
 
     if test -n "$files"
-        echo "$files" |xargs -I% git clean -xdf % && return
+        echo $files | tr ' ' '\n'|xargs -I{} git clean -xdf {} && return
     end
     echo 'Nothing to clean.'
 end
