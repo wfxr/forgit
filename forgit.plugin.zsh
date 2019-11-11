@@ -5,20 +5,20 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 
 hash fzf &>/dev/null || { forgit::warn "FZF not found and is requried for forgit"; return 1; }
 
-# https://github.com/so-fancy/diff-so-fancy
-hash diff-so-fancy &>/dev/null && forgit_fancy='|diff-so-fancy'
 # https://github.com/wfxr/emoji-cli
 hash emojify &>/dev/null && forgit_emojify='|emojify'
+
+forgit_pager=$(git config core.pager || echo 'cat')
 
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
     local cmd opts
-    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $* $forgit_fancy"
+    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $* | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --preview=\"$cmd\"
-        --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        --bind=\"enter:execute($cmd | LESS='-R' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' |${FORGIT_COPY_CMD:-pbcopy})\"
         $FORGIT_LOG_FZF_OPTS
     "
@@ -38,7 +38,7 @@ forgit::diff() {
         fi
     }
 
-    cmd="git diff --color=always $commit -- {} $forgit_fancy"
+    cmd="git diff --color=always $commit -- {} | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
@@ -60,7 +60,7 @@ forgit::add() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"git diff --color=always -- {-1} $forgit_fancy\"
+        --preview=\"git diff --color=always -- {-1} | $forgit_pager\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=$(git -c color.status=always -c status.relativePaths=true status --short |
@@ -76,7 +76,7 @@ forgit::add() {
 forgit::reset::head() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    cmd="git diff --cached --color=always -- {} $forgit_fancy"
+    cmd="git diff --cached --color=always -- {} | $forgit_pager "
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
@@ -91,7 +91,7 @@ forgit::reset::head() {
 forgit::restore() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    cmd="git diff --color=always -- {} $forgit_fancy"
+    cmd="git diff --color=always -- {} | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
@@ -106,10 +106,10 @@ forgit::restore() {
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
     local cmd opts
-    cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd | LESS='-R' less)\"
         $FORGIT_STASH_FZF_OPTS
     "
     git stash list | FZF_DEFAULT_OPTS="$opts" fzf
