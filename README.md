@@ -147,7 +147,7 @@ The full loading order of fzf options is:
 
 ## Optional
 
-- [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): Improve the `git diff` output.
+- [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) or [`delta`](https://github.com/dandavison/delta): Improve the `git diff` output.
 
 - [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore`.
 
