@@ -18,16 +18,23 @@ if not hash fzf > /dev/null 2>&1
      exit 1
 end
 
-# https://github.com/so-fancy/diff-so-fancy
-hash diff-so-fancy >/dev/null 2>&1 && set forgit_fancy '|diff-so-fancy'
+set core_pager (git config core.pager)
+
+if test -n $core_pager
+    set forgit_pager (echo "| $core_pager")
+else if hash diff-so-fancy >/dev/null 2>&1
+    set forgit_pager "| diff-so-fancy | less --tabs 4 -RFX"
+else 
+    set forgit_pager "| cat"
+end
+
 # https://github.com/wfxr/emoji-cli
 hash emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
-
 
 # git commit viewer
 function forgit::log 
     forgit::inside_work_tree || return 1
-    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $argv $forgit_fancy"
+    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $argv $forgit_pager"
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
@@ -58,7 +65,7 @@ function forgit::diff
         end
     end
 
-    set cmd "git diff --color=always $commit -- {} $forgit_fancy"
+    set cmd "git diff --color=always $commit -- {} $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
@@ -81,7 +88,7 @@ function forgit::add
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"git diff --color=always -- {-1} $forgit_fancy\"
+        --preview=\"git diff --color=always -- {-1} $forgit_pager\"
         $FORGIT_ADD_FZF_OPTS
     "
     set files (git -c color.status=always -c status.relativePaths=true status --short |
@@ -99,7 +106,7 @@ end
 ## git reset HEAD (unstage) selector
 function forgit::reset::head
     forgit::inside_work_tree || return 1
-    set cmd "git diff --cached --color=always -- {} $forgit_fancy"
+    set cmd "git diff --cached --color=always -- {} $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
@@ -116,7 +123,7 @@ end
 function forgit::restore
     forgit::inside_work_tree || return 1
 
-    set cmd "git diff --color=always -- {} $forgit_fancy"
+    set cmd "git diff --color=always -- {} $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
@@ -133,7 +140,7 @@ end
 # git stash viewer
 function forgit::stash::show
     forgit::inside_work_tree || return 1
-    set cmd "git stash show \(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_fancy"
+    set cmd "git stash show \(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
