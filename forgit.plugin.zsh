@@ -105,14 +105,47 @@ forgit::restore() {
 # git stash viewer
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
-    local cmd opts
-    cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
+    local cmd opts out
+    cmd="git stash show --patience --stat --pretty=oneline -p \$(echo {} | cut -d: -f1) --color=always --ext-diff $forgit_fancy"
     opts="
-        $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd | LESS='-R' less)\"
-        $FORGIT_STASH_FZF_OPTS
+        $FORGIT_FZF_DEFAULT_OPTS \
+        +s +m -0 --tiebreak=index --preview=\"$cmd\" \
+        --header='Press CTRL-b:Checkout, CTRL-y:Apply, CTRL-x:Drop' \
+        --print-query --query="$query" \
+        --expect=ctrl-b,ctrl-y,ctrl-x \
+        --height 90% \
+        --preview-window=right:60% \
+        $FORGIT_STASH_FZF_OPTS 
     "
-    git stash list | FZF_DEFAULT_OPTS="$opts" fzf
+    while out=$(git stash list "$@" | FZF_DEFAULT_OPTS="$opts" fzf)
+    do
+        # Tokenize selection by newline
+        selection=("${(f)out}")
+
+        # Keep the query accross fzf calls
+        query="$selection[1]"
+
+        # Represents the stash, e.g. stash{1}
+        reflog_selector=$(echo "$selection[3]" | cut -d ':' -f 1)
+
+        case "$selection[2]" in
+            # ctrl-b checks out the stash as a branch and removes the stash 
+            ctrl-b)
+                sha=$(echo "$selection[3]" | grep -o '[a-f0-9]\{7\}')
+                git stash branch "stash-$sha" "$reflog_selector"
+                break
+                ;;
+            # ctrl-y will apply the stash
+            ctrl-y) 
+                git stash apply $reflog_selector 
+                break
+                ;;
+            # ctrl-x will drop the stash
+            ctrl-x) 
+                git stash drop $reflog_selector
+                ;;
+        esac
+    done
 }
 
 # git clean selector
