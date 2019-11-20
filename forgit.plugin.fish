@@ -14,7 +14,7 @@ function forgit::inside_work_tree
 end
 
 if not type -q fzf > /dev/null 2>&1
-     forgit::warn "FZF not found and is requried for forgit"
+     forgit::warn "FZF not found and is required for forgit"
      exit 1
 end
 
