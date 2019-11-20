@@ -13,7 +13,7 @@ function forgit::inside_work_tree
     git rev-parse --is-inside-work-tree >/dev/null; 
 end
 
-if not hash fzf > /dev/null 2>&1
+if not type -q fzf > /dev/null 2>&1
      forgit::warn "FZF not found and is requried for forgit"
      exit 1
 end
@@ -22,14 +22,14 @@ set core_pager (git config core.pager)
 
 if test -n $core_pager
     set forgit_pager (echo "| $core_pager")
-else if hash diff-so-fancy >/dev/null 2>&1
+else if type -q diff-so-fancy >/dev/null 2>&1
     set forgit_pager "| diff-so-fancy | less --tabs 4 -RFX"
 else 
     set forgit_pager "| cat"
 end
 
 # https://github.com/wfxr/emoji-cli
-hash emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
+type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
 
 # git commit viewer
 function forgit::log 
@@ -71,7 +71,7 @@ function forgit::diff
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    set cmd "echo" && hash realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
+    set cmd "echo" && type -q realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
     #eval "git diff --name-only $commit -- ${files[*]}| xargs -I% $cmd '(git rev-parse --show-toplevel)/%'"|
     set git_rev_parse (git rev-parse --show-toplevel)
     eval "git diff --name-only $commit -- $files*| xargs -I% $cmd '$git_rev_parse/%'"|
@@ -186,7 +186,7 @@ function forgit::ignore
     end
 
     # https://github.com/sharkdp/bat.git
-    hash bat > /dev/null 2>&1 && set cat 'bat -l gitignore --color=always' || set cat "cat"
+    type -q bat > /dev/null 2>&1 && set cat 'bat -l gitignore --color=always' || set cat "cat"
     set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
@@ -205,7 +205,7 @@ function forgit::ignore
          return 1
      end
 
-    if hash bat > /dev/null 2>&1
+    if type -q bat > /dev/null 2>&1
         forgit::ignore::get $args | bat -l gitignore
     else
         forgit::ignore::get $args
