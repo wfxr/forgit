@@ -23,6 +23,7 @@ If applicable, add screenshots to help explain your problem.
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
  - Shell: [bash, fish, zsh]
+ - Shell Version:
  - Any other terminal config? [tmux, etc]
 
 **Additional context**
