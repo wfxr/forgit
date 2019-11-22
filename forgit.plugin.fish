@@ -13,11 +13,6 @@ function forgit::inside_work_tree
     git rev-parse --is-inside-work-tree >/dev/null; 
 end
 
-if not type -q fzf > /dev/null 2>&1
-     forgit::warn "FZF not found and is required for forgit"
-     exit 1
-end
-
 set core_pager (git config core.pager)
 
 if test -n $core_pager
