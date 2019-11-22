@@ -37,14 +37,14 @@ forgit::diff() {
     }
 
     repo="$(git rev-parse --show-toplevel)"
-    target="\$(echo {} | sed 's/.*]   //')"
+    target="\$(echo {} | sed 's/.*]  //')"
     cmd="git diff --color=always $commit -- $repo/$target | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "git diff --name-status $commit -- ${files[*]} | awk '{printf \"[%2s]  \", \$1; \$1=\"\"; print \$0}'" |
+    eval "git diff --name-status $commit -- ${files[*]} | sed 's/^\(.\)[[:space:]]\+\(.*\)$/[\1]  \2/'" |
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
@@ -62,10 +62,9 @@ forgit::add() {
         --preview=\"git diff --color=always -- {-1} | $forgit_pager\"
         $FORGIT_ADD_FZF_OPTS
     "
-    # TODO: fix path contains blanks
     files=$(git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
+        sed 's/^\(..[^[:space:]]*\)[[:space:]]\+\(.*\)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf | cut -d] -f2 |
         sed 's/.* -> //') # for rename case
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git add {} && git status --short && return
