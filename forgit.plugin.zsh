@@ -27,7 +27,7 @@ forgit::log() {
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
-    local cmd files opts commit
+    local cmd files opts commit repo
     [[ $# -ne 0 ]] && {
         if git rev-parse "$1" -- &>/dev/null ; then
             commit="$1" && files=("${@:2}")
@@ -36,14 +36,15 @@ forgit::diff() {
         fi
     }
 
-    cmd="git diff --color=always $commit -- {} | $forgit_pager"
+    repo="$(git rev-parse --show-toplevel)"
+    target="\$(echo {} | sed 's/.*]  //')"
+    cmd="git diff --color=always $commit -- $repo/$target | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    cmd="echo" && hash realpath &>/dev/null && cmd="realpath --relative-to=."
-    eval "git diff --name-only $commit -- ${files[*]}| xargs -I% $cmd '$(git rev-parse --show-toplevel)/%'"|
+    eval "git diff --name-status $commit -- ${files[*]} | sed 's/^\(.\)[[:space:]]\+\(.*\)$/[\1]  \2/'" |
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
@@ -63,7 +64,7 @@ forgit::add() {
     "
     files=$(git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
+        sed 's/^\(..[^[:space:]]*\)[[:space:]]\+\(.*\)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf | cut -d] -f2 |
         sed 's/.* -> //') # for rename case
     [[ -n "$files" ]] && echo "$files" |xargs -I{} git add {} && git status --short && return
