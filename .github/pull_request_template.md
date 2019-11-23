@@ -8,6 +8,10 @@
 - [ ] I have commented my code in hard-to-understand areas
 - [ ] I have made corresponding changes to the documentation
 
+## Description
+
+<!-- Please include a summary of the change(and the related issue if any). Please also include relevant motivation and context when necessary. -->
+
 ## Type of change
 
 - [ ] Bug fix
@@ -27,7 +31,3 @@
     - [ ] Mac OS X
     - [ ] Windows
     - [ ] Others:
-
-## Description
-
-<!-- Please include a summary of the change(and the related issue if any). Please also include relevant motivation and context when necessary. -->
