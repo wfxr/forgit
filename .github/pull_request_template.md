@@ -1,36 +1,33 @@
-# Description
+<!-- NOTE: forgit.plugin.zsh & forgit.plugin.sh share the same code. You should make sure the changes work in both `zsh` & `bash` -->
 
-Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context, such as the description of the bug you're trying to fix. 
+<!-- Check all that apply [x] -->
 
-Fixes # (issue)
+## Check list
+
+- [ ] I have performed a self-review of my code
+- [ ] I have commented my code in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
 
 ## Type of change
 
-Please delete options that are not relevant.
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Refactor
+- [ ] Breaking change
+- [ ] Documentation change
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
+## Test environment
 
-## Shells this fix should effect: 
-- [ ] bash
-- [ ] zsh 
-- [ ] fish 
+- Shell
+    - [ ] bash
+    - [ ] zsh 
+    - [ ] fish 
+- OS
+    - [ ] Linux
+    - [ ] Mac OS X
+    - [ ] Windows
+    - [ ] Others:
 
-## Shells this fix has been tested in: 
-- [ ] bash
-- [ ] zsh 
-- [ ] fish 
+## Description
 
-**Test Configuration**:
-* OS:
-
-# Checklist:
-
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-
-@cjappl @wfxr
+<!-- Please include a summary of the change(and the related issue if any). Please also include relevant motivation and context when necessary. -->
