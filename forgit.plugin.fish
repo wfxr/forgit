@@ -16,11 +16,11 @@ end
 set core_pager (git config core.pager)
 
 if test -n $core_pager
-    set forgit_pager (echo "| $core_pager")
+    set forgit_pager "$core_pager"
 else if type -q diff-so-fancy >/dev/null 2>&1
-    set forgit_pager "| diff-so-fancy | less --tabs 4 -RFX"
+    set forgit_pager "diff-so-fancy | less --tabs 4 -RFX"
 else 
-    set forgit_pager "| cat"
+    set forgit_pager "cat"
 end
 
 # https://github.com/wfxr/emoji-cli
@@ -29,7 +29,8 @@ type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
 # git commit viewer
 function forgit::log 
     forgit::inside_work_tree || return 1
-    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $argv $forgit_pager"
+    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $argv | $forgit_pager"
+    echo $cmd
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
@@ -60,17 +61,22 @@ function forgit::diff
         end
     end
 
-    set cmd "git diff --color=always $commit -- {} $forgit_pager"
+    set repo "(git rev-parse --show-toplevel)"
+    set target "\(echo {} | sed 's/.*]  //')"
+    # TODO: remove pipe from front of forget_pager
+    set cmd "git diff --color=always $commit -- $repo/$target | $forgit_pager"
+    echo $cmd
+    exit
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
     set cmd "echo" && type -q realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
-    #eval "git diff --name-only $commit -- ${files[*]}| xargs -I% $cmd '(git rev-parse --show-toplevel)/%'"|
     set git_rev_parse (git rev-parse --show-toplevel)
-    eval "git diff --name-only $commit -- $files*| xargs -I% $cmd '$git_rev_parse/%'"|
-        env FZF_DEFAULT_OPTS="$opts" fzf
+    eval "git diff --name-only $commit -- $files*| sed 's/^\(.\)[[:space:]]\+\(.*\)\$/[\1]  \2/'" |
+
+    env FZF_DEFAULT_OPTS="$opts" fzf
 end
 
 # git add selector
@@ -83,7 +89,7 @@ function forgit::add
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"git diff --color=always -- {-1} $forgit_pager\"
+        --preview=\"git diff --color=always -- {-1} | $forgit_pager\"
         $FORGIT_ADD_FZF_OPTS
     "
     set files (git -c color.status=always -c status.relativePaths=true status --short |
@@ -101,7 +107,7 @@ end
 ## git reset HEAD (unstage) selector
 function forgit::reset::head
     forgit::inside_work_tree || return 1
-    set cmd "git diff --cached --color=always -- {} $forgit_pager"
+    set cmd "git diff --cached --color=always -- {} | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
@@ -118,7 +124,7 @@ end
 function forgit::restore
     forgit::inside_work_tree || return 1
 
-    set cmd "git diff --color=always -- {} $forgit_pager"
+    set cmd "git diff --color=always -- {} | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0 --preview=\"$cmd\"
@@ -135,7 +141,7 @@ end
 # git stash viewer
 function forgit::stash::show
     forgit::inside_work_tree || return 1
-    set cmd "git stash show \(echo {}| cut -d: -f1) --color=always --ext-diff $forgit_pager"
+    set cmd "git stash show \(echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
