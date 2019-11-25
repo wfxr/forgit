@@ -141,9 +141,19 @@ Customizing fzf options for each command individually is also supported:
 | `gss`    | `FORGIT_STASH_FZF_OPTS`      |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`      |
 
-The full loading order of fzf options is:
+The complete loading order of fzf options is:
 
-`FZF_DEFAULT_OPTS`(`fzf` global) -> `FORGIT_FZF_DEFAULT_OPTS`(`forgit` global) -> `FORGIT_CMD_FZF_OPTS`(command specific).
+1. `FZF_DEFAULT_OPTS`(fzf global)
+2. `FORGIT_FZF_DEFAULT_OPTS`(forgit global)
+3. `FORGIT_CMD_FZF_OPTS`(command specific)
+
+**Example**
+```
+// adds a keybind to drop the selected stash but do not quit fzf
+FORGIT_STASH_FZF_OPTS='
+--bind="ctrl-d:reload(git stash drop $(cut -d: -f1 <<<{}) 1>/dev/null && git stash list)"
+'
+```
 
 ## Optional
 
