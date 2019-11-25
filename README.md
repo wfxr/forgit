@@ -1,8 +1,9 @@
 # forgit
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://wfxr.mit-license.org/2017)
+![Shell](https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://wfxr.mit-license.org/2017)
 
-`forgit` is a utility tool for git taking advantage of fuzzy finder fzf.
+`forgit` is a utility tool powered by fzf for using git interactively.
 
 ## Installation
 
