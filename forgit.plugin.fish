@@ -91,13 +91,15 @@ function forgit::add
     "
     set files (git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        sed 's/^\(..[^[:space:]]*\)[[:space:]]\+\(.*\)\$/[\1]  \2/' |
-        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d " " -f 2- |
+        sed 's/^\(..[^[:space:]]*\)[[:space:]]\+\(.*\)\$/[\1]  \2/' |   # deal with white spaces internal to fname
+        env FZF_DEFAULT_OPTS="$opts" fzf | 
+        sed -e 's/^[[:space:]]*//' | # remove leading whitespace
+        cut -d " " -f 2- |  # cut the line after the M or ??, this leaves just the filename
         sed 's/.* -> //') # for rename case
 
     if test -n "$files"
         for file in $files
-            echo $file | tr "\n" "\0" | xargs -I{} -0 git add {} && git status --short && return
+            echo $file | tr '\n' '\0' | xargs -I{} -0 git add {} && git status --short && return
         end
         return
     end
@@ -115,7 +117,9 @@ function forgit::reset::head
     "
     set files (git diff --cached --name-only --relative | env FZF_DEFAULT_OPTS="$opts" fzf)
     if test -n "$files"
-        echo $files | tr ' ' '\n' |xargs -I{} git reset -q HEAD {} && git status --short && return
+        for file in $files
+            echo $file | tr '\n' '\0' |xargs -I{} -0 git reset -q HEAD {} && git status --short && return
+        end
     end
     echo 'Nothing to unstage.'
 end
@@ -133,7 +137,9 @@ function forgit::restore
     set git_rev_parse (git rev-parse --show-toplevel)
     set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf)
     if test -n "$files"
-        echo $files | tr ' ' '\n' |xargs -I{} git checkout {} && git status --short && return
+        for file in $files
+            echo $file | tr '\n' '\0' |xargs -I{} -0 git checkout {} && git status --short && return
+        end
     end
     echo 'Nothing to restore.'
 end
@@ -163,7 +169,9 @@ function forgit::clean
     set files (git clean -xdfn $argv| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
 
     if test -n "$files"
-        echo $files | tr ' ' '\n'|xargs -I{} git clean -xdf {} && return
+        for file in $files
+            echo $file | tr '\n' '\0'|xargs -0 -I{} git clean -xdf {} && return
+        end
     end
     echo 'Nothing to clean.'
 end
