@@ -63,10 +63,7 @@ function forgit::diff
 
     set repo "(git rev-parse --show-toplevel)"
     set target "\(echo {} | sed 's/.*]  //')"
-    # TODO: remove pipe from front of forget_pager
     set cmd "git diff --color=always $commit -- $repo/$target | $forgit_pager"
-    echo $cmd
-    exit
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
@@ -94,12 +91,15 @@ function forgit::add
     "
     set files (git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        awk '{printf "[%10s]  ", $1; $1=""; print $0}' |
-        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d] -f2 |
+        sed 's/^\(..[^[:space:]]*\)[[:space:]]\+\(.*\)\$/[\1]  \2/' |
+        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d " " -f 2- |
         sed 's/.* -> //') # for rename case
 
     if test -n "$files"
-        echo $files | tr ' ' '\n' |xargs -I{} git add {} && git status --short && return
+        for file in $files
+            echo $file | tr "\n" "\0" | xargs -I{} -0 git add {} && git status --short && return
+        end
+        return
     end
     echo 'Nothing to add.'
 end
