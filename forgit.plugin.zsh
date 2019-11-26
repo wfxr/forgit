@@ -64,10 +64,11 @@ forgit::add() {
     "
     files=$(git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        sed 's/^\(..[^[:space:]]*\)[[:space:]]\+\(.*\)$/[\1]  \2/' |
-        FZF_DEFAULT_OPTS="$opts" fzf | cut -d] -f2 |
+        sed 's/^\(..[^[:space:]]*\) \(.*\)$/[\1]  \2/' |
+        FZF_DEFAULT_OPTS="$opts" fzf |
+        sed 's/^.*]  //' |
         sed 's/.* -> //') # for rename case
-    [[ -n "$files" ]] && echo "$files" |xargs -I{} git add {} && git status --short && return
+    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status --short && return
     echo 'Nothing to add.'
 }
 
@@ -82,7 +83,7 @@ forgit::reset::head() {
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
     files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" |xargs -I{} git reset -q HEAD {} && git status --short && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
     echo 'Nothing to unstage.'
 }
 
@@ -97,7 +98,7 @@ forgit::restore() {
         $FORGIT_CHECKOUT_FZF_OPTS
     "
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" |xargs -I{} git checkout {} && git status --short && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && git status --short && return
     echo 'Nothing to restore.'
 }
 
@@ -124,8 +125,8 @@ forgit::clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdfn "$@"| awk '{print $3}'| FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
-    [[ -n "$files" ]] && echo "$files" |xargs -I% git clean -xdf % && return
+    files=$(git clean -xdfn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && return
     echo 'Nothing to clean.'
 }
 
