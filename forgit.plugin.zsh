@@ -68,7 +68,7 @@ forgit::add() {
         FZF_DEFAULT_OPTS="$opts" fzf |
         sed 's/^.*]  //' |
         sed 's/.* -> //') # for rename case
-    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I{} git add {} && git status --short && return
+    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status --short && return
     echo 'Nothing to add.'
 }
 
@@ -83,7 +83,7 @@ forgit::reset::head() {
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
     files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I{} git reset -q HEAD {} && git status --short && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
     echo 'Nothing to unstage.'
 }
 
@@ -98,7 +98,7 @@ forgit::restore() {
         $FORGIT_CHECKOUT_FZF_OPTS
     "
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I{} git checkout {} && git status --short && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && git status --short && return
     echo 'Nothing to restore.'
 }
 
