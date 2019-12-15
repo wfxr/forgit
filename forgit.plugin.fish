@@ -30,7 +30,6 @@ type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
 function forgit::log 
     forgit::inside_work_tree || return 1
     set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $argv | $forgit_pager"
-    echo $cmd
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
