@@ -70,7 +70,7 @@ function forgit::diff
     "
     set cmd "echo" && type -q realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
     set git_rev_parse (git rev-parse --show-toplevel)
-    eval "git diff --name-only $commit -- $files*| sed 's/^\(.\)[[:space:]]\+\(.*\)\$/[\1]  \2/'" |
+    eval "git diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" |
 
     env FZF_DEFAULT_OPTS="$opts" fzf
 end
@@ -90,7 +90,7 @@ function forgit::add
     "
     set files (git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        sed 's/^\(..[^[:space:]]*\)[[:space:]]\+\(.*\)\$/[\1]  \2/' |   # deal with white spaces internal to fname
+        sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)\$/[\1]  \2/' |   # deal with white spaces internal to fname
         env FZF_DEFAULT_OPTS="$opts" fzf | 
         sed -e 's/^[[:space:]]*//' | # remove leading whitespace
         cut -d " " -f 2- |  # cut the line after the M or ??, this leaves just the filename

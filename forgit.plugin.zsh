@@ -44,7 +44,7 @@ forgit::diff() {
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "git diff --name-status $commit -- ${files[*]} | sed 's/^\(.\)[[:space:]]\+\(.*\)$/[\1]  \2/'" |
+    eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
@@ -64,7 +64,7 @@ forgit::add() {
     "
     files=$(git -c color.status=always -c status.relativePaths=true status --short |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        sed 's/^\(..[^[:space:]]*\) \(.*\)$/[\1]  \2/' |
+        sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
         sed 's/^.*]  //' |
         sed 's/.* -> //') # for rename case
