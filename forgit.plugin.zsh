@@ -59,16 +59,20 @@ forgit::add() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"git diff --color=always -- {-1} | $forgit_pager\"
+        --preview=\"if (git status --porcelain -- {-1} | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
+                        git diff --color=always --no-index -- /dev/null {-1} | $forgit_pager | sed '2 s/added: /untracked: /'
+                    else
+                        git diff --color=always -- {-1} | $forgit_pager;
+                    fi\"
         $FORGIT_ADD_FZF_OPTS
     "
-    files=$(git -c color.status=always -c status.relativePaths=true status --short |
+    files=$(git -c color.status=always -c status.relativePaths=true status --short --untracked-files |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed 's/^\(..[^[:space:]]*\) \(.*\)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
         sed 's/^.*]  //' |
         sed 's/.* -> //') # for rename case
-    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status --short && return
+    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status --short --untracked-files && return
     echo 'Nothing to add.'
 }
 
