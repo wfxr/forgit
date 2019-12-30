@@ -15,10 +15,8 @@ end
 
 set core_pager (git config core.pager)
 
-if test -n $core_pager
+if test -n "$core_pager"
     set forgit_pager "$core_pager"
-else if type -q diff-so-fancy >/dev/null 2>&1
-    set forgit_pager "diff-so-fancy | less --tabs 4 -RFX"
 else 
     set forgit_pager "cat"
 end
@@ -85,10 +83,14 @@ function forgit::add
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"git diff --color=always -- {-1} | $forgit_pager\"
+        --preview=\"if test (git status --porcelain -- {-1} | grep '^??') 
+                        git diff --color=always --no-index -- /dev/null {-1} | $forgit_pager | sed '2 s/added: /untracked: /'
+                    else
+                        git diff --color=always -- {-1} | $forgit_pager;
+                    end\"
         $FORGIT_ADD_FZF_OPTS
     "
-    set files (git -c color.status=always -c status.relativePaths=true status --short |
+    set files (git -c color.status=always -c status.relativePaths=true status --short --untracked-files |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)\$/[\1]  \2/' |   # deal with white spaces internal to fname
         env FZF_DEFAULT_OPTS="$opts" fzf | 
@@ -98,7 +100,7 @@ function forgit::add
 
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0' | xargs -I{} -0 git add {} && git status --short && return
+            echo $file | tr '\n' '\0' | xargs -I{} -0 git add {} && git status --short --untracked-files && return
         end
         return
     end
