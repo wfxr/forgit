@@ -76,6 +76,12 @@ end
 # git add selector
 function forgit::add 
     forgit::inside_work_tree || return 1
+    # Add files if passed as arguments
+    if not count $argv > /dev/null
+        git add $argv
+        return
+    end
+
     set changed (git config --get-color color.status.changed red)
     set unmerged (git config --get-color color.status.unmerged red)
     set untracked (git config --get-color color.status.untracked red)
