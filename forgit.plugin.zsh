@@ -52,6 +52,12 @@ forgit::diff() {
 forgit::add() {
     forgit::inside_work_tree || return 1
     local changed unmerged untracked files opts
+    # Add files if passed as arguments
+    [[ $# -ne 0 ]] && {
+        git add $@
+        return
+    }
+
     changed=$(git config --get-color color.status.changed red)
     unmerged=$(git config --get-color color.status.unmerged red)
     untracked=$(git config --get-color color.status.untracked red)
