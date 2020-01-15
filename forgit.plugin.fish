@@ -1,23 +1,23 @@
 #!/usr/local/bin/fish
-# MIT (c) Chris Apple 
+# MIT (c) Chris Apple
 
 function forgit::warn
     printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$argv" >&2;
 end
 
-function forgit::info 
+function forgit::info
     printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$argv" >&2;
 end
 
-function forgit::inside_work_tree 
-    git rev-parse --is-inside-work-tree >/dev/null; 
+function forgit::inside_work_tree
+    git rev-parse --is-inside-work-tree >/dev/null;
 end
 
 set core_pager (git config core.pager)
 
 if test -n "$core_pager"
     set forgit_pager "$core_pager"
-else 
+else
     set forgit_pager "cat"
 end
 
@@ -25,14 +25,14 @@ end
 type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
 
 # git commit viewer
-function forgit::log 
+function forgit::log
     forgit::inside_work_tree || return 1
     set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $argv | $forgit_pager"
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
-    else 
-        set copy_cmd pbcopy 
+    else
+        set copy_cmd pbcopy
     end
 
     set opts "
@@ -74,7 +74,7 @@ function forgit::diff
 end
 
 # git add selector
-function forgit::add 
+function forgit::add
     forgit::inside_work_tree || return 1
     # Add files if passed as arguments
     count $argv >/dev/null && git add "$argv" && return
@@ -83,27 +83,36 @@ function forgit::add
     set unmerged (git config --get-color color.status.unmerged red)
     set untracked (git config --get-color color.status.untracked red)
 
+    set extract_file "
+        sed 's/^[[:space:]]*//' |           # remove leading whitespace
+        cut -d ' ' -f 2- |                  # cut the line after the M or ??, this leaves just the filename
+        sed 's/.* -> //' |                  # for rename case
+        sed -e 's/^\\\"//' -e 's/\\\"\$//'  # removes surrounding quotes
+    "
+    set preview "
+        set file (echo {} | $extract_file)
+        # exit
+        if test (git status -s -- \$file | grep '^??') # diff with /dev/null for untracked files
+            git diff --color=always --no-index -- /dev/null \$file | $forgit_pager | sed '2 s/added:/untracked:/'
+        else
+            git diff --color=always -- \$file | $forgit_pager
+        end
+        "
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"if test (git status --porcelain -- {-1} | grep '^??') 
-                        git diff --color=always --no-index -- /dev/null {-1} | $forgit_pager | sed '2 s/added: /untracked: /'
-                    else
-                        git diff --color=always -- {-1} | $forgit_pager;
-                    end\"
+        --preview=\"$preview\"
         $FORGIT_ADD_FZF_OPTS
     "
-    set files (git -c color.status=always -c status.relativePaths=true status --short --untracked-files |
+    set files (git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)\$/[\1]  \2/' |   # deal with white spaces internal to fname
-        env FZF_DEFAULT_OPTS="$opts" fzf | 
-        sed -e 's/^[[:space:]]*//' | # remove leading whitespace
-        cut -d " " -f 2- |  # cut the line after the M or ??, this leaves just the filename
-        sed 's/.* -> //') # for rename case
+        env FZF_DEFAULT_OPTS="$opts" fzf |
+        sh -c "$extract_file") # for rename case
 
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0' | xargs -I{} -0 git add {} && git status --short --untracked-files && return
+            echo $file | tr '\n' '\0' | xargs -I{} -0 git add {}
         end
         return
     end
@@ -208,7 +217,7 @@ function forgit::ignore
     "
     set IFS '\n'
 
-    set args $argv 
+    set args $argv
     if not count $argv > /dev/null
         set args (forgit::ignore::list | nl -nrn -w4 -s'  ' |
         env FZF_DEFAULT_OPTS="$opts" fzf  |awk '{print $2}')
@@ -222,13 +231,13 @@ function forgit::ignore
         forgit::ignore::get $args | bat -l gitignore
     else
         forgit::ignore::get $args
-    end 
+    end
 end
 
 function forgit::ignore::update
     if test -d "$FORGIT_GI_REPO_LOCAL"
         forgit::info 'Updating gitignore repo...'
-        set pull_result (git -C "$FORGIT_GI_REPO_LOCAL" pull --no-rebase --ff) 
+        set pull_result (git -C "$FORGIT_GI_REPO_LOCAL" pull --no-rebase --ff)
         test -n "$pull_result" || return 1
     else
         forgit::info 'Initializing gitignore repo...'
@@ -242,9 +251,9 @@ function forgit::ignore::get
         if test -n "$filename"
             set header $filename && set header (echo $filename | sed 's/.*\.//')
             echo "### $header" && cat "$filename" && echo
-        else 
+        else
             forgit::warn "No gitignore template found for '$item'." && continue
-        end 
+        end
     end
 end
 
@@ -272,7 +281,7 @@ $FORGIT_FZF_DEFAULT_OPTS
 "
 
 # register aliases
-if test -z "$FORGIT_NO_ALIASES" 
+if test -z "$FORGIT_NO_ALIASES"
     if test -n "$forgit_add"
         alias $forgit_add 'forgit::add'
     else
