@@ -34,7 +34,7 @@ forgit::diff() {
         else
             files=("$@")
         fi
-    }
+    } || files=(".")
 
     repo="$(git rev-parse --show-toplevel)"
     target="\$(echo {} | sed 's/.*]  //')"
@@ -44,7 +44,25 @@ forgit::diff() {
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
+    git diff --name-status "$commit" -- "${files[@]}" | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/' |
+        FZF_DEFAULT_OPTS="$opts" fzf
+}
+
+# git diff viewer (staged)
+forgit::diff::staged() {
+    forgit::inside_work_tree || return 1
+    local cmd files opts repo
+    [[ $# -ne 0 ]] && files=("$@") || files=(".")
+
+    repo="$(git rev-parse --show-toplevel)"
+    target="\$(echo {} | sed 's/.*]  //')"
+    cmd="git diff --staged --color=always -- $repo/$target | $forgit_pager"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        $FORGIT_DIFF_STAGED_FZF_OPTS
+    "
+    git diff --staged --name-status -- "${files[@]}" | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
@@ -220,6 +238,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_reset_head:-grh}"='forgit::reset::head'
     alias "${forgit_log:-glo}"='forgit::log'
     alias "${forgit_diff:-gd}"='forgit::diff'
+    alias "${forgit_diff_staged:-gds}"='forgit::diff::staged'
     alias "${forgit_ignore:-gi}"='forgit::ignore'
     alias "${forgit_restore:-gcf}"='forgit::restore'
     alias "${forgit_clean:-gclean}"='forgit::clean'
