@@ -27,14 +27,16 @@ forgit::log() {
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
-    local cmd files opts commit repo
+    local cmd opts args commit repo
+    args=()
     [[ $# -ne 0 ]] && {
         if git rev-parse "$1" -- &>/dev/null ; then
-            commit="$1" && files=("${@:2}")
+            commit="$1"
+            args+=("$1" "--" "${@:2}")
         else
-            files=("$@")
+            args+=("--" "$@")
         fi
-    } || files=(".")
+    }
 
     repo="$(git rev-parse --show-toplevel)"
     target="\$(echo {} | sed 's/.*]  //')"
@@ -44,15 +46,15 @@ forgit::diff() {
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    git diff --name-status "$commit" -- "${files[@]}" | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/' |
+    git diff --name-status "${args[@]}" | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
 # git diff viewer (staged)
 forgit::diff::staged() {
     forgit::inside_work_tree || return 1
-    local cmd files opts repo
-    [[ $# -ne 0 ]] && files=("$@") || files=(".")
+    local cmd args opts repo
+    [[ $# -ne 0 ]] && args=("--" "$@")
 
     repo="$(git rev-parse --show-toplevel)"
     target="\$(echo {} | sed 's/.*]  //')"
@@ -62,7 +64,7 @@ forgit::diff::staged() {
         +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_STAGED_FZF_OPTS
     "
-    git diff --staged --name-status -- "${files[@]}" | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/' |
+    git diff --staged --name-status "${args[@]}" | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
