@@ -73,6 +73,28 @@ function forgit::diff
     env FZF_DEFAULT_OPTS="$opts" fzf
 end
 
+## git diff viewer
+function forgit::diff::staged
+    forgit::inside_work_tree || return 1
+    if not count $argv > /dev/null
+        set files "$argv"
+    end
+
+    set repo "(git rev-parse --show-toplevel)"
+    set target "\(echo {} | sed 's/.*]  //')"
+    set cmd "git diff --staged --color=always -- $repo/$target | $forgit_pager"
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
+        $FORGIT_DIFF_STAGED_FZF_OPTS
+    "
+    set cmd "echo" && type -q realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
+    set git_rev_parse (git rev-parse --show-toplevel)
+    eval "git diff --staged --name-only -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" |
+
+    env FZF_DEFAULT_OPTS="$opts" fzf
+end
+
 # git add selector
 function forgit::add
     forgit::inside_work_tree || return 1
@@ -304,6 +326,12 @@ if test -z "$FORGIT_NO_ALIASES"
         alias $forgit_diff 'forgit::diff'
     else
         alias gd 'forgit::diff'
+    end
+
+    if test -n "$forgit_diff_staged"
+        alias $forgit_diff_staged 'forgit::diff::staged'
+    else
+        alias gds 'forgit::diff::staged'
     end
 
     if test -n "$forgit_ignore"
