@@ -108,6 +108,7 @@ You can change the default aliases by defining these variables below.
 # Define them before sourcing the plugin if you don't use any plugin manager.
 forgit_log=glo
 forgit_diff=gd
+forgit_diff_staged=gds
 forgit_add=ga
 forgit_reset_head=grh
 forgit_ignore=gi
@@ -137,6 +138,7 @@ Customizing fzf options for each command individually is also supported:
 | `glo`    | `FORGIT_LOG_FZF_OPTS`        |
 | `gi`     | `FORGIT_IGNORE_FZF_OPTS`     |
 | `gd`     | `FORGIT_DIFF_FZF_OPTS`       |
+| `gds`    | `FORGIT_DIFF_STAGED_FZF_OPTS`|
 | `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS` |
 | `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS`   |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`      |
