@@ -15,13 +15,13 @@ forgit::log() {
     cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $* | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m --tiebreak=index --preview=\"$cmd\"
+        +s +m --tiebreak=index
         --bind=\"enter:execute($cmd | LESS='-R' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' |${FORGIT_COPY_CMD:-pbcopy})\"
         $FORGIT_LOG_FZF_OPTS
     "
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
-        FZF_DEFAULT_OPTS="$opts" fzf
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
 # git diff viewer
@@ -41,11 +41,11 @@ forgit::diff() {
     cmd="git diff --color=always $commit -- $repo/$target | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        +m -0 --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
     eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
-        FZF_DEFAULT_OPTS="$opts" fzf
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
 # git add selector
@@ -75,13 +75,12 @@ forgit::add() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"$preview\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
-        FZF_DEFAULT_OPTS="$opts" fzf |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
         sh -c "$extract")
     [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status -su && return
     echo 'Nothing to add.'
