@@ -93,10 +93,10 @@ forgit::reset::head() {
     cmd="git diff --cached --color=always -- {} | $forgit_pager "
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0 --preview=\"$cmd\"
+        -m -0
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
-    files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf)"
+    files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
     echo 'Nothing to unstage.'
 }
@@ -108,10 +108,10 @@ forgit::restore() {
     cmd="git diff --color=always -- {} | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0 --preview=\"$cmd\"
+        -m -0
         $FORGIT_CHECKOUT_FZF_OPTS
     "
-    files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf)"
+    files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && git status --short && return
     echo 'Nothing to restore.'
 }
@@ -123,10 +123,10 @@ forgit::stash::show() {
     cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd | LESS='-R' less)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
         $FORGIT_STASH_FZF_OPTS
     "
-    git stash list | FZF_DEFAULT_OPTS="$opts" fzf
+    git stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
 # git clean selector
@@ -157,12 +157,12 @@ forgit::ignore() {
     cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -m --preview=\"$cmd\" --preview-window='right:70%'
+        -m --preview-window='right:70%'
         $FORGIT_IGNORE_FZF_OPTS
     "
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
-        FZF_DEFAULT_OPTS="$opts" fzf  |awk '{print $2}'))
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" |awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
     if hash bat &>/dev/null; then
