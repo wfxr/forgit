@@ -37,13 +37,13 @@ function forgit::log
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m --tiebreak=index --preview=\"$cmd\"
+        +s +m --tiebreak=index
         --bind=\"enter:execute($cmd |env LESS='-R' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' | $copy_cmd)\"
         $FORGIT_LOG_FZF_OPTS
     "
     eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $argv $forgit_emojify" |
-        env FZF_DEFAULT_OPTS="$opts" fzf
+        env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
 ## git diff viewer
@@ -63,14 +63,14 @@ function forgit::diff
     set cmd "git diff --color=always $commit -- $repo/$target | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
+        +m -0 --bind=\"enter:execute($cmd |env LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
     set cmd "echo" && type -q realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
     set git_rev_parse (git rev-parse --show-toplevel)
     eval "git diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" |
 
-    env FZF_DEFAULT_OPTS="$opts" fzf
+    env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
 # git add selector
@@ -101,13 +101,12 @@ function forgit::add
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        --preview=\"$preview\"
         $FORGIT_ADD_FZF_OPTS
     "
     set files (git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)\$/[\1]  \2/' |   # deal with white spaces internal to fname
-        env FZF_DEFAULT_OPTS="$opts" fzf |
+        env FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
         sh -c "$extract_file") # for rename case
 
     if test -n "$files"
@@ -125,10 +124,10 @@ function forgit::reset::head
     set cmd "git diff --cached --color=always -- {} | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0 --preview=\"$cmd\"
+        -m -0
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
-    set files (git diff --cached --name-only --relative | env FZF_DEFAULT_OPTS="$opts" fzf)
+    set files (git diff --cached --name-only --relative | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
             echo $file | tr '\n' '\0' |xargs -I{} -0 git reset -q HEAD {} && git status --short && return
@@ -144,11 +143,11 @@ function forgit::restore
     set cmd "git diff --color=always -- {} | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0 --preview=\"$cmd\"
+        -m -0
         $FORGIT_CHECKOUT_FZF_OPTS
     "
     set git_rev_parse (git rev-parse --show-toplevel)
-    set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf)
+    set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
             echo $file | tr '\n' '\0' |xargs -I{} -0 git checkout {} && git status --short && return
@@ -163,10 +162,10 @@ function forgit::stash::show
     set cmd "git stash show \(echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --preview=\"$cmd\" --bind=\"enter:execute($cmd |env LESS='-R' less)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd |env LESS='-R' less)\"
         $FORGIT_STASH_FZF_OPTS
     "
-    git stash list | env FZF_DEFAULT_OPTS="$opts" fzf
+    git stash list | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
 # git clean selector
@@ -212,7 +211,7 @@ function forgit::ignore
     set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        -m --preview=\"$cmd\" --preview-window='right:70%'
+        -m --preview-window='right:70%'
         $FORGIT_IGNORE_FZF_OPTS
     "
     set IFS '\n'
@@ -220,7 +219,7 @@ function forgit::ignore
     set args $argv
     if not count $argv > /dev/null
         set args (forgit::ignore::list | nl -nrn -w4 -s'  ' |
-        env FZF_DEFAULT_OPTS="$opts" fzf  |awk '{print $2}')
+        env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"  |awk '{print $2}')
     end
 
      if not count $args > /dev/null
