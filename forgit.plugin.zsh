@@ -11,7 +11,7 @@ forgit_pager=$(git config core.pager || echo 'cat')
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
-    local cmd opts
+    local cmd opts graph
     cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $* | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -20,7 +20,9 @@ forgit::log() {
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' |${FORGIT_COPY_CMD:-pbcopy})\"
         $FORGIT_LOG_FZF_OPTS
     "
-    eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
+    graph=--graph
+    [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
+    eval "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
