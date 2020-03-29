@@ -57,6 +57,8 @@ Interactive `git log` viewer
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-glo.png)
 
+*The log graph can be disabled by option `FORGIT_LOG_GRAPH_ENABLE` (see discuss in [issue #71](https://github.com/wfxr/forgit/issues/71)).*
+
 ### gi
 
 Interactive `.gitignore` generator
