@@ -42,7 +42,14 @@ function forgit::log
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' | $copy_cmd)\"
         $FORGIT_LOG_FZF_OPTS
     "
-    eval "git log --graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $argv $forgit_emojify" |
+
+    if set -q FORGIT_LOG_GRAPH_ENABLE
+        set graph "--graph"
+    else
+        set graph ""
+    end
+
+    eval "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $argv $forgit_emojify" |
         env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
