@@ -166,7 +166,7 @@ end
 # git stash viewer
 function forgit::stash::show
     forgit::inside_work_tree || return 1
-    set cmd "git stash show \(echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
+    set cmd "git stash show (echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd |env LESS='-R' less)\"
