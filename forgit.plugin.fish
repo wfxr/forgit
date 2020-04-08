@@ -67,7 +67,7 @@ function forgit::diff
 
     set repo "(git rev-parse --show-toplevel)"
     set target "\(echo {} | sed 's/.*]  //')"
-    set cmd "git diff --color=always $commit -- $repo/$target | $forgit_pager"
+    set cmd "echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' |$forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($cmd |env LESS='-R' less)\"
