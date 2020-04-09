@@ -121,7 +121,7 @@ forgit::restore() {
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
     local cmd opts
-    cmd="git stash show \$(echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
+    cmd="echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
