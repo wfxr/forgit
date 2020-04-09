@@ -56,7 +56,7 @@ end
 ## git diff viewer
 function forgit::diff
     forgit::inside_work_tree || return 1
-    if not count $argv > /dev/null
+    if count $argv > /dev/null
         if git rev-parse "$1" > /dev/null 2>&1
             #set commit "$1" && set files ("${@:2}")
             set commit "$1" && set files "$2"
@@ -65,19 +65,16 @@ function forgit::diff
         end
     end
 
-    set repo "(git rev-parse --show-toplevel)"
-    set target "\(echo {} | sed 's/.*]  //')"
-    set cmd "echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' |$forgit_pager"
+    set repo (git rev-parse --show-toplevel)
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($cmd |env LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    set cmd "echo" && type -q realpath > /dev/null 2>&1 && set cmd "realpath --relative-to=."
-    set git_rev_parse (git rev-parse --show-toplevel)
-    eval "git diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" |
 
-    env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+    set cmd "echo {} |sed 's/.*]  //' | xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_pager"
+
+    eval "git diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
 # git add selector
@@ -166,7 +163,7 @@ end
 # git stash viewer
 function forgit::stash::show
     forgit::inside_work_tree || return 1
-    set cmd "git stash show (echo {}| cut -d: -f1) --color=always --ext-diff | $forgit_pager"
+    set cmd "echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd |env LESS='-R' less)\"
