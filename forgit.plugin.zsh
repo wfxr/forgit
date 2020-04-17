@@ -12,7 +12,7 @@ forgit_pager=$(git config core.pager || echo 'cat')
 forgit::log() {
     forgit::inside_work_tree || return 1
     local cmd opts graph files
-    files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*")
+    files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
