@@ -27,7 +27,9 @@ type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
 # git commit viewer
 function forgit::log
     forgit::inside_work_tree || return 1
-    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % $argv | $forgit_pager"
+
+    set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
+    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_pager"
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD

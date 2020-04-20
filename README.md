@@ -18,7 +18,7 @@ Run the following command in your shell to try `forgit` without installing:
 ``` bash
 source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
 ```
-##### Fish
+##### Fish 3.0 (NOTE: 3.1 is not currently supported)
 ``` fish
 source (curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.fish | psub)
 ```
