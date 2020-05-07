@@ -282,6 +282,7 @@ $FZF_DEFAULT_OPTS
 --bind='?:toggle-preview'
 --bind='alt-w:toggle-preview-wrap'
 --preview-window='right:60%'
++1
 $FORGIT_FZF_DEFAULT_OPTS
 "
 
