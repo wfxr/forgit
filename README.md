@@ -1,94 +1,80 @@
-# forgit
+<h1 align="center">💤 forgit</h1>
+<p align="center">
+    <em>Utility tool for using git interactively. Powered by <a href="https://github.com/junegunn/fzf">junegunn/fzf</a>.</em>
+</p>
 
-![Shell](https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue)
-[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://wfxr.mit-license.org/2017)
+<p align="center">
+  <a href="https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue"
+    ><img
+      src="https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue"
+  /></a>
+  <a href="https://wfxr.mit-license.org/2017"
+    ><img
+      src="https://img.shields.io/badge/License-MIT-brightgreen.svg"
+  /></a>
+</p>
 
-`forgit` is a utility tool powered by fzf for using git interactively.
+This tool is designed to help you use git more efficiently.
+It's **lightweight** and **easy to use**.
 
-## Installation
+### 📥 Installation
 
 *Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.*
 
-### Try Online
+``` zsh
+# for zplug
+zplug 'wfxr/forgit'
 
-Run the following command in your shell to try `forgit` without installing:
+# for zgen
+zgen load 'wfxr/forgit'
 
-##### Bash and ZSH 
+# for antigen
+antigen bundle 'wfxr/forgit'
+
+# manually
+# Clone the repository and source it in your shell's rc file.
+```
+
+You can run the following command to try `forgit` without installing:
 
 ``` bash
-source <(curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
-```
-##### Fish 3.0 (NOTE: 3.1 is not currently supported)
-``` fish
-source (curl -Ss https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.fish | psub)
-```
-
-### Installation using a ZSH Plugin manager
-### [Zplug](https://github.com/zplug/zplug)
-``` zsh
-zplug 'wfxr/forgit'
+# for bash / zsh
+source <(curl -s https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
+# for fish
+source (curl -s https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.fish | psub)
 ```
 
-### [Zgen](https://github.com/tarjoilija/zgen)
-``` zsh
-zgen load 'wfxr/forgit'
-```
+*NOTE: `fish` 3.1 is not currently supported. (see [issue #87](https://github.com/wfxr/forgit/issues/87))*
 
-### [Antigen](https://github.com/zsh-users/antigen)
-``` zsh
-antigen bundle 'wfxr/forgit'
-```
+### 📝 Features
 
-### Manual Installation
-
-Download and source `forgit.plugin.zsh`, `forgit.plugin.sh`, or `forgit.plugin.fish` in your shell config.
-
-## Commands
-
-### ga
-
-Interactive `git add` selector
+- **Interactive `git add` selector** (`ga`)
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-ga.png)
 
-### glo
-
-Interactive `git log` viewer
+- **Interactive `git log` viewer** (`glo`)
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-glo.png)
 
 *The log graph can be disabled by option `FORGIT_LOG_GRAPH_ENABLE` (see discuss in [issue #71](https://github.com/wfxr/forgit/issues/71)).*
 
-### gi
-
-Interactive `.gitignore` generator
+- **Interactive `.gitignore` generator** (`gi`)
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-gi.png)
 
-### gd
+- **Interactive `git diff` viewer** (`gd`)
 
-Interactive `git diff` viewer
+- **Interactive `git reset HEAD <file>` selector** (`grh`)
 
-### grh
+- **Interactive `git checkout <file>` selector** (`gcf`)
 
-Interactive `git reset HEAD <file>` selector
+- **Interactive `git stash` viewer** (`gss`)
 
-### gcf
+- **Interactive `git clean` selector** (`gclean`)
 
-Interactive `git checkout <file>` selector
+### ⌨  Keybinds
 
-### gss
-
-Interactive `git stash` viewer
-
-### gclean
-
-Interactive `git clean` selector
-
-
-## Default keybinds
-
-| Keybind                                       | Action                  |
+| Key                                           | Action                  |
 | :-------------------------------------------: | ----------------------- |
 | <kbd>Enter</kbd>                              | Confirm                 |
 | <kbd>Tab</kbd>                                | Toggle mark             |
@@ -101,13 +87,12 @@ Interactive `git clean` selector
 | <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up         |
 | <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down       |
 
-## Custom options
+### ⚙  Options
 
 You can change the default aliases by defining these variables below.
 (To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
 
 ``` bash
-# Define them before sourcing the plugin if you don't use any plugin manager.
 forgit_log=glo
 forgit_diff=gd
 forgit_add=ga
@@ -144,21 +129,21 @@ Customizing fzf options for each command individually is also supported:
 | `gss`    | `FORGIT_STASH_FZF_OPTS`      |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`      |
 
-The complete loading order of fzf options is:
+Complete loading order of fzf options is:
 
-1. `FZF_DEFAULT_OPTS`(fzf global)
-2. `FORGIT_FZF_DEFAULT_OPTS`(forgit global)
-3. `FORGIT_CMD_FZF_OPTS`(command specific)
+1. `FZF_DEFAULT_OPTS` (fzf global)
+2. `FORGIT_FZF_DEFAULT_OPTS` (forgit global)
+3. `FORGIT_CMD_FZF_OPTS` (command specific)
 
 **Example**
 ```
-// adds a keybind to drop the selected stash but do not quit fzf
+# adds a keybind to drop the selected stash but do not quit fzf
 FORGIT_STASH_FZF_OPTS='
 --bind="ctrl-d:reload(git stash drop $(cut -d: -f1 <<<{}) 1>/dev/null && git stash list)"
 '
 ```
 
-## Optional
+### 📦 Optional dependencies
 
 - [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) or [`delta`](https://github.com/dandavison/delta): Improve the `git diff` output.
 
@@ -166,13 +151,13 @@ FORGIT_STASH_FZF_OPTS='
 
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
-## Tips
+### 💡 Tips
 
 - Hit `q` to quit from full screen preview any time.
 - Commands like `glo`, `gd`, `gcf` and `gclean` accept arguments to restrain the items listed in fzf(eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gclean output/` etc.).
 - `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
 
-## License
+### 📃 License
 
 [MIT](https://wfxr.mit-license.org/2017) (c) Wenxuan Zhang
