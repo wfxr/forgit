@@ -128,7 +128,12 @@ forgit::stash::show() {
         +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
         $FORGIT_STASH_FZF_OPTS
     "
-    git stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+    if [ "$#" -eq 0 ]; then
+      git stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+    else
+      # Prepend git stash list output with stash@{0}:..stash@{N-1}: to make the `cut` above works.
+      git stash list $* | awk '{print "stash@{" NR-1 "}:" $0}' | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+    fi
 }
 
 # git clean selector
