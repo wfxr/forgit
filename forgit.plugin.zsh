@@ -91,6 +91,9 @@ forgit::add() {
 # git reset HEAD (unstage) selector
 forgit::reset::head() {
     forgit::inside_work_tree || return 1
+    # Reset HEAD of specific files, if passed as arguments
+    [[ $# -ne 0 ]] && git reset -q HEAD "$@" && git status --short && return
+
     local cmd files opts
     cmd="git diff --cached --color=always -- {} | $forgit_pager "
     opts="

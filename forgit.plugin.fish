@@ -127,6 +127,9 @@ end
 ## git reset HEAD (unstage) selector
 function forgit::reset::head
     forgit::inside_work_tree || return 1
+    # Reset HEAD of specific files, if passed as arguments
+    count $argv >/dev/null && git reset -q HEAD "$argv" && git status --short && return
+
     set cmd "git diff --cached --color=always -- {} | $forgit_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
