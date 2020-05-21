@@ -43,7 +43,7 @@ forgit::diff() {
     cmd="echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' |$forgit_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        +m -0 --bind=\"enter:execute($cmd |LESS='-R' less),page-up:preview-up,page-down:preview-down\"
         $FORGIT_DIFF_FZF_OPTS
     "
     eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
