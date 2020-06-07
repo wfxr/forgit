@@ -48,8 +48,6 @@ source <(curl -s https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plu
 source (curl -s https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.fish | psub)
 ```
 
-*NOTE: `fish` 3.1 is not currently supported. (see [issue #87](https://github.com/wfxr/forgit/issues/87))*
-
 ### 📝 Features
 
 - **Interactive `git add` selector** (`ga`)
