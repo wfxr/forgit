@@ -54,7 +54,7 @@ forgit::diff() {
 forgit::add() {
     forgit::inside_work_tree || return 1
     # Add files if passed as arguments
-    [[ $# -ne 0 ]] && git add "$@" && return
+    [[ $# -ne 0 ]] && git add "$@" && git status -su && return
 
     local changed unmerged untracked files opts preview extract
     changed=$(git config --get-color color.status.changed red)
@@ -142,7 +142,7 @@ forgit::clean() {
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
     files=$(git clean -xdfn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && git status --short && return
     echo 'Nothing to clean.'
 }
 
