@@ -83,7 +83,7 @@ end
 function forgit::add
     forgit::inside_work_tree || return 1
     # Add files if passed as arguments
-    count $argv >/dev/null && git add "$argv" && return
+    count $argv >/dev/null && git add "$argv" && git status --short && return
 
     set changed (git config --get-color color.status.changed red)
     set unmerged (git config --get-color color.status.unmerged red)
@@ -119,6 +119,7 @@ function forgit::add
         for file in $files
             echo $file | tr '\n' '\0' | xargs -I{} -0 git add {}
         end
+        git status --short
         return
     end
     echo 'Nothing to add.'
@@ -136,14 +137,16 @@ function forgit::reset::head
     set files (git diff --cached --name-only --relative | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0' |xargs -I{} -0 git reset -q HEAD {} && git status --short && return
+            echo $file | tr '\n' '\0' |xargs -I{} -0 git reset -q HEAD {}
         end
+        git status --short
+        return
     end
     echo 'Nothing to unstage.'
 end
 
 # git checkout-restore selector
-function forgit::restore
+function forgit::checkout_file
     forgit::inside_work_tree || return 1
 
     set cmd "git diff --color=always -- {} | $forgit_pager"
@@ -156,8 +159,10 @@ function forgit::restore
     set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0' |xargs -I{} -0 git checkout {} && git status --short && return
+            echo $file | tr '\n' '\0' | xargs -I{} -0 git checkout -q {} 
         end
+        git status --short
+        return
     end
     echo 'Nothing to restore.'
 end
@@ -188,8 +193,10 @@ function forgit::clean
 
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0'|xargs -0 -I{} git clean -xdf {} && return
+            echo $file | tr '\n' '\0'| xargs -0 -I{} git clean -xdf {} 
         end
+        git status --short
+        return
     end
     echo 'Nothing to clean.'
 end
@@ -319,9 +326,9 @@ if test -z "$FORGIT_NO_ALIASES"
     end
 
     if test -n "$forgit_restore"
-        alias $forgit_restore 'forgit::restore'
+        alias $forgit_restore 'forgit::checkout_file'
     else
-        alias gcf 'forgit::restore'
+        alias gcf 'forgit::checkout_file'
     end
 
     if test -n "$forgit_clean"
