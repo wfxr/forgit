@@ -43,9 +43,9 @@ You can run the following command to try `forgit` without installing:
 
 ``` bash
 # for bash / zsh
-source <(curl -s https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.zsh)
+source <(curl -sSL git.io/forgit)
 # for fish
-source (curl -s https://raw.githubusercontent.com/wfxr/forgit/master/forgit.plugin.fish | psub)
+source (curl -sSL git.io/forgit.fish | psub)
 ```
 
 ### 📝 Features
