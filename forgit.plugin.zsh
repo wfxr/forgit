@@ -7,6 +7,7 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 hash emojify &>/dev/null && forgit_emojify='|emojify'
 
 forgit_pager=$(git config core.pager || echo 'cat')
+forgit_editor=$(echo $EDITOR || echo 'vim')
 
 # git commit viewer
 forgit::log() {
@@ -14,11 +15,16 @@ forgit::log() {
     local cmd opts graph files
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_pager"
+    cmd_vim="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% sh -c 'git show % -- $files'"
+
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --bind=\"enter:execute($cmd | LESS='-R' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' |${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-e:execute($cmd_vim | $forgit_editor -)\"
+        --header=\"enter to View, ctrl-y to Copy hash, ctrl-e to Edit\"
+
         $FORGIT_LOG_FZF_OPTS
     "
     graph=--graph
@@ -41,9 +47,14 @@ forgit::diff() {
 
     repo="$(git rev-parse --show-toplevel)"
     cmd="echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' |$forgit_pager"
+    cmd_vim="echo {} |sed 's/.*]  //' |xargs -I% sh -c 'git diff $commit -- \'$repo/%\''"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        +m -0 
+        --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        --bind=\"ctrl-y:execute-silent(echo {} |sed 's/.*]  //' |xargs -I% |${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-e:execute($cmd_vim | $forgit_editor -)\"
+        --header=\"enter to View, ctrl-y to Copy path, ctrl-e to Edit\"
         $FORGIT_DIFF_FZF_OPTS
     "
     eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
@@ -123,9 +134,14 @@ forgit::stash::show() {
     forgit::inside_work_tree || return 1
     local cmd opts
     cmd="echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_pager"
+    cmd_vim="echo {} |cut -d: -f1 |xargs -I% sh -c 'git stash show --ext-diff %'"
+
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
+        +s +m -0 
+        --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
+        --bind=\"ctrl-e:execute($cmd_vim | $forgit_editor -)\"
+        --header=\"enter to View, ctrl-e to Edit\"
         $FORGIT_STASH_FZF_OPTS
     "
     git stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
