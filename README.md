@@ -143,12 +143,16 @@ Complete loading order of fzf options is:
 3. `FORGIT_CMD_FZF_OPTS` (command specific)
 
 **Example**
+
+- `ctrl-d` to drop the selected stash but do not quit fzf (`gss` specific).
 ```
-# ctrl-d to drop the selected stash but do not quit fzf
 FORGIT_STASH_FZF_OPTS='
 --bind="ctrl-d:reload(git stash drop $(cut -d: -f1 <<<{}) 1>/dev/null && git stash list)"
 '
-# ctrl-e to view the logs in a vim buffer
+```
+
+- `ctrl-e` to view the logs in a vim buffer (`glo` specific).
+```
 FORGIT_LOG_FZF_OPTS='
 --bind="ctrl-e:execute(echo {} |grep -Eo [a-f0-9]+ |head -1 |xargs git show |vim -)"
 '
