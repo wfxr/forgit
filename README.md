@@ -76,19 +76,23 @@ source (curl -sSL git.io/forgit.fish | psub)
 
 ### ⌨  Keybinds
 
-| Key                                           | Action                   |
-| :-------------------------------------------: | -------------------------|
-| <kbd>Enter</kbd>                              | Confirm                  |
-| <kbd>Tab</kbd>                                | Toggle mark and move up  |
-| <kbd>Shift</kbd> - <kbd>Tab</kbd>             | Toggle mark and move down|
-| <kbd>?</kbd>                                  | Toggle preview window    |
-| <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap      |
-| <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort              |
-| <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection         |
-| <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection move up        |
-| <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection move down      |
-| <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up          |
-| <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down        |
+| Key                                           | Action                    |
+| :-------------------------------------------: | ------------------------- |
+| <kbd>Enter</kbd>                              | Confirm                   |
+| <kbd>Tab</kbd>                                | Toggle mark and move up   |
+| <kbd>Shift</kbd> - <kbd>Tab</kbd>             | Toggle mark and move down |
+| <kbd>?</kbd>                                  | Toggle preview window     |
+| <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap       |
+| <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort               |
+| <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection          |
+| <kbd>Ctrl</kbd> - <kbd>Y</kbd>                | Copy commit hash*         |
+| <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection move up         |
+| <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection move down       |
+| <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up           |
+| <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down         |
+
+\* Available when the selection contains a commit hash.
+For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
 ### ⚙  Options
 
@@ -140,9 +144,13 @@ Complete loading order of fzf options is:
 
 **Example**
 ```
-# adds a keybind to drop the selected stash but do not quit fzf
+# ctrl-d to drop the selected stash but do not quit fzf
 FORGIT_STASH_FZF_OPTS='
 --bind="ctrl-d:reload(git stash drop $(cut -d: -f1 <<<{}) 1>/dev/null && git stash list)"
+'
+# ctrl-e to view the logs in a vim buffer
+FORGIT_LOG_FZF_OPTS='
+--bind="ctrl-e:execute(echo {} |grep -Eo [a-f0-9]+ |head -1 |xargs git show |vim -)"
 '
 ```
 
