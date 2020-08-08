@@ -7,13 +7,14 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 hash emojify &>/dev/null && forgit_emojify='|emojify'
 
 forgit_pager=$(git config core.pager || echo 'cat')
+forgit_show_pager=$(git config pager.show || echo "$forgit_pager")
+forgit_diff_pager=$(git config pager.diff || echo "$forgit_pager")
 
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
     local cmd opts graph files
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
-    forgit_show_pager=$(git config pager.show || echo "$forgit_pager")
     cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -39,7 +40,6 @@ forgit::diff() {
             files=("$@")
         fi
     }
-    forgit_diff_pager=$(git config pager.diff || echo "$forgit_pager")
     repo="$(git rev-parse --show-toplevel)"
     cmd="echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
     opts="
@@ -61,7 +61,6 @@ forgit::add() {
     changed=$(git config --get-color color.status.changed red)
     unmerged=$(git config --get-color color.status.unmerged red)
     untracked=$(git config --get-color color.status.untracked red)
-    forgit_diff_pager=$(git config pager.diff || echo "$forgit_pager")
     # NOTE: paths listed by 'git status -su' mixed with quoted and unquoted style
     # remove indicators | remove original path for rename case | remove surrounding quotes
     extract="
@@ -93,7 +92,6 @@ forgit::add() {
 forgit::reset::head() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    forgit_diff_pager=$(git config pager.diff || echo "$forgit_pager")
     cmd="git diff --cached --color=always -- {} | $forgit_diff_pager "
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -109,7 +107,6 @@ forgit::reset::head() {
 forgit::restore() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    forgit_diff_pager=$(git config pager.diff || echo "$forgit_pager")
     cmd="git diff --color=always -- {} | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -125,7 +122,6 @@ forgit::restore() {
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
     local cmd opts
-    forgit_diff_pager=$(git config pager.diff || echo "$forgit_pager")
     cmd="echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
