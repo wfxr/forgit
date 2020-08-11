@@ -27,15 +27,14 @@ jobs:
       shell: bash
       run: |
         if [[ "${{ matrix.os }}" == macos* ]]; then
-          brew install fish zsh
+          brew install fish zsh || true
         elif [[ "${{ matrix.os }}" == ubuntu* ]]; then
           sudo apt -y update
           sudo apt -y install fish zsh
         fi
-
-    # Runs a set of commands using the runners shell
-    - name: Test sourcing
-      run: |
-        bash forgit.plugin.sh
-        zsh  forgit.plugin.zsh
-        fish forgit.plugin.fish
+    - name: Test bash
+      run: bash forgit.plugin.sh
+    - name: Test zsh
+      run: zsh forgit.plugin.zsh
+    - name: Test fish
+      run: fish forgit.plugin.fish
