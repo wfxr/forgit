@@ -13,7 +13,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest]
 
@@ -27,11 +27,16 @@ jobs:
       shell: bash
       run: |
         if [[ "${{ matrix.os }}" == macos* ]]; then
-          brew install fish zsh || true
+          brew install zsh fish
         elif [[ "${{ matrix.os }}" == ubuntu* ]]; then
           sudo apt -y update
-          sudo apt -y install fish zsh
+          sudo apt -y install zsh fish
         fi
+    - name: Show version info
+      run: |
+        bash --version
+        zsh --version
+        fish --version
     - name: Test bash
       run: bash forgit.plugin.sh
     - name: Test zsh
