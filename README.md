@@ -5,7 +5,7 @@
 
 <p align="center">
     <a href="https://github.com/wfxr/forgit/actions">
-        <img src="https://github.com/wfxr/forgit/workflows/CI/badge.svg"/>
+        <img src="https://github.com/wfxr/forgit/workflows/ci/badge.svg"/>
     </a>
     <a href="https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue">
         <img src="https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue"/>

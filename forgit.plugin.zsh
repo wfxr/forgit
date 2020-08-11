@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # MIT (c) Wenxuan Zhang
 forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 forgit::info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
