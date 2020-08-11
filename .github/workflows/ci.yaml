@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: ci
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -27,20 +27,27 @@ jobs:
       shell: bash
       run: |
         if [[ "${{ matrix.os }}" == macos* ]]; then
-          brew install zsh fish
+          brew install zsh fish shellcheck
         elif [[ "${{ matrix.os }}" == ubuntu* ]]; then
           sudo apt-add-repository -y ppa:fish-shell/release-3
           sudo apt -y update
-          sudo apt -y install zsh fish
+          sudo apt -y install zsh fish shellcheck
         fi
-    - name: Show version info
+
+    - name: Show version
       run: |
-        bash --version
-        zsh --version
-        fish --version
+        bash --version; echo
+        zsh  --version; echo
+        fish --version; echo
+
+    - name: Shellcheck
+      run: shellcheck forgit.plugin.sh
+
     - name: Test bash
       run: bash forgit.plugin.sh
+
     - name: Test zsh
       run: zsh forgit.plugin.zsh
+
     - name: Test fish
       run: fish forgit.plugin.fish
