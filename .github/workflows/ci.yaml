@@ -26,9 +26,9 @@ jobs:
     - name: Install prerequisites
       shell: bash
       run: |
-        if [[ "${{ matrix.os }}" =~ "macos.*" ]]; then
+        if [[ "${{ matrix.os }}" == macos* ]]; then
           brew install fish zsh
-        elif [[ "${{ matrix.os }}" =~ "ubuntu.*" ]]; then
+        elif [[ "${{ matrix.os }}" == ubuntu* ]]; then
           sudo apt -y update
           sudo apt -y install fish zsh
         fi
