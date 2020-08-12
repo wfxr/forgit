@@ -13,13 +13,10 @@ function forgit::inside_work_tree
     git rev-parse --is-inside-work-tree >/dev/null;
 end
 
-set core_pager (git config core.pager)
+set forgit_pager (git config core.pager || echo 'cat')
+set forgit_show_pager (git config pager.show || echo "$forgit_pager")
+set forgit_diff_pager (git config pager.diff || echo "$forgit_pager")
 
-if test -n "$core_pager"
-    set forgit_pager "$core_pager"
-else
-    set forgit_pager "cat"
-end
 
 # https://github.com/wfxr/emoji-cli
 type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
@@ -29,7 +26,7 @@ function forgit::log
     forgit::inside_work_tree || return 1
 
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
-    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_pager"
+    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
@@ -74,7 +71,7 @@ function forgit::diff
         $FORGIT_DIFF_FZF_OPTS
     "
 
-    set cmd "echo {} |sed 's/.*]  //' | xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_pager"
+    set cmd "echo {} |sed 's/.*]  //' | xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
 
     eval "git diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
@@ -99,9 +96,9 @@ function forgit::add
         set file (echo {} | $extract_file)
         # exit
         if test (git status -s -- \$file | grep '^??') # diff with /dev/null for untracked files
-            git diff --color=always --no-index -- /dev/null \$file | $forgit_pager | sed '2 s/added:/untracked:/'
+            git diff --color=always --no-index -- /dev/null \$file | $forgit_diff_pager | sed '2 s/added:/untracked:/'
         else
-            git diff --color=always -- \$file | $forgit_pager
+            git diff --color=always -- \$file | $forgit_diff_pager
         end
         "
     set opts "
@@ -128,7 +125,7 @@ end
 ## git reset HEAD (unstage) selector
 function forgit::reset::head
     forgit::inside_work_tree || return 1
-    set cmd "git diff --cached --color=always -- {} | $forgit_pager"
+    set cmd "git diff --cached --color=always -- {} | $forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
@@ -149,7 +146,7 @@ end
 function forgit::checkout_file
     forgit::inside_work_tree || return 1
 
-    set cmd "git diff --color=always -- {} | $forgit_pager"
+    set cmd "git diff --color=always -- {} | $forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
@@ -170,7 +167,7 @@ end
 # git stash viewer
 function forgit::stash::show
     forgit::inside_work_tree || return 1
-    set cmd "echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_pager"
+    set cmd "echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd |env LESS='-R' less)\"
