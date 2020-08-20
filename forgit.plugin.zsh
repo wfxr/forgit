@@ -11,15 +11,12 @@ forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
 forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
 
-# used whenever piping to disable any pager like 'less'
-forgit_git_no_pager='git --no-pager'
-
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
     local cmd opts graph files
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
-    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% $forgit_git_no_pager show --color=always % -- $files | $forgit_show_pager"
+    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git --no-pager show --color=always % -- $files | $forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
@@ -29,7 +26,7 @@ forgit::log() {
     "
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    eval "$forgit_git_no_pager log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
+    eval "git --no-pager log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $* $forgit_emojify" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
@@ -38,20 +35,20 @@ forgit::diff() {
     forgit::inside_work_tree || return 1
     local cmd files opts commit repo
     [[ $# -ne 0 ]] && {
-        if $forgit_git_no_pager rev-parse "$1" -- &>/dev/null ; then
+        if git --no-pager rev-parse "$1" -- &>/dev/null ; then
             commit="$1" && files=("${@:2}")
         else
             files=("$@")
         fi
     }
-    repo="$($forgit_git_no_pager rev-parse --show-toplevel)"
-    cmd="echo {} |sed 's/.*]  //' |xargs -I% $forgit_git_no_pager diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
+    repo="$(git --no-pager rev-parse --show-toplevel)"
+    cmd="echo {} |sed 's/.*]  //' |xargs -I% git --no-pager diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($cmd |LESS='-R' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "$forgit_git_no_pager diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
+    eval "git --no-pager diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
@@ -73,17 +70,17 @@ forgit::add() {
         sed -e 's/^\\\"//' -e 's/\\\"\$//'"
     preview="
         file=\$(echo {} | $extract)
-        if ($forgit_git_no_pager status -s -- \$file | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
-            $forgit_git_no_pager diff --color=always --no-index -- /dev/null \$file | $forgit_diff_pager | sed '2 s/added:/untracked:/'
+        if (git --no-pager status -s -- \$file | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
+            git --no-pager diff --color=always --no-index -- /dev/null \$file | $forgit_diff_pager | sed '2 s/added:/untracked:/'
         else
-            $forgit_git_no_pager diff --color=always -- \$file | $forgit_diff_pager
+            git --no-pager diff --color=always -- \$file | $forgit_diff_pager
         fi"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
         $FORGIT_ADD_FZF_OPTS
     "
-    files=$($forgit_git_no_pager -c color.status=always -c status.relativePaths=true status -su |
+    files=$(git --no-pager -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
@@ -96,13 +93,13 @@ forgit::add() {
 forgit::reset::head() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    cmd="$forgit_git_no_pager diff --cached --color=always -- {} | $forgit_diff_pager "
+    cmd="git --no-pager diff --cached --color=always -- {} | $forgit_diff_pager "
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
-    files="$($forgit_git_no_pager diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
+    files="$(git --no-pager diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
     echo 'Nothing to unstage.'
 }
@@ -111,13 +108,13 @@ forgit::reset::head() {
 forgit::restore() {
     forgit::inside_work_tree || return 1
     local cmd files opts
-    cmd="$forgit_git_no_pager diff --color=always -- {} | $forgit_diff_pager"
+    cmd="git --no-pager diff --color=always -- {} | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
         $FORGIT_CHECKOUT_FZF_OPTS
     "
-    files="$($forgit_git_no_pager ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
+    files="$(git --no-pager ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && git status --short && return
     echo 'Nothing to restore.'
 }
@@ -126,13 +123,13 @@ forgit::restore() {
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
     local cmd opts
-    cmd="echo {} |cut -d: -f1 |xargs -I% $forgit_git_no_pager stash show --color=always --ext-diff % |$forgit_diff_pager"
+    cmd="echo {} |cut -d: -f1 |xargs -I% git --no-pager stash show --color=always --ext-diff % |$forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
         $FORGIT_STASH_FZF_OPTS
     "
-    $forgit_git_no_pager stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+    git --no-pager stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
 # git clean selector
@@ -145,7 +142,7 @@ forgit::clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$($forgit_git_no_pager clean -xdfn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    files=$(git --no-pager clean -xdfn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && git status --short && return
     echo 'Nothing to clean.'
 }
