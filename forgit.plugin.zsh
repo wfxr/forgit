@@ -59,7 +59,7 @@ forgit::diff() {
 forgit::add() {
     forgit::inside_work_tree || return 1
     # Add files if passed as arguments
-    [[ $# -ne 0 ]] && git add "$@" && $git status -su && return
+    [[ $# -ne 0 ]] && git add "$@" && git status -su && return
 
     local changed unmerged untracked files opts preview extract
     changed=$(git config --get-color color.status.changed red)
@@ -88,7 +88,7 @@ forgit::add() {
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
         sh -c "$extract")
-    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && $git status -su && return
+    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status -su && return
     echo 'Nothing to add.'
 }
 
@@ -103,7 +103,7 @@ forgit::reset::head() {
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
     files="$($forgit_git_no_pager diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && $git status --short && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
     echo 'Nothing to unstage.'
 }
 
@@ -117,8 +117,8 @@ forgit::restore() {
         -m -0
         $FORGIT_CHECKOUT_FZF_OPTS
     "
-    files="$($forgit_git_no_pager ls-files --modified "$($git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && $git status --short && return
+    files="$($forgit_git_no_pager ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && git status --short && return
     echo 'Nothing to restore.'
 }
 
@@ -146,7 +146,7 @@ forgit::clean() {
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
     files=$($forgit_git_no_pager clean -xdfn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && $git status --short && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && git status --short && return
     echo 'Nothing to clean.'
 }
 
