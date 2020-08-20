@@ -21,6 +21,9 @@ test -z "$forgit_pager"; and set forgit_pager (git config core.pager || echo 'ca
 test -z "$forgit_show_pager"; and set forgit_show_pager (git config pager.show || echo "$forgit_pager")
 test -z "$forgit_diff_pager"; and set forgit_diff_pager (git config pager.diff || echo "$forgit_pager")
 
+# used whenever piping to disable any pager like 'less'
+set gitP git --no-pager
+
 # https://github.com/wfxr/emoji-cli
 type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
 
@@ -29,7 +32,7 @@ function forgit::log
     forgit::inside_work_tree || return 1
 
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
-    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% $gitP show --color=always % -- $files | $forgit_show_pager"
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
@@ -51,7 +54,7 @@ function forgit::log
         set graph ""
     end
 
-    eval "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $argv $forgit_emojify" |
+    eval "$gitP log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $argv $forgit_emojify" |
         env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
@@ -74,9 +77,9 @@ function forgit::diff
         $FORGIT_DIFF_FZF_OPTS
     "
 
-    set cmd "echo {} |sed 's/.*]  //' | xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
+    set cmd "echo {} |sed 's/.*]  //' | xargs -I% $gitP diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
 
-    eval "git diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+    eval "$gitP diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
 # git add selector
@@ -98,10 +101,10 @@ function forgit::add
     set preview "
         set file (echo {} | $extract_file)
         # exit
-        if test (git status -s -- \$file | grep '^??') # diff with /dev/null for untracked files
-            git diff --color=always --no-index -- /dev/null \$file | $forgit_diff_pager | sed '2 s/added:/untracked:/'
+        if test ($gitP status -s -- \$file | grep '^??') # diff with /dev/null for untracked files
+            $gitP diff --color=always --no-index -- /dev/null \$file | $forgit_diff_pager | sed '2 s/added:/untracked:/'
         else
-            git diff --color=always -- \$file | $forgit_diff_pager
+            $gitP diff --color=always -- \$file | $forgit_diff_pager
         end
         "
     set opts "
@@ -109,7 +112,7 @@ function forgit::add
         -0 -m --nth 2..,..
         $FORGIT_ADD_FZF_OPTS
     "
-    set files (git -c color.status=always -c status.relativePaths=true status -su |
+    set files ($gitP -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)\$/[\1]  \2/' |   # deal with white spaces internal to fname
         env FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
@@ -128,13 +131,13 @@ end
 ## git reset HEAD (unstage) selector
 function forgit::reset::head
     forgit::inside_work_tree || return 1
-    set cmd "git diff --cached --color=always -- {} | $forgit_diff_pager"
+    set cmd "$gitP diff --cached --color=always -- {} | $forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
-    set files (git diff --cached --name-only --relative | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
+    set files ($gitP diff --cached --name-only --relative | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
             echo $file | tr '\n' '\0' |xargs -I{} -0 git reset -q HEAD {}
@@ -149,14 +152,14 @@ end
 function forgit::checkout_file
     forgit::inside_work_tree || return 1
 
-    set cmd "git diff --color=always -- {} | $forgit_diff_pager"
+    set cmd "$gitP diff --color=always -- {} | $forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
         $FORGIT_CHECKOUT_FZF_OPTS
     "
     set git_rev_parse (git rev-parse --show-toplevel)
-    set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
+    set files ($gitP ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
             echo $file | tr '\n' '\0' | xargs -I{} -0 git checkout -q {} 
