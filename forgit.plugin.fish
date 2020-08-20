@@ -13,10 +13,13 @@ function forgit::inside_work_tree
     git rev-parse --is-inside-work-tree >/dev/null;
 end
 
-set forgit_pager (git config core.pager || echo 'cat')
-set forgit_show_pager (git config pager.show || echo "$forgit_pager")
-set forgit_diff_pager (git config pager.diff || echo "$forgit_pager")
+set forgit_pager "$FORGIT_PAGER"
+set forgit_show_pager "$FORGIT_SHOW_PAGER"
+set forgit_diff_pager "$FORGIT_DIFF_PAGER"
 
+test -z "$forgit_pager"; and set forgit_pager (git config core.pager || echo 'cat')
+test -z "$forgit_show_pager"; and set forgit_show_pager (git config pager.show || echo "$forgit_pager")
+test -z "$forgit_diff_pager"; and set forgit_diff_pager (git config pager.diff || echo "$forgit_pager")
 
 # https://github.com/wfxr/emoji-cli
 type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
