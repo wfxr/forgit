@@ -216,7 +216,7 @@ forgit::cherry::pick() {
         -m -0
     "
 
-    git cherry $base $target | cut -d ' ' -f2 |
+    git cherry "$base" "$target" | cut -d ' ' -f2 |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
         xargs -I% git cherry-pick %
 }
