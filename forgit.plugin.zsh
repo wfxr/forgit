@@ -201,6 +201,26 @@ forgit::ignore::clean() {
     [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
 }
 
+forgit::cherry::pick() {
+    local base target preview opts
+
+    base=$(git branch --show-current)
+
+    [[ -z $1 ]] && echo "Please specify target branch name" && return 1
+    target="$1"
+
+    preview="echo {} | xargs -I% git show --color=always % | $forgit_show_pager"
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+    "
+
+    git cherry $base $target | cut -d ' ' -f2 |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
+        xargs -I% git cherry-pick %
+}
+
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
 --ansi
@@ -227,4 +247,5 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_restore:-gcf}"='forgit::restore'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
+    alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
 fi

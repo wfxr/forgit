@@ -74,6 +74,8 @@ source (curl -sSL git.io/forgit.fish | psub)
 
 - **Interactive `git clean` selector** (`gclean`)
 
+- **Interactive `git cherry-pick` selector** (`gcp`)
+
 ### ⌨  Keybinds
 
 | Key                                           | Action                    |
@@ -108,6 +110,7 @@ forgit_ignore=gi
 forgit_restore=gcf
 forgit_clean=gclean
 forgit_stash_show=gss
+forgit_cherry_pick=gcp
 ```
 
 Forgit will use the default configured pager from git (`core.pager`,
