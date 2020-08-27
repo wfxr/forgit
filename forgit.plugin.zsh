@@ -203,21 +203,16 @@ forgit::ignore::clean() {
 
 forgit::cherry::pick() {
     local base target preview opts
-
     base=$(git branch --show-current)
-
-    [[ -z $1 ]] && echo "Please specify target branch name" && return 1
+    [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
-
-    preview="echo {} | xargs -I% git show --color=always % | $forgit_show_pager"
-
+    preview="echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
     "
-
-    git cherry "$base" "$target" | cut -d ' ' -f2 |
-        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
+    git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | cut -d' ' -f1 |
         xargs -I% git cherry-pick %
 }
 
