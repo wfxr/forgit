@@ -159,7 +159,7 @@ function forgit::checkout_file
     set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0' | xargs -I{} -0 git checkout -q {} 
+            echo $file | tr '\n' '\0' | xargs -I{} -0 git checkout -q {}
         end
         git status --short
         return
@@ -189,11 +189,11 @@ function forgit::clean
         $FORGIT_CLEAN_FZF_OPTS
     "
 
-    set files (git clean -xdfn $argv| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    set files (git clean -xdffn $argv| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
 
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0'| xargs -0 -I{} git clean -xdf {} 
+            echo $file | tr '\n' '\0'| xargs -0 -I{} git clean -xdff {}
         end
         git status --short
         return
