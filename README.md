@@ -153,6 +153,7 @@ Customizing fzf options for each command individually is also supported:
 
 Complete loading order of fzf options is:
 
+
 1. `FZF_DEFAULT_OPTS` (fzf global)
 2. `FORGIT_FZF_DEFAULT_OPTS` (forgit global)
 3. `FORGIT_CMD_FZF_OPTS` (command specific)
