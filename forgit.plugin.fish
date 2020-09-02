@@ -209,7 +209,7 @@ function forgit::cherry::pick
         return 1
     end
     set target $argv[1]
-    set preview "echo {} | xargs -I% git show --color=always % | $forgit_show_pager"
+    set preview "echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
