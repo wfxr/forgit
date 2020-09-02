@@ -74,6 +74,8 @@ source (curl -sSL git.io/forgit.fish | psub)
 
 - **Interactive `git clean` selector** (`gclean`)
 
+- **Interactive `git cherry-pick` selector** (`gcp`)
+
 ### ⌨  Keybinds
 
 | Key                                           | Action                    |
@@ -108,8 +110,20 @@ forgit_ignore=gi
 forgit_restore=gcf
 forgit_clean=gclean
 forgit_stash_show=gss
+forgit_cherry_pick=gcp
 ```
 
+Forgit will use the default configured pager from git (`core.pager`,
+`pager.show`, `pager.diff`) but can be altered with the following environment
+variables:
+
+| Use case            | Option              | Fallbacks to                                 |
+| ------------        | ------------------- | -------------------------------------------- |
+| fallback pager      | `FORGIT_PAGER`      | `git config core.pager` _or_ `cat`           |
+| pager on `git show` | `FORGIT_PAGER_SHOW` | `git config pager.show` _or_ `$FORGIT_PAGER` |
+| pager on `git diff` | `FORGIT_PAGER_DIFF` | `git config pager.diff` _or_ `$FORGIT_PAGER` |
+
+>>>>>>> 12d5d3c0d1e06caccd33bfcf97198ad91736db59
 You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
 

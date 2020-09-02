@@ -7,9 +7,9 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 # https://github.com/wfxr/emoji-cli
 hash emojify &>/dev/null && forgit_emojify='|emojify'
 
-forgit_pager=$(git config core.pager || echo 'cat')
-forgit_show_pager=$(git config pager.show || echo "$forgit_pager")
-forgit_diff_pager=$(git config pager.diff || echo "$forgit_pager")
+forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
+forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
+forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
 
 # git commit viewer
 forgit::log() {
@@ -142,9 +142,24 @@ forgit::clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdfn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && git status --short && return
+    files=$(git clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
+}
+
+forgit::cherry::pick() {
+    local base target preview opts
+    base=$(git branch --show-current)
+    [[ -z $1 ]] && echo "Please specify target branch" && return 1
+    target="$1"
+    preview="echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+    "
+    git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | cut -d' ' -f1 |
+        xargs -I% git cherry-pick %
 }
 
 # git ignore generator
@@ -227,4 +242,5 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_restore:-gcf}"='forgit::restore'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
+    alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
 fi

@@ -13,10 +13,13 @@ function forgit::inside_work_tree
     git rev-parse --is-inside-work-tree >/dev/null;
 end
 
-set forgit_pager (git config core.pager || echo 'cat')
-set forgit_show_pager (git config pager.show || echo "$forgit_pager")
-set forgit_diff_pager (git config pager.diff || echo "$forgit_pager")
+set forgit_pager "$FORGIT_PAGER"
+set forgit_show_pager "$FORGIT_SHOW_PAGER"
+set forgit_diff_pager "$FORGIT_DIFF_PAGER"
 
+test -z "$forgit_pager"; and set forgit_pager (git config core.pager || echo 'cat')
+test -z "$forgit_show_pager"; and set forgit_show_pager (git config pager.show || echo "$forgit_pager")
+test -z "$forgit_diff_pager"; and set forgit_diff_pager (git config pager.diff || echo "$forgit_pager")
 
 # https://github.com/wfxr/emoji-cli
 type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
@@ -156,7 +159,7 @@ function forgit::checkout_file
     set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0' | xargs -I{} -0 git checkout -q {} 
+            echo $file | tr '\n' '\0' | xargs -I{} -0 git checkout -q {}
         end
         git status --short
         return
@@ -186,11 +189,11 @@ function forgit::clean
         $FORGIT_CLEAN_FZF_OPTS
     "
 
-    set files (git clean -xdfn $argv| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    set files (git clean -xdffn $argv| awk '{print $3}'| env FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
 
     if test -n "$files"
         for file in $files
-            echo $file | tr '\n' '\0'| xargs -0 -I{} git clean -xdf {} 
+            echo $file | tr '\n' '\0'| xargs -0 -I{} git clean -xdff {}
         end
         git status --short
         return
