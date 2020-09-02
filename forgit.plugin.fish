@@ -253,7 +253,6 @@ function forgit::ignore
     if not count $argv > /dev/null
         set args (forgit::ignore::list | nl -nrn -w4 -s'  ' |
         env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"  |awk '{print $2}')
-        return 1
     end
 
      if not count $args > /dev/null
