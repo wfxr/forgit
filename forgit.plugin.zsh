@@ -142,8 +142,8 @@ forgit::clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdfn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdf '%' && git status --short && return
+    files=$(git clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
 }
 
