@@ -201,6 +201,26 @@ function forgit::clean
     echo 'Nothing to clean.'
 end
 
+function forgit::cherry::pick
+    forgit::inside_work_tree || return 1
+    set base (git branch --show-current)
+    if not count $argv > /dev/null
+        echo "Please specify target branch"
+        return 1
+    end
+    set target $argv[1]
+    set preview "echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+    "
+    echo $base
+    echo $target
+    git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
+        env FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | cut -d' ' -f1 |
+        xargs -I% git cherry-pick %
+end
+
 # git ignore generator
 if test -z "$FORGIT_GI_REPO_REMOTE"
     set -x FORGIT_GI_REPO_REMOTE https://github.com/dvcs/gitignore
@@ -341,5 +361,11 @@ if test -z "$FORGIT_NO_ALIASES"
         alias $forgit_stash_show 'forgit::stash::show'
     else
         alias gss 'forgit::stash::show'
+    end
+    
+    if test -n "$forgit_cherry_pick"
+        alias $forgit_cherry_pick 'forgit::cherry::pick'
+    else
+        alias gcp 'forgit::cherry::pick'
     end
 end
