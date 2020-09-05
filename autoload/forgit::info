@@ -1,0 +1,4 @@
+forgit::info() {
+    printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2
+}
+forgit::info "$@"

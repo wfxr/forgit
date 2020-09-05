@@ -1,0 +1,23 @@
+# git diff viewer
+forgit::diff() {
+    forgit::inside_work_tree || return 1
+    local cmd files opts commit repo
+    [[ $# -ne 0 ]] && {
+        if git rev-parse "$1" -- &>/dev/null ; then
+            commit="$1" && files=("${@:2}")
+        else
+            files=("$@")
+        fi
+    }
+    repo="$(git rev-parse --show-toplevel)"
+    cmd="echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +m -0 --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        $FORGIT_DIFF_FZF_OPTS
+    "
+    eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+}
+
+forgit::diff "$@"

@@ -1,0 +1,16 @@
+# git reset HEAD (unstage) selector
+forgit::reset::head() {
+    forgit::inside_work_tree || return 1
+    local cmd files opts
+    cmd="git diff --cached --color=always -- {} | $forgit_diff_pager "
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+        $FORGIT_RESET_HEAD_FZF_OPTS
+    "
+    files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
+    echo 'Nothing to unstage.'
+}
+
+forgit::reset::head "$@"

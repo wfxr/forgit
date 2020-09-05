@@ -1,0 +1,12 @@
+forgit::ignore::get() {
+    local item filename header
+    for item in "$@"; do
+        if filename=$(find -L "$FORGIT_GI_TEMPLATES" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
+            [[ -z "$filename" ]] && forgit::warn "No gitignore template found for '$item'." && continue
+            header="${filename##*/}" && header="${header%.gitignore}"
+            echo "### $header" && cat "$filename" && echo
+        fi
+    done
+}
+
+forgit::ignore::get "$@"

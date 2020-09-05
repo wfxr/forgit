@@ -1,0 +1,15 @@
+# git stash viewer
+forgit::stash::show() {
+    forgit::inside_work_tree || return 1
+    local cmd opts
+    cmd="echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
+        $FORGIT_STASH_FZF_OPTS
+    "
+    git stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
+}
+
+
+forgit::stash::show "$@"

@@ -1,0 +1,23 @@
+forgit::ignore() {
+    [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
+    local IFS cmd args cat opts
+    # https://github.com/sharkdp/bat.git
+    hash bat &>/dev/null && cat='bat -l gitignore --color=always' || cat="cat"
+    cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m --preview-window='right:70%'
+        $FORGIT_IGNORE_FZF_OPTS
+    "
+    # shellcheck disable=SC2206,2207
+    IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" |awk '{print $2}'))
+    [ ${#args[@]} -eq 0 ] && return 1
+    # shellcheck disable=SC2068
+    if hash bat &>/dev/null; then
+        forgit::ignore::get ${args[@]} | bat -l gitignore
+    else
+        forgit::ignore::get ${args[@]}
+    fi
+}
+forgit::ignore "$@"

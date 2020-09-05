@@ -1,0 +1,10 @@
+forgit::ignore::update() {
+    if [[ -d "$FORGIT_GI_REPO_LOCAL" ]]; then
+        forgit::info 'Updating gitignore repo...'
+        (cd "$FORGIT_GI_REPO_LOCAL" && git pull --no-rebase --ff) || return 1
+    else
+        forgit::info 'Initializing gitignore repo...'
+        git clone --depth=1 "$FORGIT_GI_REPO_REMOTE" "$FORGIT_GI_REPO_LOCAL"
+    fi
+}
+forgit::ignore::update "$@"
