@@ -166,12 +166,13 @@ forgit::cherry::pick() {
 export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
 export FORGIT_GI_REPO_LOCAL=${FORGIT_GI_REPO_LOCAL:-~/.forgit/gi/repos/dvcs/gitignore}
 export FORGIT_GI_TEMPLATES=${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/templates}
+export FORGIT_BAT_OPTION=${FORGIT_BAT_OPTION:---color=always}
 
 forgit::ignore() {
     [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
     local IFS cmd args cat opts
     # https://github.com/sharkdp/bat.git
-    hash bat &>/dev/null && cat='bat -l gitignore --color=always' || cat="cat"
+    hash bat &>/dev/null && cat='bat -l gitignore '"${FORGIT_BAT_OPTION}" || cat="cat"
     cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -184,7 +185,7 @@ forgit::ignore() {
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
     if hash bat &>/dev/null; then
-        forgit::ignore::get ${args[@]} | bat -l gitignore
+        forgit::ignore::get ${args[@]} | bat -l gitignore "${FORGIT_BAT_OPTION}"
     else
         forgit::ignore::get ${args[@]}
     fi

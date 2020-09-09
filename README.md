@@ -136,6 +136,14 @@ FORGIT_FZF_DEFAULT_OPTS="
 "
 ```
 
+You can set [bat](https://github.com/sharkdp/bat) options with `FORGIT_BAT_OPTION`.
+default option is `FORGIT_BAT_OPTION="--color=always"`
+
+``` bash
+# this is a example. see bat --help
+FORGIT_BAT_OPTION='-pp --color=always --theme="Monokai Extended Origin"'
+```
+
 Customizing fzf options for each command individually is also supported:
 
 | Command  | Option                       |
