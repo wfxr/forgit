@@ -181,11 +181,11 @@ forgit::ignore() {
     "
     # shellcheck disable=SC2206,2207
     IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(forgit::ignore::list | nl -nrn -w4 -s'  ' |
-        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" |awk '{print $2}'))
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="eval $cmd" | awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
     if hash bat &>/dev/null; then
-        forgit::ignore::get ${args[@]} | bat -l gitignore "${FORGIT_BAT_OPTION}"
+      forgit::ignore::get ${args[@]} | eval bat -l gitignore "$FORGIT_BAT_OPTION"
     else
         forgit::ignore::get ${args[@]}
     fi
