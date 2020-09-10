@@ -235,7 +235,7 @@ if test -z "$FORGIT_GI_TEMPLATES"
 end
 
 function forgit::ignore
-    if test -d "$FORGIT_GI_REPO_LOCAL"
+    if ! test -d "$FORGIT_GI_REPO_LOCAL"
         forgit::ignore::update
     end
 
