@@ -227,7 +227,7 @@ if test -z "$FORGIT_GI_REPO_REMOTE"
 end
 
 if test -z "$FORGIT_GI_REPO_LOCAL"
-    if test -z "XDG_CACHE_HOME"
+    if test "XDG_CACHE_HOME"
         set -x FORGIT_GI_REPO_LOCAL $XDG_CACHE_HOME/.forgit/gi/repos/dvcs/gitignore
     else
         set -x FORGIT_GI_REPO_LOCAL ~/.forgit/gi/repos/dvcs/gitignore
