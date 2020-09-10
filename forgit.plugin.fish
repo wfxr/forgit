@@ -234,8 +234,8 @@ if test -z "$FORGIT_GI_TEMPLATES"
     set -x FORGIT_GI_TEMPLATES $FORGIT_GI_REPO_LOCAL/templates
 end
 
-if test -z "FORGIT_BAT_OPTION"
-    set -x FORGIT_BAT_OPTION --color=always
+if test -z "FORGIT_BAT_OPTS"
+    set -x FORGIT_BAT_OPTS --color=always
 end
 
 function forgit::ignore
@@ -244,7 +244,7 @@ function forgit::ignore
     end
 
     # https://github.com/sharkdp/bat.git
-    type -q bat > /dev/null 2>&1 && set cat 'bat -l gitignore '"$FORGIT_BAT_OPTION" || set cat "cat"
+    type -q bat > /dev/null 2>&1 && set cat 'bat -l gitignore '"$FORGIT_BAT_OPTS" || set cat "cat"
     set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
@@ -264,7 +264,7 @@ function forgit::ignore
      end
 
     if type -q bat > /dev/null 2>&1
-        forgit::ignore::get $args | bat -l gitignore "$FORGIT_BAT_OPTION" 
+        forgit::ignore::get $args | bat -l gitignore "$FORGIT_BAT_OPTS" 
     else
         forgit::ignore::get $args
     end
