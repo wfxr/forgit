@@ -136,6 +136,14 @@ FORGIT_FZF_DEFAULT_OPTS="
 "
 ```
 
+You can forgit gitignore pager with `FORGIT_IGNORE_PAGER`.
+default option is `FORGIT_IGNORE_PAGER="bat -l gitignore --color=always"`
+
+``` bash
+# this is a example. see bat --help
+FORGIT_IGNORE_PAGER='bat -l gitignore -pp --color=always --theme="Monokai Extended Origin"'
+```
+
 Customizing fzf options for each command individually is also supported:
 
 | Command  | Option                       |
