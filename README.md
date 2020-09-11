@@ -136,12 +136,12 @@ FORGIT_FZF_DEFAULT_OPTS="
 "
 ```
 
-You can set [bat](https://github.com/sharkdp/bat) options with `FORGIT_BAT_OPTS`.
-default option is `FORGIT_BAT_OPTS="--color=always"`
+You can forgit gitignore pager with `FORGIT_IGNORE_PAGER`.
+default option is `FORGIT_IGNORE_PAGER="bat -l gitignore --color=always"`
 
 ``` bash
 # this is a example. see bat --help
-FORGIT_BAT_OPTS='-pp --color=always --theme="Monokai Extended Origin"'
+FORGIT_IGNORE_PAGER='bat -l gitignore -pp --color=always --theme="Monokai Extended Origin"'
 ```
 
 Customizing fzf options for each command individually is also supported:
