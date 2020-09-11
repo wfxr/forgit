@@ -228,9 +228,9 @@ end
 
 if test -z "$FORGIT_GI_REPO_LOCAL"
     if test "XDG_CACHE_HOME"
-        set -x FORGIT_GI_REPO_LOCAL $XDG_CACHE_HOME/.forgit/gi/repos/dvcs/gitignore
+        set -x FORGIT_GI_REPO_LOCAL $XDG_CACHE_HOME/forgit/gi/repos/dvcs/gitignore
     else
-        set -x FORGIT_GI_REPO_LOCAL ~/.forgit/gi/repos/dvcs/gitignore
+        set -x FORGIT_GI_REPO_LOCAL $HOME/.cache/forgit/gi/repos/dvcs/gitignore
     end
 end
 
@@ -268,7 +268,7 @@ function forgit::ignore
      end
 
     if type -q bat > /dev/null 2>&1
-        forgit::ignore::get $args | $FORGIT_IGNORE_PAGER 
+        forgit::ignore::get $args | $FORGIT_IGNORE_PAGER
     else
         forgit::ignore::get $args
     end
@@ -370,7 +370,7 @@ if test -z "$FORGIT_NO_ALIASES"
     else
         alias gss 'forgit::stash::show'
     end
-    
+
     if test -n "$forgit_cherry_pick"
         alias $forgit_cherry_pick 'forgit::cherry::pick'
     else
