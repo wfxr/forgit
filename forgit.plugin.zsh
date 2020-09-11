@@ -171,7 +171,6 @@ export FORGIT_GI_TEMPLATES=${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/template
 forgit::ignore() {
     [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
     local IFS cmd args opts
-    # https://github.com/sharkdp/bat.git
     cmd="$forgit_ignore_pager $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -183,7 +182,7 @@ forgit::ignore() {
         FZF_DEFAULT_OPTS="$opts" fzf --preview="eval $cmd" | awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
-    forgit::ignore::get ${args[@]} | sh -c "$forgit_ignore_pager"
+    forgit::ignore::get ${args[@]}
 }
 forgit::ignore::update() {
     if [[ -d "$FORGIT_GI_REPO_LOCAL" ]]; then

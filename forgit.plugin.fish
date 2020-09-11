@@ -16,10 +16,12 @@ end
 set forgit_pager "$FORGIT_PAGER"
 set forgit_show_pager "$FORGIT_SHOW_PAGER"
 set forgit_diff_pager "$FORGIT_DIFF_PAGER"
+set forgit_ignore_pager "$FORGIT_IGNORE_PAGER"
 
 test -z "$forgit_pager"; and set forgit_pager (git config core.pager || echo 'cat')
 test -z "$forgit_show_pager"; and set forgit_show_pager (git config pager.show || echo "$forgit_pager")
 test -z "$forgit_diff_pager"; and set forgit_diff_pager (git config pager.diff || echo "$forgit_pager")
+test -z "$forgit_ignore_pager"; and set forgit_ignore_pager (type -q bat >/dev/null 2>&1 && echo 'bat -l gitignore --color=always' || echo 'cat')
 
 # https://github.com/wfxr/emoji-cli
 type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
@@ -238,18 +240,12 @@ if test -z "$FORGIT_GI_TEMPLATES"
     set -x FORGIT_GI_TEMPLATES $FORGIT_GI_REPO_LOCAL/templates
 end
 
-if test -z "FORGIT_IGNORE_PAGER"
-    set -x FORGIT_IGNORE_PAGER bat -l gitignore --color=always
-end
-
 function forgit::ignore
     if not test -d "$FORGIT_GI_REPO_LOCAL"
         forgit::ignore::update
     end
 
-    # https://github.com/sharkdp/bat.git
-    type -q bat > /dev/null 2>&1 && set cat $FORGIT_IGNORE_PAGER || set cat "cat"
-    set cmd "$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
+    set cmd "$forgit_ignore_pager $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m --preview-window='right:70%'
@@ -267,11 +263,7 @@ function forgit::ignore
          return 1
      end
 
-    if type -q bat > /dev/null 2>&1
-        forgit::ignore::get $args | $FORGIT_IGNORE_PAGER
-    else
-        forgit::ignore::get $args
-    end
+     forgit::ignore::get $args
 end
 
 function forgit::ignore::update
