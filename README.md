@@ -117,11 +117,12 @@ Forgit will use the default configured pager from git (`core.pager`,
 `pager.show`, `pager.diff`) but can be altered with the following environment
 variables:
 
-| Use case            | Option              | Fallbacks to                                 |
-| ------------        | ------------------- | -------------------------------------------- |
-| fallback pager      | `FORGIT_PAGER`      | `git config core.pager` _or_ `cat`           |
-| pager on `git show` | `FORGIT_PAGER_SHOW` | `git config pager.show` _or_ `$FORGIT_PAGER` |
-| pager on `git diff` | `FORGIT_PAGER_DIFF` | `git config pager.diff` _or_ `$FORGIT_PAGER` |
+| Use case             | Option                | Fallbacks to                                 |
+| ------------         | -------------------   | -------------------------------------------- |
+| common pager         | `FORGIT_PAGER`        | `git config core.pager` _or_ `cat`           |
+| pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER` |
+| pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER` |
+| pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat` |
 
 You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
@@ -134,14 +135,6 @@ FORGIT_FZF_DEFAULT_OPTS="
 --reverse
 --height '80%'
 "
-```
-
-You can forgit gitignore pager with `FORGIT_IGNORE_PAGER`.
-default option is `FORGIT_IGNORE_PAGER="bat -l gitignore --color=always"`
-
-``` bash
-# this is a example. see bat --help
-FORGIT_IGNORE_PAGER='bat -l gitignore -pp --color=always --theme="Monokai Extended Origin"'
 ```
 
 Customizing fzf options for each command individually is also supported:

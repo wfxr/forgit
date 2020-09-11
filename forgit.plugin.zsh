@@ -10,6 +10,7 @@ hash emojify &>/dev/null && forgit_emojify='|emojify'
 forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
 forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
+forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
 
 # git commit viewer
 forgit::log() {
@@ -164,16 +165,14 @@ forgit::cherry::pick() {
 
 # git ignore generator
 export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
-export FORGIT_GI_REPO_LOCAL="${FORGIT_GI_REPO_LOCAL:-${XDG_CACHE_HOME:-~/}}/.forgit/gi/repos/dvcs/gitignore"
+export FORGIT_GI_REPO_LOCAL="${FORGIT_GI_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME}}/.forgit/gi/repos/dvcs/gitignore"
 export FORGIT_GI_TEMPLATES=${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/templates}
-export FORGIT_IGNORE_PAGER=${FORGIT_IGNORE_PAGER:-bat -l gitignore --color=always}
 
 forgit::ignore() {
     [ -d "$FORGIT_GI_REPO_LOCAL" ] || forgit::ignore::update
-    local IFS cmd args cat opts
+    local IFS cmd args opts
     # https://github.com/sharkdp/bat.git
-    hash bat &>/dev/null && cat="${FORGIT_IGNORE_PAGER}" || cat="cat"
-    cmd="$cat $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
+    cmd="$forgit_ignore_pager $FORGIT_GI_TEMPLATES/{2}{,.gitignore} 2>/dev/null"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m --preview-window='right:70%'
@@ -184,11 +183,7 @@ forgit::ignore() {
         FZF_DEFAULT_OPTS="$opts" fzf --preview="eval $cmd" | awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
-    if hash bat &>/dev/null; then
-      forgit::ignore::get ${args[@]} | eval "${FORGIT_IGNORE_PAGER}"
-    else
-        forgit::ignore::get ${args[@]}
-    fi
+    forgit::ignore::get ${args[@]} | sh -c "$forgit_ignore_pager"
 }
 forgit::ignore::update() {
     if [[ -d "$FORGIT_GI_REPO_LOCAL" ]]; then
