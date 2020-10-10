@@ -35,6 +35,9 @@ zgen load 'wfxr/forgit'
 # for antigen
 antigen bundle 'wfxr/forgit'
 
+# for fisher
+fisher add wfxr/forgit
+
 # manually
 # Clone the repository and source it in your shell's rc file.
 ```

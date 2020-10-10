@@ -1,4 +1,3 @@
-#!/usr/local/bin/fish
 # MIT (c) Chris Apple
 
 function forgit::warn
@@ -27,7 +26,7 @@ test -z "$forgit_ignore_pager"; and set forgit_ignore_pager (type -q bat >/dev/n
 type -q emojify >/dev/null 2>&1 && set forgit_emojify '|emojify'
 
 # git commit viewer
-function forgit::log
+function forgit::log -d "git commit viewer"
     forgit::inside_work_tree || return 1
 
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
@@ -58,7 +57,7 @@ function forgit::log
 end
 
 ## git diff viewer
-function forgit::diff
+function forgit::diff -d "git diff viewer"
     forgit::inside_work_tree || return 1
     if count $argv > /dev/null
         if git rev-parse "$1" > /dev/null 2>&1
@@ -82,7 +81,7 @@ function forgit::diff
 end
 
 # git add selector
-function forgit::add
+function forgit::add -d "git add selector"
     forgit::inside_work_tree || return 1
     # Add files if passed as arguments
     count $argv >/dev/null && git add "$argv" && git status --short && return
@@ -128,7 +127,7 @@ function forgit::add
 end
 
 ## git reset HEAD (unstage) selector
-function forgit::reset::head
+function forgit::reset::head -d "git reset HEAD (unstage) selector"
     forgit::inside_work_tree || return 1
     set cmd "git diff --cached --color=always -- {} | $forgit_diff_pager"
     set opts "
@@ -148,7 +147,7 @@ function forgit::reset::head
 end
 
 # git checkout-restore selector
-function forgit::checkout_file
+function forgit::checkout_file -d "git checkout-restore selector"
     forgit::inside_work_tree || return 1
 
     set cmd "git diff --color=always -- {} | $forgit_diff_pager"
@@ -170,7 +169,7 @@ function forgit::checkout_file
 end
 
 # git stash viewer
-function forgit::stash::show
+function forgit::stash::show -d "git stash viewer"
     forgit::inside_work_tree || return 1
     set cmd "echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     set opts "
@@ -182,7 +181,7 @@ function forgit::stash::show
 end
 
 # git clean selector
-function forgit::clean
+function forgit::clean -d "git clean selector"
     forgit::inside_work_tree || return 1
 
     set opts "
@@ -203,7 +202,7 @@ function forgit::clean
     echo 'Nothing to clean.'
 end
 
-function forgit::cherry::pick
+function forgit::cherry::pick -d "git cherry-picking"
     forgit::inside_work_tree || return 1
     set base (git branch --show-current)
     if not count $argv > /dev/null
@@ -240,7 +239,7 @@ if test -z "$FORGIT_GI_TEMPLATES"
     set -x FORGIT_GI_TEMPLATES $FORGIT_GI_REPO_LOCAL/templates
 end
 
-function forgit::ignore
+function forgit::ignore -d "git ignore generator"
     if not test -d "$FORGIT_GI_REPO_LOCAL"
         forgit::ignore::update
     end

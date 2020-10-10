@@ -50,4 +50,4 @@ jobs:
       run: zsh forgit.plugin.zsh
 
     - name: Test fish
-      run: fish forgit.plugin.fish
+      run: fish conf.d/forgit.plugin.fish
