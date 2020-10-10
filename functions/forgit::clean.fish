@@ -1,5 +1,5 @@
 # git clean selector
-function forgit::clean
+function forgit::clean -d "git clean selector"
     forgit::inside_work_tree || return 1
 
     set opts "

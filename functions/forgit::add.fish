@@ -1,5 +1,5 @@
 # git add selector
-function forgit::add
+function forgit::add -d "git add selector"
     forgit::inside_work_tree || return 1
     # Add files if passed as arguments
     count $argv >/dev/null && git add "$argv" && git status --short && return

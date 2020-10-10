@@ -1,5 +1,5 @@
 # git commit viewer
-function forgit::log
+function forgit::log -d "git commit viewer"
     forgit::inside_work_tree || return 1
 
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')

@@ -1,5 +1,5 @@
 # git ignore selector
-function forgit::ignore
+function forgit::ignore -d "git ignore selector"
     if not test -d "$FORGIT_GI_REPO_LOCAL"
         forgit::ignore::update
     end

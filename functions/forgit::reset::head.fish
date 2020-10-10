@@ -1,5 +1,5 @@
 ## git reset HEAD (unstage) selector
-function forgit::reset::head
+function forgit::reset::head -d "git reset HEAD (unstage) selector"
     forgit::inside_work_tree || return 1
     set cmd "git diff --cached --color=always -- {} | $forgit_diff_pager"
     set opts "

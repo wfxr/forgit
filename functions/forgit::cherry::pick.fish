@@ -1,5 +1,5 @@
 # git cherry-picking
-function forgit::cherry::pick
+function forgit::cherry::pick -d "git cherry-picking"
     forgit::inside_work_tree || return 1
     set base (git branch --show-current)
     if not count $argv > /dev/null

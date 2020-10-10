@@ -1,5 +1,5 @@
 # git checkout-restore selector
-function forgit::checkout_file
+function forgit::checkout_file -d "git checkout-restore selector"
     forgit::inside_work_tree || return 1
 
     set cmd "git diff --color=always -- {} | $forgit_diff_pager"

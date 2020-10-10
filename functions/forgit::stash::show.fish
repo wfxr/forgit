@@ -1,5 +1,5 @@
 # git stash viewer
-function forgit::stash::show
+function forgit::stash::show -d "git stash viewer"
     forgit::inside_work_tree || return 1
     set cmd "echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     set opts "

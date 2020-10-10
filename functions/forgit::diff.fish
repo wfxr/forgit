@@ -1,5 +1,5 @@
 ## git diff viewer
-function forgit::diff
+function forgit::diff -d "git diff viewer"
     forgit::inside_work_tree || return 1
     if count $argv > /dev/null
         if git rev-parse "$1" > /dev/null 2>&1
