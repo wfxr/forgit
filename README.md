@@ -25,7 +25,6 @@ It's **lightweight** and **easy to use**.
 
 *Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.*
 
-For **zsh**:
 ``` zsh
 # for zplug
 zplug 'wfxr/forgit'
@@ -40,22 +39,13 @@ antigen bundle 'wfxr/forgit'
 # Clone the repository and source it in your shell's rc file.
 ```
 
-For **fish**:
-``` zsh
-# with Fisher
-fisher add wfxr/forgit
-
-# manually
-# Clone the repository and source forgit.plugin.fish in your config.fish file
-```
-
 You can run the following command to try `forgit` without installing:
 
 ``` bash
 # for bash / zsh
 source <(curl -sSL git.io/forgit)
 # for fish
-source (curl -sSL git.io/conf.d/forgit.fish | psub)
+source (curl -sSL git.io/forgit.fish | psub)
 ```
 
 ### 📝 Features
