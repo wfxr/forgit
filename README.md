@@ -46,7 +46,10 @@ For **fish**:
 fisher add wfxr/forgit
 
 # manually
-# Clone the repository and source forgit.plugin.fish in your config.fish file
+git clone --depth 1 https://github.com/wfxr/forgit.git
+mkdir -p ~/.config/fish/{conf.d,functions}
+cp forgit/functions/* ~/.config/fish/functions/
+cp forgit/conf.d/forgit.plugin.fish ~/.config/fish/conf.d/
 ```
 
 You can run the following command to try `forgit` without installing:
@@ -55,7 +58,7 @@ You can run the following command to try `forgit` without installing:
 # for bash / zsh
 source <(curl -sSL git.io/forgit)
 # for fish
-source (curl -sSL git.io/conf.d/forgit.fish | psub)
+source (curl -sSL git.io/forgit.fish | psub)
 ```
 
 ### 📝 Features
