@@ -38,6 +38,9 @@ antigen bundle 'wfxr/forgit'
 # for fisher
 fisher add wfxr/forgit
 
+# for omf
+omf install https://github.com/wfxr/forgit
+
 # manually
 # Clone the repository and source it in your shell's rc file.
 ```
@@ -48,7 +51,7 @@ You can run the following command to try `forgit` without installing:
 # for bash / zsh
 source <(curl -sSL git.io/forgit)
 # for fish
-source (curl -sSL git.io/forgit.fish | psub)
+source (curl -sSL git.io/forgit-fish | psub)
 ```
 
 ### 📝 Features
