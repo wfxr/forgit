@@ -82,6 +82,8 @@ source (curl -sSL git.io/forgit-fish | psub)
 
 - **Interactive `git cherry-pick` selector** (`gcp`)
 
+- **Interactive `git rebase -i` selector** (`grb`)
+
 ### ⌨  Keybinds
 
 | Key                                           | Action                    |
@@ -117,6 +119,7 @@ forgit_restore=gcf
 forgit_clean=gclean
 forgit_stash_show=gss
 forgit_cherry_pick=gcp
+forgit_rebase=grb
 ```
 
 Forgit will use the default configured pager from git (`core.pager`,
@@ -155,6 +158,7 @@ Customizing fzf options for each command individually is also supported:
 | `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS`   |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`      |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`      |
+| `grb`    | `FORGIT_REBASE_FZF_OPTS`     |
 
 Complete loading order of fzf options is:
 
