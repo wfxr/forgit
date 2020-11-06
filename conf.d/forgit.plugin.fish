@@ -222,6 +222,37 @@ function forgit::cherry::pick -d "git cherry-picking"
         xargs -I% git cherry-pick %
 end
 
+
+function forgit::rebase -d "git rebase "
+    forgit::inside_work_tree || return 1
+
+    if set -q FORGIT_LOG_GRAPH_ENABLE
+        set graph "--graph"
+    else
+        set graph ""
+    end
+    set cmd "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr' $argv $forgit_emojify"
+
+    set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
+    set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+
+    if test -n "$FORGIT_COPY_CMD"
+        set copy_cmd $FORGIT_COPY_CMD
+    else
+        set copy_cmd pbcopy
+    end
+
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' |$copy_cmd)\"
+        $FORGIT_REBASE_FZF_OPTS
+    "
+    eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
+        grep -Eo '[a-f0-9]+' | head -1 |
+        xargs -I% git rebase -i %
+end
+
 # git ignore generator
 if test -z "$FORGIT_GI_REPO_REMOTE"
     set -g FORGIT_GI_REPO_REMOTE https://github.com/dvcs/gitignore
@@ -366,5 +397,11 @@ if test -z "$FORGIT_NO_ALIASES"
         alias $forgit_cherry_pick 'forgit::cherry::pick'
     else
         alias gcp 'forgit::cherry::pick'
+    end
+
+    if test -n "$forgit_rebase"
+        alias $forgit_rebase 'forgit::rebase'
+    else
+        alias grb 'forgit::rebase'
     end
 end
