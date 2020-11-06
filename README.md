@@ -35,6 +35,12 @@ zgen load 'wfxr/forgit'
 # for antigen
 antigen bundle 'wfxr/forgit'
 
+# for fisher
+fisher add wfxr/forgit
+
+# for omf
+omf install https://github.com/wfxr/forgit
+
 # manually
 # Clone the repository and source it in your shell's rc file.
 ```
@@ -45,7 +51,7 @@ You can run the following command to try `forgit` without installing:
 # for bash / zsh
 source <(curl -sSL git.io/forgit)
 # for fish
-source (curl -sSL git.io/forgit.fish | psub)
+source (curl -sSL git.io/forgit-fish | psub)
 ```
 
 ### 📝 Features
@@ -75,6 +81,8 @@ source (curl -sSL git.io/forgit.fish | psub)
 - **Interactive `git clean` selector** (`gclean`)
 
 - **Interactive `git cherry-pick` selector** (`gcp`)
+
+- **Interactive `git rebase -i` selector** (`grb`)
 
 ### ⌨  Keybinds
 
@@ -110,6 +118,20 @@ forgit_ignore=gi
 forgit_restore=gcf
 forgit_clean=gclean
 forgit_stash_show=gss
+forgit_cherry_pick=gcp
+forgit_rebase=grb
+```
+
+Forgit will use the default configured pager from git (`core.pager`,
+`pager.show`, `pager.diff`) but can be altered with the following environment
+variables:
+
+| Use case             | Option                | Fallbacks to                                 |
+| ------------         | -------------------   | -------------------------------------------- |
+| common pager         | `FORGIT_PAGER`        | `git config core.pager` _or_ `cat`           |
+| pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER` |
+| pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER` |
+| pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat` |
 
 You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
@@ -136,6 +158,7 @@ Customizing fzf options for each command individually is also supported:
 | `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS`   |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`      |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`      |
+| `grb`    | `FORGIT_REBASE_FZF_OPTS`     |
 
 Complete loading order of fzf options is:
 
