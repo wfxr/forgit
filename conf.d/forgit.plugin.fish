@@ -41,7 +41,7 @@ function forgit::log -d "git commit viewer"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($cmd |env LESS='-R' less)\"
+        --bind=\"enter:execute($cmd |env LESS='-r' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' | $copy_cmd)\"
         $FORGIT_LOG_FZF_OPTS
     "
@@ -71,7 +71,7 @@ function forgit::diff -d "git diff viewer"
     set repo (git rev-parse --show-toplevel)
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($cmd |env LESS='-R' less)\"
+        +m -0 --bind=\"enter:execute($cmd |env LESS='-r' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
 
@@ -174,7 +174,7 @@ function forgit::stash::show -d "git stash viewer"
     set cmd "echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd |env LESS='-R' less)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd |env LESS='-r' less)\"
         $FORGIT_STASH_FZF_OPTS
     "
     git stash list | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"

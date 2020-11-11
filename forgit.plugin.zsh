@@ -21,7 +21,7 @@ forgit::log() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($cmd | LESS='-R' less)\"
+        --bind=\"enter:execute($cmd | LESS='-r' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' |${FORGIT_COPY_CMD:-pbcopy})\"
         $FORGIT_LOG_FZF_OPTS
     "
@@ -46,7 +46,7 @@ forgit::diff() {
     cmd="echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($cmd |LESS='-R' less)\"
+        +m -0 --bind=\"enter:execute($cmd |LESS='-r' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
     eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
@@ -127,7 +127,7 @@ forgit::stash::show() {
     cmd="echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-R' less)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-r' less)\"
         $FORGIT_STASH_FZF_OPTS
     "
     git stash list | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
