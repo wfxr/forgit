@@ -184,7 +184,7 @@ FORGIT_LOG_FZF_OPTS='
 
 ### 📦 Optional dependencies
 
-- [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy) or [`delta`](https://github.com/dandavison/delta): Improve the `git diff` output.
+- [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human readable diffs.
 
 - [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore`.
 
@@ -192,7 +192,6 @@ FORGIT_LOG_FZF_OPTS='
 
 ### 💡 Tips
 
-- Hit `q` to quit from full screen preview any time.
 - Commands like `glo`, `gd`, `gcf` and `gclean` accept arguments to restrain the items listed in fzf(eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gclean output/` etc.).
 - `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
