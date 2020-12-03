@@ -69,13 +69,12 @@ function forgit::diff -d "git diff viewer"
     end
 
     set repo (git rev-parse --show-toplevel)
+    set cmd "echo {} |sed 's/.*]  //' | xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($cmd |env LESS='-r' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-
-    set cmd "echo {} |sed 's/.*]  //' | xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
 
     eval "git diff --name-only $commit -- $files*| sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/'" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
