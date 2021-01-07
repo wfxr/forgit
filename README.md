@@ -36,7 +36,7 @@ zgen load 'wfxr/forgit'
 antigen bundle 'wfxr/forgit'
 
 # for fisher
-fisher add wfxr/forgit
+fisher install wfxr/forgit
 
 # for omf
 omf install https://github.com/wfxr/forgit
