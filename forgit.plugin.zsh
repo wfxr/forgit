@@ -7,7 +7,14 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 # https://github.com/wfxr/emoji-cli
 hash emojify &>/dev/null && forgit_emojify='|emojify'
 
-forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
+if [[ ! -z ${FORGIT_PAGER} ]]; then
+  forgit_pager=${FORGIT_PAGER}
+elif [[ ! -z ${GIT_PAGER} ]]; then
+  forgit_pager=${GIT_PAGER}
+else
+  forgit_pager=$(git config core.pager || echo 'cat')
+fi
+
 forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
 forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}

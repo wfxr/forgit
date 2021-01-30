@@ -126,12 +126,12 @@ Forgit will use the default configured pager from git (`core.pager`,
 `pager.show`, `pager.diff`) but can be altered with the following environment
 variables:
 
-| Use case             | Option                | Fallbacks to                                 |
-| ------------         | -------------------   | -------------------------------------------- |
-| common pager         | `FORGIT_PAGER`        | `git config core.pager` _or_ `cat`           |
-| pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER` |
-| pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER` |
-| pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat` |
+| Use case             | Option                | Fallbacks to                                        |
+| ------------         | -------------------   | ----------------------------------------------------|
+| common pager         | `FORGIT_PAGER`        | `GIT_PAGER` _or_ `git config core.pager` _or_ `cat` |
+| pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER`        |
+| pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER`        |
+| pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat`        |
 
 You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
