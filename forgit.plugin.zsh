@@ -182,6 +182,19 @@ forgit::rebase() {
         xargs -I% git rebase -i %
 }
 
+forgit::checkout() {
+    forgit::inside_work_tree || return 1
+    local cmd preview opts
+    cmd="git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $* $forgit_emojify | sed '/^$/d'"
+    preview="git log {} --graph --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' --color=always --abbrev-commit --date=relative"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index --ansi
+        $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
+        "
+    eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | xargs -I% git checkout %
+}
+
 # git ignore generator
 export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
 export FORGIT_GI_REPO_LOCAL="${FORGIT_GI_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME/.cache}/forgit/gi/repos/dvcs/gitignore}"
@@ -254,6 +267,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_diff:-gd}"='forgit::diff'
     alias "${forgit_ignore:-gi}"='forgit::ignore'
     alias "${forgit_restore:-gcf}"='forgit::restore'
+    alias "${forgit_checkout:-gcb}"='forgit::checkout'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'

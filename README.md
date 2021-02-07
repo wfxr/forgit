@@ -84,6 +84,8 @@ source (curl -sSL git.io/forgit-fish | psub)
 
 - **Interactive `git rebase -i` selector** (`grb`)
 
+- **Interactive `git checkout` selector** (`gcb`)
+
 ### ⌨  Keybinds
 
 | Key                                           | Action                    |
@@ -120,6 +122,7 @@ forgit_clean=gclean
 forgit_stash_show=gss
 forgit_cherry_pick=gcp
 forgit_rebase=grb
+forgit_checkout=gcb
 ```
 
 Forgit will use the default configured pager from git (`core.pager`,
@@ -148,17 +151,18 @@ FORGIT_FZF_DEFAULT_OPTS="
 
 Customizing fzf options for each command individually is also supported:
 
-| Command  | Option                       |
-|----------|------------------------------|
-| `ga`     | `FORGIT_ADD_FZF_OPTS`        |
-| `glo`    | `FORGIT_LOG_FZF_OPTS`        |
-| `gi`     | `FORGIT_IGNORE_FZF_OPTS`     |
-| `gd`     | `FORGIT_DIFF_FZF_OPTS`       |
-| `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS` |
-| `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS`   |
-| `gss`    | `FORGIT_STASH_FZF_OPTS`      |
-| `gclean` | `FORGIT_CLEAN_FZF_OPTS`      |
-| `grb`    | `FORGIT_REBASE_FZF_OPTS`     |
+| Command  | Option                            |
+|----------|-----------------------------------|
+| `ga`     | `FORGIT_ADD_FZF_OPTS`             |
+| `glo`    | `FORGIT_LOG_FZF_OPTS`             |
+| `gi`     | `FORGIT_IGNORE_FZF_OPTS`          |
+| `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
+| `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
+| `gcf`    | `FORGIT_CHECKOUT_FZF_OPTS`        |
+| `gss`    | `FORGIT_STASH_FZF_OPTS`           |
+| `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
+| `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
+| `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
 
 Complete loading order of fzf options is:
 
