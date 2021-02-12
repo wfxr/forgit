@@ -174,7 +174,7 @@ function forgit::checkout::branch -d "git checkout branch selector"
     set cmd "git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $argv $forgit_emojify | sed '/^\$/d'"
     set preview "git log {} --graph --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' --color=always --abbrev-commit --date=relative"
 
-   set opts "
+    set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --ansi
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
