@@ -146,17 +146,18 @@ function forgit::reset::head -d "git reset HEAD (unstage) selector"
 end
 
 # git checkout-restore selector
-function forgit::checkout_file -d "git checkout-restore selector"
+function forgit::checkout::file -d "git checkout-file selector"
     forgit::inside_work_tree || return 1
 
     set cmd "git diff --color=always -- {} | $forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
-        $FORGIT_CHECKOUT_FZF_OPTS
+        $FORGIT_CHECKOUT_FILE_FZF_OPTS
     "
     set git_rev_parse (git rev-parse --show-toplevel)
     set files (git ls-files --modified "$git_rev_parse" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")
+
     if test -n "$files"
         for file in $files
             echo $file | tr '\n' '\0' | xargs -I{} -0 git checkout -q {}
@@ -165,6 +166,20 @@ function forgit::checkout_file -d "git checkout-restore selector"
         return
     end
     echo 'Nothing to restore.'
+end
+
+function forgit::checkout::branch -d "git checkout branch selector"
+    forgit::inside_work_tree || return 1
+
+    set cmd "git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $argv $forgit_emojify | sed '/^\$/d'"
+    set preview "git log {} --graph --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' --color=always --abbrev-commit --date=relative"
+
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index --ansi
+        $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
+        "
+    eval "$cmd" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | xargs -I% git checkout %
 end
 
 # git stash viewer
@@ -374,10 +389,16 @@ if test -z "$FORGIT_NO_ALIASES"
         alias gi 'forgit::ignore'
     end
 
-    if test -n "$forgit_restore"
-        alias $forgit_restore 'forgit::checkout_file'
+    if test -n "$forgit_checkout_file"
+        alias $forgit_checkout_file 'forgit::checkout::file'
     else
-        alias gcf 'forgit::checkout_file'
+        alias gcf 'forgit::checkout::file'
+    end
+
+    if test -n "$forgit_checkout_branch"
+        alias $forgit_branch 'forgit::checkout::branch'
+    else
+        alias gcb 'forgit::checkout::branch'
     end
 
     if test -n "$forgit_clean"

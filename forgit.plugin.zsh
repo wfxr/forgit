@@ -106,14 +106,14 @@ forgit::reset::head() {
 }
 
 # git checkout-restore selector
-forgit::restore() {
+forgit::checkout::file() {
     forgit::inside_work_tree || return 1
     local cmd files opts
     cmd="git diff --color=always -- {} | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
-        $FORGIT_CHECKOUT_FZF_OPTS
+        $FORGIT_CHECKOUT_FILE_FZF_OPTS
     "
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && git status --short && return
@@ -182,7 +182,7 @@ forgit::rebase() {
         xargs -I% git rebase -i %
 }
 
-forgit::checkout() {
+forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
     local cmd preview opts
     cmd="git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $* $forgit_emojify | sed '/^$/d'"
@@ -266,8 +266,8 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_log:-glo}"='forgit::log'
     alias "${forgit_diff:-gd}"='forgit::diff'
     alias "${forgit_ignore:-gi}"='forgit::ignore'
-    alias "${forgit_restore:-gcf}"='forgit::restore'
-    alias "${forgit_checkout:-gcb}"='forgit::checkout'
+    alias "${forgit_checkout_file:-gcf}"='forgit::checkout::file'
+    alias "${forgit_checkout_branch:-gcb}"='forgit::checkout::branch'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
