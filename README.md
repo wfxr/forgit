@@ -41,6 +41,9 @@ fisher install wfxr/forgit
 # for omf
 omf install https://github.com/wfxr/forgit
 
+# for zinit
+zinit load wfxr/forgit
+
 # manually
 # Clone the repository and source it in your shell's rc file.
 ```
