@@ -1,0 +1,22 @@
+repos:
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v3.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-added-large-files
+  - id: mixed-line-ending
+- repo: local
+  hooks:
+  - id: update-license
+    name: update license
+    pass_filenames: false
+    language: system
+    always_run: true
+    entry: >
+      sh -c '
+        (curl -fsSL https://wfxr.mit-license.org/2017/license.txt && echo) > ./LICENSE &&
+            git add ./LICENSE || { git checkout ./LICENSE && exit 1; }
+      '
