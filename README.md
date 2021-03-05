@@ -7,14 +7,20 @@
     <a href="https://github.com/wfxr/forgit/actions">
         <img src="https://github.com/wfxr/forgit/workflows/ci/badge.svg"/>
     </a>
+    <a href="https://wfxr.mit-license.org/2017">
+        <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg"/>
+    </a>
     <a href="https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue">
         <img src="https://img.shields.io/badge/Shell-Bash%20%7C%20Zsh%20%7C%20Fish-blue"/>
     </a>
     <a href="https://github.com/unixorn/awesome-zsh-plugins">
         <img src="https://img.shields.io/badge/Awesome-zsh--plugins-d07cd0?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAABVklEQVRIS+3VvWpVURDF8d9CRAJapBAfwWCt+FEJthIUUcEm2NgIYiOxsrCwULCwktjYKSgYLfQF1JjCNvoMNhYRCwOO7HAiVw055yoBizvN3nBmrf8+M7PZsc2RbfY3AfRWeNMSVdUlHEzS1t6oqvt4n+TB78l/AKpqHrdwLcndXndU1WXcw50k10c1PwFV1fa3cQVzSR4PMd/IqaoLeIj2N1eTfG/f1gFVtQMLOI+zSV6NYz4COYFneIGLSdZSVbvwCMdxMsnbvzEfgRzCSyzjXAO8xlHcxMq/mI9oD+AGlhqgxjD93OVOD9TUuICdXd++/VeAVewecKKv2NPlfcHUAM1qK9FTnBmQvJjkdDfWzzE7QPOkAfZiEce2ECzhVJJPHWAfGuTwFpo365pO0NYjmEFr5Eas4SPeJfll2rqb38Z7/yaaD+0eNM3kPejt86REvSX6AamgdXkgoxLxAAAAAElFTkSuQmCC"/>
     </a>
-    <a href="https://wfxr.mit-license.org/2017">
-        <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg"/>
+    <a href="https://github.com/pre-commit/pre-commit">
+        <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit" />
+    </a>
+    <a href="https://github.com/wfxr/minimap.vim/graphs/contributors">
+        <img src="https://img.shields.io/github/contributors/wfxr/minimap.vim" alt="Contributors"/>
     </a>
 </p>
 
