@@ -42,7 +42,7 @@ function forgit::log -d "git commit viewer"
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --bind=\"enter:execute($cmd |env LESS='-r' less)\"
-        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' | $copy_cmd)\"
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |$copy_cmd)\"
         $FORGIT_LOG_FZF_OPTS
     "
 
@@ -259,7 +259,7 @@ function forgit::rebase -d "git rebase "
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' |$copy_cmd)\"
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |$copy_cmd)\"
         $FORGIT_REBASE_FZF_OPTS
     "
     eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
