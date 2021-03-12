@@ -57,7 +57,7 @@ function forgit::log -d "git commit viewer"
 end
 
 ## git diff viewer
-function forgit::diff -d "git diff viewer"
+function forgit::diff -d "git diff viewer" 
     forgit::inside_work_tree || return 1
     if count $argv > /dev/null
         if git rev-parse "$1" > /dev/null 2>&1
@@ -167,12 +167,13 @@ function forgit::checkout::file -d "git checkout-file selector"
     echo 'Nothing to restore.'
 end
 
-function forgit::checkout::branch -d "git checkout branch selector"
+function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'branch_name'
     forgit::inside_work_tree || return 1
 
-    if count $argv > /dev/null
-        git checkout -b $argv[1]
+    if test -n "$branch_name"
+        git checkout -b "$branch_name"
         git status --short
+        return
     end
 
     set cmd "git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $argv $forgit_emojify | sed '/^\$/d'"
@@ -220,14 +221,13 @@ function forgit::clean -d "git clean selector"
     echo 'Nothing to clean.'
 end
 
-function forgit::cherry::pick -d "git cherry-picking"
+function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
     forgit::inside_work_tree || return 1
     set base (git branch --show-current)
-    if not count $argv > /dev/null
+    if test -n "$target"
         echo "Please specify target branch"
         return 1
     end
-    set target $argv[1]
     set preview "echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
@@ -241,7 +241,7 @@ function forgit::cherry::pick -d "git cherry-picking"
 end
 
 
-function forgit::rebase -d "git rebase "
+function forgit::rebase -d "git rebase"
     forgit::inside_work_tree || return 1
 
     if set -q FORGIT_LOG_GRAPH_ENABLE

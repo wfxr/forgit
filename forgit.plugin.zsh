@@ -186,7 +186,7 @@ forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git checkout -b "$*"; return $?; }
     local cmd preview opts
-    cmd="git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $* $forgit_emojify | sed '/^$/d'"
+    cmd="git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $forgit_emojify | sed '/^$/d'"
     preview="git log {} --graph --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' --color=always --abbrev-commit --date=relative"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
