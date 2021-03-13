@@ -57,11 +57,10 @@ function forgit::log -d "git commit viewer"
 end
 
 ## git diff viewer
-function forgit::diff -d "git diff viewer"
+function forgit::diff -d "git diff viewer" 
     forgit::inside_work_tree || return 1
     if count $argv > /dev/null
         if git rev-parse "$1" > /dev/null 2>&1
-            #set commit "$1" && set files ("${@:2}")
             set commit "$1" && set files "$2"
         else
             set files "$argv"
@@ -168,8 +167,14 @@ function forgit::checkout::file -d "git checkout-file selector"
     echo 'Nothing to restore.'
 end
 
-function forgit::checkout::branch -d "git checkout branch selector"
+function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'branch_name'
     forgit::inside_work_tree || return 1
+
+    if test -n "$branch_name"
+        git checkout -b "$branch_name"
+        git status --short
+        return
+    end
 
     set cmd "git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $argv $forgit_emojify | sed '/^\$/d'"
     set preview "git log {} --graph --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' --color=always --abbrev-commit --date=relative"
@@ -216,14 +221,13 @@ function forgit::clean -d "git clean selector"
     echo 'Nothing to clean.'
 end
 
-function forgit::cherry::pick -d "git cherry-picking"
+function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
     forgit::inside_work_tree || return 1
     set base (git branch --show-current)
-    if not count $argv > /dev/null
+    if test -n "$target"
         echo "Please specify target branch"
         return 1
     end
-    set target $argv[1]
     set preview "echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
@@ -237,7 +241,7 @@ function forgit::cherry::pick -d "git cherry-picking"
 end
 
 
-function forgit::rebase -d "git rebase "
+function forgit::rebase -d "git rebase"
     forgit::inside_work_tree || return 1
 
     if set -q FORGIT_LOG_GRAPH_ENABLE
@@ -262,9 +266,12 @@ function forgit::rebase -d "git rebase "
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |$copy_cmd)\"
         $FORGIT_REBASE_FZF_OPTS
     "
-    eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
-        grep -Eo '[a-f0-9]+' | head -1 |
-        xargs -I% git rebase -i %
+    set commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
+        grep -Eo '[a-f0-9]+' | head -1)
+
+    if test $commit
+        git rebase -i "$commit"
+    end
 end
 
 # git ignore generator
