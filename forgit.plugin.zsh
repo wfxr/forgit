@@ -11,7 +11,7 @@ forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
 forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
 forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
-forgit_glo_format=${FORGIT_GLO_FORMAT:-$(echo '%C(auto)%h%d %s %C(black)%C(bold)%cr%reset')}
+forgit_glo_format=${FORGIT_GLO_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%reset}
 
 # git commit viewer
 forgit::log() {
