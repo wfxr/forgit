@@ -11,6 +11,7 @@ forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
 forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
 forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
+forgit_glo_format=${FORGIT_GLO_FORMAT:-$(echo '%C(auto)%h%d %s %C(black)%C(bold)%cr%reset')}
 
 # git commit viewer
 forgit::log() {
@@ -27,7 +28,7 @@ forgit::log() {
     "
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    eval "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' $* $forgit_emojify" |
+    eval "git log $graph --color=always --format='$forgit_glo_format' $* $forgit_emojify" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
@@ -168,7 +169,7 @@ forgit::rebase() {
     local cmd preview opts graph files commit
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    cmd="git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' $* $forgit_emojify"
+    cmd="git log $graph --color=always --format='$forgit_glo_format' $* $forgit_emojify"
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     preview="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
     opts="
@@ -187,7 +188,7 @@ forgit::checkout::branch() {
     [[ $# -ne 0 ]] && { git checkout -b "$*"; return $?; }
     local cmd preview opts
     cmd="git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $forgit_emojify | sed '/^$/d'"
-    preview="git log {} --graph --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' --color=always --abbrev-commit --date=relative"
+    preview="git log {} --graph --pretty=format:'$forgit_glo_format' --color=always --abbrev-commit --date=relative"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --ansi
