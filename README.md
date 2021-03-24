@@ -144,6 +144,7 @@ variables:
 | pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER` |
 | pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER` |
 | pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat` |
+| git log format       | `FORGIT_GLO_FORMAT`   | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset` |
 
 You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
