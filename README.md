@@ -205,7 +205,7 @@ FORGIT_LOG_FZF_OPTS='
 
 | Option              | Description    | Default                                      |
 |---------------------|----------------|----------------------------------------------|
-| `FORGIT_LOG_FORMAT` | git log format | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset` |
+| `FORGIT_LOG_FORMAT` | git log format | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
 
 ### 📦 Optional dependencies
 
