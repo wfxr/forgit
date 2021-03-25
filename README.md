@@ -117,6 +117,8 @@ For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 
 ### ⚙  Options
 
+#### aliases
+
 You can change the default aliases by defining these variables below.
 (To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
 
@@ -134,6 +136,8 @@ forgit_rebase=grb
 forgit_checkout_branch=gcb
 ```
 
+#### pagers
+
 Forgit will use the default configured pager from git (`core.pager`,
 `pager.show`, `pager.diff`) but can be altered with the following environment
 variables:
@@ -145,6 +149,8 @@ variables:
 | pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER` |
 | pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat` |
 | git log format       | `FORGIT_GLO_FORMAT`   | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset` |
+
+#### fzf options
 
 You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
@@ -180,7 +186,7 @@ Complete loading order of fzf options is:
 2. `FORGIT_FZF_DEFAULT_OPTS` (forgit global)
 3. `FORGIT_CMD_FZF_OPTS` (command specific)
 
-**Example**
+Examples:
 
 - `ctrl-d` to drop the selected stash but do not quit fzf (`gss` specific).
 ```
@@ -195,6 +201,11 @@ FORGIT_LOG_FZF_OPTS='
 --bind="ctrl-e:execute(echo {} |grep -Eo [a-f0-9]+ |head -1 |xargs git show |vim -)"
 '
 ```
+#### other options
+
+| Option              | Description    | Default                                      |
+|---------------------|----------------|----------------------------------------------|
+| `FORGIT_LOG_FORMAT` | git log format | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset` |
 
 ### 📦 Optional dependencies
 
