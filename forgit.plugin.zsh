@@ -184,6 +184,30 @@ forgit::rebase() {
     [[ -n "$commit" ]] && git rebase -i "$commit"
 }
 
+forgit::fixup() {
+    forgit::inside_work_tree || return 1
+    git diff --cached --quiet && echo 'Nothing to fixup: there are no staged changes.' && return 1
+    local cmd preview opts graph files commit
+    graph=--graph
+    [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
+    cmd="git log $graph --color=always --format='$forgit_log_format' $* $forgit_emojify"
+    files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*")
+    preview="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |${FORGIT_COPY_CMD:-pbcopy})\"
+        $FORGIT_FIXUP_FZF_OPTS
+    "
+    commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
+        grep -Eo '[a-f0-9]+' | head -1)
+    [[ -n "$commit" ]] && git commit --fixup "$commit" && \
+        # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
+        # GIT_EDITOR=true is needed to skip the editor
+        GIT_EDITOR=true git rebase --autostash -i --autosquash "$commit~1"
+
+}
+
 forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git checkout -b "$*"; return $?; }
@@ -275,4 +299,5 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
     alias "${forgit_rebase:-grb}"='forgit::rebase'
+    alias "${forgit_fixup:-gfu}"='forgit::fixup'
 fi
