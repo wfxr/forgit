@@ -93,6 +93,8 @@ source (curl -sSL git.io/forgit-fish | psub)
 
 - **Interactive `git rebase -i` selector** (`grb`)
 
+- **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
+
 - **Interactive `git checkout` selector** (`gcb`)
 
 ### ⌨  Keybinds
@@ -133,6 +135,7 @@ forgit_clean=gclean
 forgit_stash_show=gss
 forgit_cherry_pick=gcp
 forgit_rebase=grb
+forgit_fixup=gfu
 forgit_checkout_branch=gcb
 ```
 
@@ -178,6 +181,7 @@ Customizing fzf options for each command individually is also supported:
 | `gss`    | `FORGIT_STASH_FZF_OPTS`           |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
 | `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
+| `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
 
 Complete loading order of fzf options is:
