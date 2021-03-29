@@ -203,8 +203,8 @@ forgit::fixup() {
         grep -Eo '[a-f0-9]+' | head -1)
     [[ -n "$commit" ]] && git commit --fixup "$commit" && \
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
-        # GIT_EDITOR=true is needed to skip the editor
-        GIT_EDITOR=true git rebase --autostash -i --autosquash "$commit~1"
+        # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
+        GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$commit~1"
 
 }
 
