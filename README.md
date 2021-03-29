@@ -19,8 +19,8 @@
     <a href="https://github.com/pre-commit/pre-commit">
         <img src="https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white" alt="pre-commit" />
     </a>
-    <a href="https://github.com/wfxr/minimap.vim/graphs/contributors">
-        <img src="https://img.shields.io/github/contributors/wfxr/minimap.vim" alt="Contributors"/>
+    <a href="https://github.com/wfxr/forgit/graphs/contributors">
+        <img src="https://img.shields.io/github/contributors/wfxr/forgit" alt="Contributors"/>
     </a>
 </p>
 
