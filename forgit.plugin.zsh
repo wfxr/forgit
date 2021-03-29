@@ -187,7 +187,7 @@ forgit::rebase() {
 forgit::fixup() {
     forgit::inside_work_tree || return 1
     git diff --cached --quiet && echo 'Nothing to fixup: there are no staged changes.' && return 1
-    local cmd preview opts graph files commit
+    local cmd preview opts graph files target_commit prev_commit
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
     cmd="git log $graph --color=always --format='$forgit_log_format' $* $forgit_emojify"
@@ -199,12 +199,19 @@ forgit::fixup() {
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |${FORGIT_COPY_CMD:-pbcopy})\"
         $FORGIT_FIXUP_FZF_OPTS
     "
-    commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
+    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
         grep -Eo '[a-f0-9]+' | head -1)
-    [[ -n "$commit" ]] && git commit --fixup "$commit" && \
+    if [[ -n "$target_commit" ]] && git commit --fixup "$target_commit"; then
+        # "$commit~" is invalid when the commit is the first commit, but we can use "--root" instead
+        if [[ "$(git rev-parse "$target_commit")" == "$(git rev-list --max-parents=0 HEAD)" ]]; then
+            prev_commit="--root"
+        else
+            prev_commit="$commit~"
+        fi
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
         # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
-        GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$commit~1"
+        GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$prev_commit"
+    fi
 
 }
 
