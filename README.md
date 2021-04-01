@@ -224,6 +224,7 @@ FORGIT_LOG_FZF_OPTS='
 - Commands like `glo`, `gd`, `gcf` and `gclean` accept arguments to restrain the items listed in fzf(eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gclean output/` etc.).
 - `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
+- You can use the commands as sub-commands of `git`, see [#147](https://github.com/wfxr/forgit/issues/147) for details.
 
 ### 📃 License
 
