@@ -256,6 +256,7 @@ function forgit::fixup -d "git fixup"
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
     set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
 
+
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
     else
