@@ -242,6 +242,45 @@ function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
         xargs -I% git cherry-pick %
 end
 
+function forgit::fixup -d "git fixup"
+    forgit::inside_work_tree || return 1
+    git diff --cached --quiet && echo 'Nothing to fixup: there are no staged changes.' && return 1
+
+    if set -q FORGIT_LOG_GRAPH_ENABLE
+        set graph "--graph"
+    else
+        set graph ""
+    end
+
+    set cmd "git log $graph --color=always --format='$forgit_log_format' $argv $forgit_emojify"
+    set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
+    set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+
+    if test -n "$FORGIT_COPY_CMD"
+        set copy_cmd $FORGIT_COPY_CMD
+    else
+        set copy_cmd pbcopy
+    end
+
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |$copy_cmd)\"
+        $FORGIT_FIXUP_FZF_OPTS
+    "
+
+    set target_commit = (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | grep -Eo '[a-f0-9]+' | head -1)
+
+    if test -n "$target_commit" && git commit --fxiup "$target_commit"
+        # "$commit~" is invalid when the commit is the first commit, but we can use "--root" instead
+        set prev_commit "$commit~"
+        if test "(git rev-parse '$target_commit')" = "(git rev-list --max-parents=0 HEAD)"
+            set prev_commit "--root"
+        end
+    end
+
+end
+
 
 function forgit::rebase -d "git rebase"
     forgit::inside_work_tree || return 1
@@ -432,5 +471,11 @@ if test -z "$FORGIT_NO_ALIASES"
         alias $forgit_rebase 'forgit::rebase'
     else
         alias grb 'forgit::rebase'
+    end
+
+    if test -n "$forgit_fixup"
+        alias $forgit_fixup 'forgit::fixup'
+    else
+        alias gfu 'forgit::fixup'
     end
 end
