@@ -16,11 +16,13 @@ set -g forgit_pager        "$FORGIT_PAGER"
 set -g forgit_show_pager   "$FORGIT_SHOW_PAGER"
 set -g forgit_diff_pager   "$FORGIT_DIFF_PAGER"
 set -g forgit_ignore_pager "$FORGIT_IGNORE_PAGER"
+set -g forgit_log_format   "$FORGIT_LOG_FORMAT"
 
 test -z "$forgit_pager";        and set -g forgit_pager        (git config core.pager || echo 'cat')
 test -z "$forgit_show_pager";   and set -g forgit_show_pager   (git config pager.show || echo "$forgit_pager")
 test -z "$forgit_diff_pager";   and set -g forgit_diff_pager   (git config pager.diff || echo "$forgit_pager")
 test -z "$forgit_ignore_pager"; and set -g forgit_ignore_pager (type -q bat >/dev/null 2>&1 && echo 'bat -l gitignore --color=always' || echo 'cat')
+test -z "$forgit_log_format";   and set -g forgit_log_format   "-%C(auto)%h%d %s %C(black)%C(bold)%cr%reset"
 
 # https://github.com/wfxr/emoji-cli
 type -q emojify >/dev/null 2>&1 && set -g forgit_emojify '|emojify'
@@ -52,7 +54,7 @@ function forgit::log -d "git commit viewer"
         set graph ""
     end
 
-    eval "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' $argv $forgit_emojify" |
+    eval "git log $graph --color=always --format='$forgit_log_format' $argv $forgit_emojify" |
         env FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 end
 
@@ -177,7 +179,7 @@ function forgit::checkout::branch -d "git checkout branch selector" --argument-n
     end
 
     set cmd "git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $argv $forgit_emojify | sed '/^\$/d'"
-    set preview "git log {} --graph --pretty=format:'%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' --color=always --abbrev-commit --date=relative"
+    set preview "git log {} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
@@ -249,7 +251,7 @@ function forgit::rebase -d "git rebase"
     else
         set graph ""
     end
-    set cmd "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' $argv $forgit_emojify"
+    set cmd "git log $graph --color=always --format='$forgit_log_format' $argv $forgit_emojify"
 
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
     set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
