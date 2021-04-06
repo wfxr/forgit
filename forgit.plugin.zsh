@@ -206,7 +206,7 @@ forgit::fixup() {
         if [[ "$(git rev-parse "$target_commit")" == "$(git rev-list --max-parents=0 HEAD)" ]]; then
             prev_commit="--root"
         else
-            prev_commit="$commit~"
+            prev_commit="$target_commit~"
         fi
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
         # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
