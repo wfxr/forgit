@@ -22,7 +22,7 @@ test -z "$forgit_pager";        and set -g forgit_pager        (git config core.
 test -z "$forgit_show_pager";   and set -g forgit_show_pager   (git config pager.show || echo "$forgit_pager")
 test -z "$forgit_diff_pager";   and set -g forgit_diff_pager   (git config pager.diff || echo "$forgit_pager")
 test -z "$forgit_ignore_pager"; and set -g forgit_ignore_pager (type -q bat >/dev/null 2>&1 && echo 'bat -l gitignore --color=always' || echo 'cat')
-test -z "$forgit_log_format";   and set -g forgit_log_format   "-%C(auto)%h%d %s %C(black)%C(bold)%cr%reset"
+test -z "$forgit_log_format";   and set -g forgit_log_format   "-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset"
 
 # https://github.com/wfxr/emoji-cli
 type -q emojify >/dev/null 2>&1 && set -g forgit_emojify '|emojify'
@@ -270,14 +270,16 @@ function forgit::fixup -d "git fixup"
         $FORGIT_FIXUP_FZF_OPTS
     "
 
-    set target_commit = (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | grep -Eo '[a-f0-9]+' | head -1)
+    set target_commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | grep -Eo '[a-f0-9]+' | head -1)
 
-    if test -n "$target_commit" && git commit --fxiup "$target_commit"
+    if test -n "$target_commit" && git commit --fixup "$target_commit"
         # "$commit~" is invalid when the commit is the first commit, but we can use "--root" instead
         set prev_commit "$commit~"
         if test "(git rev-parse '$target_commit')" = "(git rev-list --max-parents=0 HEAD)"
             set prev_commit "--root"
         end
+
+        set GIT_SEQUENCE_EDITOR ': git rebase --autostash -i --autosquash "$prev_commit"'
     end
 
 end
