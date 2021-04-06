@@ -273,13 +273,13 @@ function forgit::fixup -d "git fixup"
     set target_commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | grep -Eo '[a-f0-9]+' | head -1)
 
     if test -n "$target_commit" && git commit --fixup "$target_commit"
-        # "$commit~" is invalid when the commit is the first commit, but we can use "--root" instead
+        # "$target_commit~" is invalid when the commit is the first commit, but we can use "--root" instead
         set prev_commit "$target_commit~"
         if test "(git rev-parse '$target_commit')" = "(git rev-list --max-parents=0 HEAD)"
             set prev_commit "--root"
         end
 
-        set GIT_SEQUENCE_EDITOR ': git rebase --autostash -i --autosquash "$prev_commit"'
+        GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$prev_commit"
     end
 
 end
