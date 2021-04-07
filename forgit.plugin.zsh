@@ -202,11 +202,11 @@ forgit::fixup() {
     target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
         grep -Eo '[a-f0-9]+' | head -1)
     if [[ -n "$target_commit" ]] && git commit --fixup "$target_commit"; then
-        # "$commit~" is invalid when the commit is the first commit, but we can use "--root" instead
+        # "$target_commit~" is invalid when the commit is the first commit, but we can use "--root" instead
         if [[ "$(git rev-parse "$target_commit")" == "$(git rev-list --max-parents=0 HEAD)" ]]; then
             prev_commit="--root"
         else
-            prev_commit="$commit~"
+            prev_commit="$target_commit~"
         fi
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
         # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
