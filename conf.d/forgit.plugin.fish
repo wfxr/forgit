@@ -147,8 +147,16 @@ function forgit::reset::head -d "git reset HEAD (unstage) selector"
 end
 
 # git checkout-restore selector
-function forgit::checkout::file -d "git checkout-file selector"
+function forgit::checkout::file -d "git checkout-file selector" --argument-names 'file_name'
     forgit::inside_work_tree || return 1
+
+    if test -n "$file_name"
+        git checkout -- "$file_name"
+        set checkout_status $status
+        git status --short
+        return $checkout_status
+    end
+
 
     set cmd "git diff --color=always -- {} | $forgit_diff_pager"
     set opts "
@@ -169,13 +177,50 @@ function forgit::checkout::file -d "git checkout-file selector"
     echo 'Nothing to restore.'
 end
 
+function forgit::checkout::commit -d "git checkout commit selector" --argument-names 'commit_id'
+    forgit::inside_work_tree || return 1
+
+    if test -n "$commit_id"
+        git checkout "$commit_id"
+        set checkout_status $status
+        git status --short
+        return $checkout_status
+    end
+
+    if test -n "$FORGIT_COPY_CMD"
+        set copy_cmd $FORGIT_COPY_CMD
+    else
+        set copy_cmd pbcopy
+    end
+
+
+    set cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % | $forgit_show_pager"
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' | $copy_cmd)\"
+        $FORGIT_COMMIT_FZF_OPTS
+    "
+
+    if set -q FORGIT_LOG_GRAPH_ENABLE
+        set graph "--graph"
+    else
+        set graph ""
+    end
+
+    eval "git log $graph --color=always --format='$forgit_log_format' $forgit_emojify" |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git checkout % --
+end
+
+
 function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'branch_name'
     forgit::inside_work_tree || return 1
 
     if test -n "$branch_name"
         git checkout -b "$branch_name"
+        set checkout_status $status
         git status --short
-        return
+        return $checkout_status
     end
 
     set cmd "git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $argv $forgit_emojify | sed '/^\$/d'"
@@ -183,7 +228,7 @@ function forgit::checkout::branch -d "git checkout branch selector" --argument-n
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m --tiebreak=index --ansi
+        +s +m --tiebreak=index 
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
     eval "$cmd" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | xargs -I% git checkout %
@@ -255,7 +300,6 @@ function forgit::fixup -d "git fixup"
     set cmd "git log $graph --color=always --format='$forgit_log_format' $argv $forgit_emojify"
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
     set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
-
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
@@ -481,4 +525,11 @@ if test -z "$FORGIT_NO_ALIASES"
     else
         alias gfu 'forgit::fixup'
     end
+
+    if test -n "$forgit_checkout_commit"
+        alias $forgit_checkout_commit 'forgit::checkout::commit'
+    else
+        alias gco 'forgit::checkout::commit'
+    end
+
 end
