@@ -107,21 +107,6 @@ forgit::reset::head() {
     echo 'Nothing to unstage.'
 }
 
-# git checkout-restore selector
-forgit::checkout::file() {
-    forgit::inside_work_tree || return 1
-    local cmd files opts
-    cmd="git diff --color=always -- {} | $forgit_diff_pager"
-    opts="
-        $FORGIT_FZF_DEFAULT_OPTS
-        -m -0
-        $FORGIT_CHECKOUT_FILE_FZF_OPTS
-    "
-    files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout % && git status --short && return
-    echo 'Nothing to restore.'
-}
-
 # git stash viewer
 forgit::stash::show() {
     forgit::inside_work_tree || return 1
@@ -215,6 +200,22 @@ forgit::fixup() {
 
 }
 
+# git checkout-file selector
+forgit::checkout::file() {
+    forgit::inside_work_tree || return 1
+    [[ $# -ne 0 ]] && { git checkout -- "$*"; return $?; }
+    local cmd files opts
+    cmd="git diff --color=always -- {} | $forgit_diff_pager"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+        $FORGIT_CHECKOUT_FILE_FZF_OPTS
+    "
+    files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout %
+}
+
+# git checkout-branch selector
 forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git checkout -b "$*"; return $?; }
@@ -223,10 +224,28 @@ forgit::checkout::branch() {
     preview="git log {} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m --tiebreak=index --ansi
+        +s +m --tiebreak=index
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
     eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | xargs -I% git checkout %
+}
+
+# git checkout-commit selector
+forgit::checkout::commit() {
+    forgit::inside_work_tree || return 1
+    [[ $# -ne 0 ]] && { git checkout "$*"; return $?; }
+    local cmd opts graph
+    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % | $forgit_show_pager"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |${FORGIT_COPY_CMD:-pbcopy})\"
+        $FORGIT_COMMIT_FZF_OPTS
+    "
+    graph=--graph
+    [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
+    eval "git log $graph --color=always --format='$forgit_log_format' $forgit_emojify" |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git checkout % --
 }
 
 # git ignore generator
@@ -302,6 +321,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_ignore:-gi}"='forgit::ignore'
     alias "${forgit_checkout_file:-gcf}"='forgit::checkout::file'
     alias "${forgit_checkout_branch:-gcb}"='forgit::checkout::branch'
+    alias "${forgit_checkout_commit:-gco}"='forgit::checkout::commit'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'

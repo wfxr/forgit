@@ -85,6 +85,10 @@ source (curl -sSL git.io/forgit-fish | psub)
 
 - **Interactive `git checkout <file>` selector** (`gcf`)
 
+- **Interactive `git checkout <branch>` selector** (`gcb`)
+
+- **Interactive `git checkout <commit>` selector** (`gco`)
+
 - **Interactive `git stash` viewer** (`gss`)
 
 - **Interactive `git clean` selector** (`gclean`)
@@ -94,8 +98,6 @@ source (curl -sSL git.io/forgit-fish | psub)
 - **Interactive `git rebase -i` selector** (`grb`)
 
 - **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
-
-- **Interactive `git checkout` selector** (`gcb`)
 
 ### ⌨  Keybinds
 
@@ -131,12 +133,13 @@ forgit_add=ga
 forgit_reset_head=grh
 forgit_ignore=gi
 forgit_checkout_file=gcf
+forgit_checkout_branch=gcb
+forgit_checkout_commit=gco
 forgit_clean=gclean
 forgit_stash_show=gss
 forgit_cherry_pick=gcp
 forgit_rebase=grb
 forgit_fixup=gfu
-forgit_checkout_branch=gcb
 ```
 
 #### pagers
@@ -178,11 +181,12 @@ Customizing fzf options for each command individually is also supported:
 | `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
 | `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_FZF_OPTS`   |
+| `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
+| `gco`    | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`           |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
 | `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
 | `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
-| `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
 
 Complete loading order of fzf options is:
 
@@ -221,7 +225,7 @@ FORGIT_LOG_FZF_OPTS='
 
 ### 💡 Tips
 
-- Commands like `glo`, `gd`, `gcf` and `gclean` accept arguments to restrain the items listed in fzf(eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gclean output/` etc.).
+- Most of the commands accept optional arguments (eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
 - `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
 - You can use the commands as sub-commands of `git`, see [#147](https://github.com/wfxr/forgit/issues/147) for details.
