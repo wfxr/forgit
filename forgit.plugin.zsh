@@ -203,7 +203,7 @@ forgit::fixup() {
 # git checkout-file selector
 forgit::checkout::file() {
     forgit::inside_work_tree || return 1
-    [[ $# -ne 0 ]] && { git checkout -- "$*"; return $?; }
+    [[ $# -ne 0 ]] && { git checkout -- "$@"; return $?; }
     local cmd files opts
     cmd="git diff --color=always -- {} | $forgit_diff_pager"
     opts="
@@ -218,7 +218,7 @@ forgit::checkout::file() {
 # git checkout-branch selector
 forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
-    [[ $# -ne 0 ]] && { git checkout -b "$*"; return $?; }
+    [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
     local cmd preview opts
     cmd="git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $forgit_emojify | sed '/^$/d'"
     preview="git log {} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
@@ -233,7 +233,7 @@ forgit::checkout::branch() {
 # git checkout-commit selector
 forgit::checkout::commit() {
     forgit::inside_work_tree || return 1
-    [[ $# -ne 0 ]] && { git checkout "$*"; return $?; }
+    [[ $# -ne 0 ]] && { git checkout "$@"; return $?; }
     local cmd opts graph
     cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % | $forgit_show_pager"
     opts="
