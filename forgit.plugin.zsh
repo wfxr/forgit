@@ -219,15 +219,20 @@ forgit::checkout::file() {
 forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
-    local cmd preview opts
-    cmd="git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $forgit_emojify | sed '/^$/d'"
-    preview="git log {} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    local cmd preview opts branch
+    cmd="git branch --color=always --verbose --all | sort -k1.1,1.1 -r"
+    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m --tiebreak=index
+        +s +m --tiebreak=index --header-lines=1
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
-    eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | xargs -I% git checkout %
+    branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | awk '{print $1}')"
+    [[ -z "$branch" ]] && return 1
+    # track the remote branch if possible
+    if ! git checkout --track "$branch" 2>/dev/null; then
+        git checkout "$branch"
+    fi
 }
 
 # git checkout-commit selector
