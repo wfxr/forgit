@@ -59,11 +59,11 @@ function forgit::log -d "git commit viewer"
 end
 
 ## git diff viewer
-function forgit::diff -d "git diff viewer" 
+function forgit::diff -d "git diff viewer"
     forgit::inside_work_tree || return 1
     if count $argv > /dev/null
-        if git rev-parse "$1" > /dev/null 2>&1
-            set commit "$1" && set files "$2"
+        if git rev-parse "$argv[1]" > /dev/null 2>&1
+            set commit "$argv[1]" && set files "$argv[2..]"
         else
             set files "$argv"
         end
@@ -228,7 +228,7 @@ function forgit::checkout::branch -d "git checkout branch selector" --argument-n
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m --tiebreak=index 
+        +s +m --tiebreak=index
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
     eval "$cmd" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | xargs -I% git checkout %
