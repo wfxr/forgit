@@ -213,25 +213,33 @@ function forgit::checkout::commit -d "git checkout commit selector" --argument-n
 end
 
 
-function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'branch_name'
+function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'input_branch_name'
     forgit::inside_work_tree || return 1
 
-    if test -n "$branch_name"
-        git checkout -b "$branch_name"
+    if test -n "$input_branch_name"
+        git checkout -b "$input_branch_name"
         set checkout_status $status
         git status --short
         return $checkout_status
     end
 
-    set cmd "git branch --color=always --verbose --all --format=\"%(if:equals=HEAD)%(refname:strip=3)%(then)%(else)%(refname:short)%(end)\" $argv $forgit_emojify | sed '/^\$/d'"
-    set preview "git log {} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    set cmd "git branch --color=always --verbose --all | sort -k1.1,1.1 -r"
+    set preview "git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m --tiebreak=index
+        +s +m --tiebreak=index --header-lines=1
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
-    eval "$cmd" | env FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | xargs -I% git checkout %
+
+    set branch (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | awk '{print $1}')
+
+    test -z "$branch" && return 1
+
+    # track the remote branch if possible
+    if not git checkout --track "$branch" 2>/dev/null
+        git checkout "$branch"
+    end
 end
 
 # git stash viewer
@@ -271,7 +279,7 @@ end
 function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
     forgit::inside_work_tree || return 1
     set base (git branch --show-current)
-    if test -n "$target"
+    if test -z "$target"
         echo "Please specify target branch"
         return 1
     end
