@@ -55,13 +55,8 @@ forgit::diff() {
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
-# git add selector
-forgit::add() {
-    forgit::inside_work_tree || return 1
-    # Add files if passed as arguments
-    [[ $# -ne 0 ]] && git add "$@" && git status -su && return
-
-    local changed unmerged untracked files opts preview extract
+forgit::choose_from_changed() {
+    local changed unmerged untracked opts preview extract
     changed=$(git config --get-color color.status.changed red)
     unmerged=$(git config --get-color color.status.unmerged red)
     untracked=$(git config --get-color color.status.untracked red)
@@ -81,13 +76,23 @@ forgit::add() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
-        $FORGIT_ADD_FZF_OPTS
+        $1
     "
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" |
         sh -c "$extract")
+}
+
+# git add selector
+forgit::add() {
+    forgit::inside_work_tree || return 1
+    # Add files if passed as arguments
+    [[ $# -ne 0 ]] && git add "$@" && git status -su && return
+
+    local files
+    forgit::choose_from_changed $FORGIT_ADD_FZF_OPTS
     [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status -su && return
     echo 'Nothing to add.'
 }
@@ -105,6 +110,17 @@ forgit::reset::head() {
     files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
     echo 'Nothing to unstage.'
+}
+
+forgit::stash::push() {
+    forgit::inside_work_tree || return 1
+    [[ $# -ne 0 ]] && git stash push "$@" && git status -su && return
+
+    local files
+    forgit::choose_from_changed $FORGIT_STASH_PUSH_FZF_OPTS
+
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 git stash push -u -- && git status -su && return
+    echo 'Nothing to stash.'
 }
 
 # git stash viewer
@@ -347,6 +363,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_checkout_branch:-gcb}"='forgit::checkout::branch'
     alias "${forgit_checkout_commit:-gco}"='forgit::checkout::commit'
     alias "${forgit_clean:-gclean}"='forgit::clean'
+    alias "${forgit_stash_push:-gsp}"='forgit::stash::push'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
     alias "${forgit_rebase:-grb}"='forgit::rebase'
