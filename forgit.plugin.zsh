@@ -112,6 +112,7 @@ forgit::reset::head() {
     echo 'Nothing to unstage.'
 }
 
+# git stash selector
 forgit::stash::push() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && git stash push "$@" && git status -su && return
@@ -231,6 +232,7 @@ forgit::checkout::file() {
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout %
 }
 
+# git checkout-file from other branch selector
 forgit::checkout::file_from_branch() {
     forgit::inside_work_tree || return 1
     [[ $# -eq 0 ]] && { echo "No branch name given."; return 1; }
@@ -242,10 +244,7 @@ forgit::checkout::file_from_branch() {
         $FORGIT_CHECKOUT_FILE_FROM_BRANCH_FZF_OPTS
     "
 
-    files="$(git ls-tree -r --name-only $1 \
-        | xargs -I% sh -c "! git diff -s --exit-code $1 -- % && echo %" \
-        | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
-
+    files="$(git diff --name-only $1 | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout $@ -- %
 }
 
