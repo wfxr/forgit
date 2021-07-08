@@ -55,6 +55,8 @@ forgit::diff() {
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
+# Inner function to list changed files in fzf with different markers for changed, unmerged, and untracked status.
+# Accepts additional fzf options as first parameter.
 forgit::choose_from_changed() {
     local changed unmerged untracked opts preview extract
     changed=$(git config --get-color color.status.changed red)
@@ -78,6 +80,7 @@ forgit::choose_from_changed() {
         -0 -m --nth 2..,..
         $1
     "
+    # Files selected by user to be read by calling function.
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
@@ -244,7 +247,9 @@ forgit::checkout::file_from_branch() {
         $FORGIT_CHECKOUT_FILE_FROM_BRANCH_FZF_OPTS
     "
 
-    files="$(git diff --name-only $1 | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
+    # "--relative" & "-- .": only show files in working dir
+    # "--diff-filter=MD": only show modified and deleted files present in the target branch
+    files="$(git diff --name-only --relative --diff-filter=MD $1 -- . | FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd")"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout $@ -- %
 }
 
