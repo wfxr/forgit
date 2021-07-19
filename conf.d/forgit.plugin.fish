@@ -499,7 +499,7 @@ if test -z "$FORGIT_NO_ALIASES"
     end
 
     if test -n "$forgit_checkout_branch"
-        alias $forgit_branch 'forgit::checkout::branch'
+        alias $forgit_checkout_branch 'forgit::checkout::branch'
     else
         alias gcb 'forgit::checkout::branch'
     end
