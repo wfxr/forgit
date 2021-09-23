@@ -217,7 +217,7 @@ function forgit::checkout::branch -d "git checkout branch selector" --argument-n
     forgit::inside_work_tree || return 1
 
     if test -n "$input_branch_name"
-        git checkout -b "$input_branch_name"
+        git checkout -B "$input_branch_name"
         set checkout_status $status
         git status --short
         return $checkout_status
