@@ -142,13 +142,15 @@ forgit_rebase=grb
 forgit_fixup=gfu
 ```
 
-You can also use git aliases. To do this:
-1. Set the `FORGIT_STANDALONE` flag (example: `export FORGIT_STANDALONE=1`)
-2. Add the bin directory in `FORGIT_INSTALL_DIR` to your `PATH` (example:
-`PATH="$PATH:FORGIT_INSTALL_DIR/bin`)
-3. Add (aliases in git)[https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases] (example:
-`git config --global alias.cf 'forgit checkout_file'`)
-4. Use the alias in git instead of the shell (example: `git cf`)
+Or if you prefer, you can also use git aliases (instead of shell aliases). To do this:
+1. Set the `FORGIT_STANDALONE` flag
+    - example: `export FORGIT_STANDALONE=1`
+2. Add the bin directory in `FORGIT_INSTALL_DIR` to your `PATH`
+    - example: `PATH="$PATH:FORGIT_INSTALL_DIR/bin`
+3. Add (aliases in git)[https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases]
+    - example: `git config --global alias.cf 'forgit checkout_file'`
+4. Use the alias in git instead of the shell
+    - example: `git cf`
 
 #### pagers
 
