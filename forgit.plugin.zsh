@@ -334,6 +334,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_fixup:-gfu}"='forgit::fixup'
 fi
 
+# set installation path (for use by `bin/git-forgit`)
 if [[ -n "$FORGIT_STANDALONE" ]]; then
     if [[ -n "$ZSH_VERSION" ]]; then
         FORGIT_INSTALL_DIR="$( dirname -- "$0")"
