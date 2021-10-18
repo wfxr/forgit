@@ -5,4 +5,4 @@ source "$FORGIT_INSTALL_DIR/forgit.plugin.zsh"
 
 cmd="$1"
 shift
-forgit::${cmd/-/::} "$@"
+forgit::${cmd/_/::} "$@"
