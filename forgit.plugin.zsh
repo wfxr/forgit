@@ -333,3 +333,18 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_rebase:-grb}"='forgit::rebase'
     alias "${forgit_fixup:-gfu}"='forgit::fixup'
 fi
+
+if [[ -n "$FORGIT_STANDALONE" ]]; then
+    if [[ -n "$ZSH_VERSION" ]]; then
+        FORGIT_INSTALL_DIR="$( dirname -- "$0")"
+    elif [[ -n "$BASH_VERSION" ]]; then
+        FORGIT_INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
+    else
+        forgit::warn "Shell not supported for FORGIT_STANDLONE (only zsh and bash)"
+    fi
+
+    if [[ -n "$FORGIT_INSTALL_DIR" ]]; then
+        export FORGIT_INSTALL_DIR
+    fi
+fi
+
