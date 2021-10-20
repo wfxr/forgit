@@ -12,6 +12,8 @@ function forgit::inside_work_tree
     git rev-parse --is-inside-work-tree >/dev/null;
 end
 
+set -x FORGIT_INSTALL_DIR (cd (dirname (dirname (status -f))); and pwd)
+
 set -g forgit_pager        "$FORGIT_PAGER"
 set -g forgit_show_pager   "$FORGIT_SHOW_PAGER"
 set -g forgit_diff_pager   "$FORGIT_DIFF_PAGER"
