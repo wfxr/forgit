@@ -229,8 +229,16 @@ forgit::checkout::branch() {
         "
     branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | awk '{print $1}')"
     [[ -z "$branch" ]] && return 1
+    
     # track the remote branch if possible
-    if ! git checkout --track "$branch" 2>/dev/null; then
+    if [[ "$branch" == "remotes/origin/"* ]]; then
+        if [[ -n $(git branch | grep -w "${branch#remotes/origin/}") ]]; then
+            # hack to force creating a new branch which tracks the remote if a local branch already exists
+            git checkout -b "track/${branch#remotes/origin/}" --track "$branch"
+        elif ! git checkout --track "$branch" 2>/dev/null; then
+            git checkout "$branch"
+        fi
+    else
         git checkout "$branch"
     fi
 }
