@@ -218,7 +218,7 @@ forgit::checkout::file() {
 # git checkout-branch selector
 forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
-    [[ $# -ne 0 ]] && { git checkout -B "$@"; return $?; }
+    [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
     local cmd preview opts branch
     cmd="git branch --color=always --verbose --all | sort -k1.1,1.1 -r"
     preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
