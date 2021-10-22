@@ -123,6 +123,8 @@ For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 
 #### aliases
 
+##### shell
+
 You can change the default aliases by defining these variables below.
 (To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
 
@@ -140,6 +142,37 @@ forgit_stash_show=gss
 forgit_cherry_pick=gcp
 forgit_rebase=grb
 forgit_fixup=gfu
+```
+
+#### git
+
+You can use git aliases by making `git-forgit` available in `$PATH`:
+
+```sh
+# after `forgit` was loaded
+export PATH="$PATH:$FORGIT_INSTALL_DIR/bin"
+```
+
+*Some plugin managers can help do this.*
+
+Then any forgit command will be a subcommand of git:
+
+```
+$ git forgit log
+$ git forgit add
+$ git forgit diff
+```
+
+Optionally you can add [aliases in git](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases):
+
+```sh
+git config --global alias.cf 'forgit checkout_file'
+```
+
+And use the alias in git:
+
+```sh
+git cf
 ```
 
 #### pagers

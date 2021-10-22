@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# This file is a bridge between forgit and git itself. This makes forgit a
+# subcommand of git, and forwards all arguments on to forgit. So, all of these
+# commands will work as expected:
+#
+# `git forgit log`
+# `git forgit checkout_file`
+# `git forgit checkout_file README.md`
+#
+# This gives users the choice to set aliases inside of their git config instead
+# of their shell config if they prefer.
+
+set -e
+
+source "$FORGIT_INSTALL_DIR/forgit.plugin.zsh"
+
+cmd="$1"
+shift
+forgit::${cmd/_/::} "$@"
