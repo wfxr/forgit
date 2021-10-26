@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
+        os: [macos-latest, ubuntu-18.04, ubuntu-20.04]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
