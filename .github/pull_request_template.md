@@ -24,8 +24,8 @@
 
 - Shell
     - [ ] bash
-    - [ ] zsh 
-    - [ ] fish 
+    - [ ] zsh
+    - [ ] fish
 - OS
     - [ ] Linux
     - [ ] Mac OS X
