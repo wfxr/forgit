@@ -95,9 +95,9 @@ function forgit::add -d "git add selector"
     set extract_file "
         sed 's/^[[:space:]]*//' |           # remove leading whitespace
         cut -d ' ' -f 2- |                  # cut the line after the M or ??, this leaves just the filename
-        sed 's/.* -> //' |                  # for rename case
-        sed -e 's/^\\\"//' -e 's/\\\"\$//'  # removes surrounding quotes
+        sed 's/.* -> //'                    # for rename case
     "
+
     set preview "
         set file (echo {} | $extract_file)
         # exit
