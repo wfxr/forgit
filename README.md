@@ -131,6 +131,8 @@ You can change the default aliases by defining these variables below.
 ``` bash
 forgit_log=glo
 forgit_diff=gd
+forgit_diff_cached=gdca
+forgit_diff_staged=gds
 forgit_add=ga
 forgit_reset_head=grh
 forgit_ignore=gi

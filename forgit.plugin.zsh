@@ -331,6 +331,8 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_reset_head:-grh}"='forgit::reset::head'
     alias "${forgit_log:-glo}"='forgit::log'
     alias "${forgit_diff:-gd}"='forgit::diff'
+    alias "${forgit_diff_cached:-gdca}"='forgit::diff --cached'
+    alias "${forgit_diff_staged:-gds}"='forgit::diff --staged'
     alias "${forgit_ignore:-gi}"='forgit::ignore'
     alias "${forgit_checkout_file:-gcf}"='forgit::checkout::file'
     alias "${forgit_checkout_branch:-gcb}"='forgit::checkout::branch'

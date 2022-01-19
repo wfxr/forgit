@@ -488,6 +488,18 @@ if test -z "$FORGIT_NO_ALIASES"
         alias gd 'forgit::diff'
     end
 
+    if test -n "$forgit_diff_cached"
+        alias $forgit_diff_cached 'forgit::diff'
+    else
+        alias gdca 'forgit::diff --cached'
+    end
+
+    if test -n "$forgit_diff_staged"
+        alias $forgit_diff_staged 'forgit::diff --staged'
+    else
+        alias gds 'forgit::diff --staged'
+    end
+
     if test -n "$forgit_ignore"
         alias $forgit_ignore 'forgit::ignore'
     else
