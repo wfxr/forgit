@@ -136,18 +136,32 @@ forgit::clean() {
 }
 
 forgit::cherry::pick() {
-    local base target preview opts
-    base=$(git branch --show-current)
-    [[ -z $1 ]] && echo "Please specify target branch" && return 1
-    target="$1"
-    preview="echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
-    opts="
-        $FORGIT_FZF_DEFAULT_OPTS
-        -m -0
-    "
-    git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
-        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | cut -d' ' -f1 |
-        xargs -I% git cherry-pick %
+    if [ -z "$1" ]; then
+        local cmd opts graph
+        cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % | $forgit_show_pager"
+        opts="
+            $FORGIT_FZF_DEFAULT_OPTS
+            +s +m --tiebreak=index
+            --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |${FORGIT_COPY_CMD:-pbcopy})\"
+            $FORGIT_COMMIT_FZF_OPTS
+        "
+        graph=--graph
+        [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
+        eval "git log $graph --color=always --format='$forgit_log_format' $forgit_emojify" |
+            FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git checkout % --
+    else
+        local base target preview opts
+        base=$(git branch --show-current)
+        target="$1"
+        preview="echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
+        opts="
+            $FORGIT_FZF_DEFAULT_OPTS
+            -m -0
+        "
+        git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
+            FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" | cut -d' ' -f1 |
+            xargs -I% git cherry-pick %
+    fi
 }
 
 forgit::rebase() {
