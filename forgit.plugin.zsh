@@ -29,7 +29,7 @@ forgit::log() {
     "
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    eval "git log $graph --color=always --format='$forgit_log_format' $* $forgit_emojify" |
+    eval "git log $graph --color=always --format="$forgit_log_format" $* $forgit_emojify" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
