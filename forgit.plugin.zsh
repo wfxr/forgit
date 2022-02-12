@@ -243,6 +243,23 @@ forgit::checkout::branch() {
     fi
 }
 
+# git checkout-tag selector
+forgit::checkout::tag() {
+    forgit::inside_work_tree || return 1
+    [[ $# -ne 0 ]] && { git checkout "$@"; return $?; }
+    local cmd opts preview
+    cmd="git tag -l --sort=-v:refname"
+    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        $FORGIT_CHECKOUT_TAG_FZF_OPTS
+    "
+    tag="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")"
+    [[ -z "$tag" ]] && return 1
+    git checkout "$tag"
+}
+
 # git checkout-commit selector
 forgit::checkout::commit() {
     forgit::inside_work_tree || return 1
@@ -335,6 +352,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_checkout_file:-gcf}"='forgit::checkout::file'
     alias "${forgit_checkout_branch:-gcb}"='forgit::checkout::branch'
     alias "${forgit_checkout_commit:-gco}"='forgit::checkout::commit'
+    alias "${forgit_checkout_tag:-gct}"='forgit::checkout::tag'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
