@@ -17,7 +17,7 @@ forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Cres
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
-    local cmd opts graph files
+    local cmd opts graph files log_format
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
     opts="
@@ -29,7 +29,8 @@ forgit::log() {
     "
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    eval "git log $graph --color=always --format='$forgit_log_format' $* $forgit_emojify" |
+    log_format=${FORGIT_GLO_FORMAT:-$forgit_log_format}
+    eval "git log $graph --color=always --format='$log_format' $* $forgit_emojify" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
