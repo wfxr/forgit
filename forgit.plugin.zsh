@@ -49,13 +49,13 @@ forgit::diff() {
         fi
     }
     repo="$(git rev-parse --show-toplevel)"
-    cmd="echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commits -- '$repo/%' | $forgit_diff_pager"
+    cmd="cd $repo && echo {} |sed 's/.*] *//' |xargs git diff --color=always $commits -- | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($cmd |LESS='-r' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "git diff --name-status $commits -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
+    eval "git diff --name-status $commits -- ${files[*]} | sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]\t\2/'" | expand -t 8 |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
