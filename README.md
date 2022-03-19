@@ -91,6 +91,8 @@ source (curl -sSL git.io/forgit-fish | psub)
 
 - **Interactive `git checkout <commit>` selector** (`gco`)
 
+- **Interactive `git revert <commit>` selector** (`grc`)
+
 - **Interactive `git stash` viewer** (`gss`)
 
 - **Interactive `git clean` selector** (`gclean`)
@@ -140,6 +142,7 @@ forgit_checkout_file=gcf
 forgit_checkout_branch=gcb
 forgit_checkout_tag=gct
 forgit_checkout_commit=gco
+forgit_revert_commit=grc
 forgit_clean=gclean
 forgit_stash_show=gss
 forgit_cherry_pick=gcp
@@ -220,6 +223,7 @@ Customizing fzf options for each command individually is also supported:
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
 | `gct`    | `FORGIT_CHECKOUT_TAG_FZF_OPTS`    |
 | `gco`    | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
+| `grc`    | `FORGIT_REVERT_COMMIT_OPTS`       |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`           |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
 | `grb`    | `FORGIT_REBASE_FZF_OPTS`          |

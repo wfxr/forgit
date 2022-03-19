@@ -278,6 +278,28 @@ forgit::checkout::commit() {
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git checkout % --
 }
 
+# git revert-commit selector
+forgit::revert::commit() {
+    forgit::inside_work_tree || return 1
+    [[ $# -ne 0 ]] && { git revert "$@"; return $?; }
+    local cmd opts files preview commits
+    cmd="git log --graph --color=always --format='$forgit_log_format' $* $forgit_emojify"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s --tiebreak=index
+        $FORGIT_REVERT_COMMIT_OPTS
+    "
+    files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
+    preview="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+    commits="$(eval "$cmd" |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m |
+        grep -Eo '^\*\s[a-f0-9]+' |
+        cut -c 3- |
+        tr $'\n' ' ')"
+    [[ -z "$commits" ]] && return 1
+    eval "git revert $commits"
+}
+
 # git ignore generator
 export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
 export FORGIT_GI_REPO_LOCAL="${FORGIT_GI_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME/.cache}/forgit/gi/repos/dvcs/gitignore}"
@@ -352,6 +374,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_checkout_file:-gcf}"='forgit::checkout::file'
     alias "${forgit_checkout_branch:-gcb}"='forgit::checkout::branch'
     alias "${forgit_checkout_commit:-gco}"='forgit::checkout::commit'
+    alias "${forgit_revert_commit:-grc}"='forgit::revert::commit'
     alias "${forgit_checkout_tag:-gct}"='forgit::checkout::tag'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
