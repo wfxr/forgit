@@ -427,6 +427,37 @@ function forgit::ignore -d "git ignore generator"
      forgit::ignore::get $args
 end
 
+function forgit::revert::commit --argument-names 'commit_hash'
+    if test -n "$commit_hash"
+        git revert -- "$commit_hash"
+        set revert_status $status
+        git status --short
+        return $revert_status
+    end
+
+    set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s --tiebreak=index
+        --preview=\"$preview\" 
+        $FORGIT_REVERT_COMMIT_OPTS
+    "
+
+    set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p') # extract files parameters for `git show` command
+
+    set cmd "git log --graph --color=always --format='$forgit_log_format' $argv $forgit_emojify"
+
+    set commits (eval $cmd |
+        FZF_DEFAULT_OPTS="$opts" fzf -m |
+        string match -r "[a-f0-9]+")
+
+    if test -z "$commits"
+        return 1
+    end
+
+    git revert $commits
+end
+
 function forgit::ignore::update
     if test -d "$FORGIT_GI_REPO_LOCAL"
         forgit::info 'Updating gitignore repo...'
@@ -451,12 +482,13 @@ function forgit::ignore::get
 end
 
 function forgit::ignore::list
-    find "$FORGIT_GI_TEMPLATES" -print |sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
+    find "$FORGIT_GI_TEMPLATES" -print | sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
 end
 
 function forgit::ignore::clean
-    setopt localoptions rmstarsilent
-    [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
+    if test -d "$FORGIT_GI_REPO_LOCAL"
+        rm -rf "$FORGIT_GI_REPO_LOCAL"
+    end
 end
 
 set -g FORGIT_FZF_DEFAULT_OPTS "
@@ -552,6 +584,12 @@ if test -z "$FORGIT_NO_ALIASES"
         alias $forgit_checkout_commit 'forgit::checkout::commit'
     else
         alias gco 'forgit::checkout::commit'
+    end
+
+    if test -n "$forgit_revert_commit"
+        alias $forgit_revert_commit 'forgit::revert::commit'
+    else
+        alias grc 'forgit::revert::commit'
     end
 
 end
