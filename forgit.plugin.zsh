@@ -35,7 +35,6 @@ forgit::log() {
         FZF_DEFAULT_OPTS="$opts" fzf
 }
 
-
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
