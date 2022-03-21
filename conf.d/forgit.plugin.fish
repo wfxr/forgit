@@ -51,13 +51,19 @@ function forgit::log -d "git commit viewer"
         $FORGIT_LOG_FZF_OPTS
     "
 
+    if test -n "$FORGIT_GLO_FORMAT"
+        set log_format "$FORGIT_GLO_FORMAT"
+    else
+        set log_format "$forgit_log_format"
+    end
+
     if set -q FORGIT_LOG_GRAPH_ENABLE
         set graph "--graph"
     else
         set graph ""
     end
 
-    eval "git log $graph --color=always --format='$forgit_log_format' $argv $forgit_emojify" |
+    eval "git log $graph --color=always --format='$log_format' $argv $forgit_emojify" |
         env FZF_DEFAULT_OPTS="$opts" fzf 
 end
 
@@ -80,6 +86,7 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
     set repo (git rev-parse --show-toplevel)
     set preview "echo {} | sed 's/.*]  *//' | sed 's/ -> / /' | xargs -I% git diff --color=always $commits -- '$repo/%' | $forgit_diff_pager"
 
+    
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($preview |env LESS='-r' less)\"
