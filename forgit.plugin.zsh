@@ -37,22 +37,27 @@ forgit::log() {
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
-    local cmd files opts commit repo
+    local cmd files opts commits repo
     [[ $# -ne 0 ]] && {
         if git rev-parse "$1" -- &>/dev/null ; then
-            commit="$1" && files=("${@:2}")
+            if [[ $# -gt 1 ]] && git rev-parse "$2" -- &>/dev/null; then
+                commits="$1 $2" && files=("${@:3}")
+            else
+                commits="$1" && files=("${@:2}")
+            fi
         else
             files=("$@")
         fi
     }
     repo="$(git rev-parse --show-toplevel)"
-    cmd="echo {} |sed 's/.*]  //' |xargs -I% git diff --color=always $commit -- '$repo/%' | $forgit_diff_pager"
+    cmd="cd $repo && echo {} |sed 's/.*] *//' | sed 's/  ->  / /' |xargs git diff --color=always $commits -- | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($cmd |LESS='-r' less)\"
         $FORGIT_DIFF_FZF_OPTS
     "
-    eval "git diff --name-status $commit -- ${files[*]} | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'" |
+    eval "git diff --name-status $commits -- ${files[*]} | sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]\t\2/'" |
+        sed 's/\t/  ->  /2' | expand -t 8 |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd"
 }
 
