@@ -84,8 +84,7 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
     end
 
     set repo (git rev-parse --show-toplevel)
-    set preview "echo {} | sed 's/.*]  *//' | sed 's/ -> / /' | xargs -I% git diff --color=always $commits -- '$repo/%' | $forgit_diff_pager"
-
+    set preview "cd $repo && echo {} | sed 's/.*] *//' | sed 's/  ->  / /' | xargs git diff --color=always $commits -- | $forgit_diff_pager"
     
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
@@ -94,10 +93,12 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
         $FORGIT_DIFF_FZF_OPTS
     "
 
-    eval git diff --name-only $commit -- $files* |
-         sed -E 's/^(.)[[:space:]]+(.*)\$/[\1]  \2/' | 
-         sed 's/\t/  ->  /2' | expand -t 8 |
-         env FZF_DEFAULT_OPTS="$opts" fzf  
+    eval git diff --name-status $commits -- $files* | 
+     sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)\$/[\1]\t\2/' | 
+     sed ' s/\t/  ->  /2' |
+     expand -t 8 |
+     env FZF_DEFAULT_OPTS="$opts" fzf
+
 end
 
 # git add selector
