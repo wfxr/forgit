@@ -311,11 +311,13 @@ forgit::revert::commit() {
     preview="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
     commits="$(eval "$cmd" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m |
-        grep -Eo '^\*\s[a-f0-9]+' |
-        cut -c 3- |
+        sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/' |
         tr $'\n' ' ')"
-    [[ -z "$commits" ]] && return 1
-    eval "git revert $commits"
+    if [[ "$commits" == *[![:space:]]* ]]; then
+        eval "git revert $commits"
+    else
+        return 1
+    fi
 }
 
 # git ignore generator
