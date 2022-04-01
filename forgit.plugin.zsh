@@ -314,7 +314,7 @@ forgit::revert::commit() {
         sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/' |
         tr $'\n' ' ')"
     if [[ "$commits" == *[![:space:]]* ]]; then
-        eval "git revert $commits"
+        git revert $(echo "$commits")
     else
         return 1
     fi
