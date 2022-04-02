@@ -300,7 +300,7 @@ forgit::checkout::commit() {
 forgit::revert::commit() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git revert "$@"; return $?; }
-    local cmd opts files preview commits
+    local cmd opts files preview commits IFS
     cmd="git log --graph --color=always --format='$forgit_log_format' $* $forgit_emojify"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -309,13 +309,14 @@ forgit::revert::commit() {
     "
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     preview="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
-    commits="$(eval "$cmd" |
+    # shellcheck disable=2207
+    IFS=$'\n' commits=($(eval "$cmd" |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m |
-        grep -Eo '^\*\s[a-f0-9]+' |
-        cut -c 3- |
-        tr $'\n' ' ')"
-    [[ -z "$commits" ]] && return 1
-    eval "git revert $commits"
+        sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'))
+    [ ${#commits[@]} -eq 0 ] && return 1
+    for commit in "${commits[@]}"; do
+        git revert "$commit"
+    done
 }
 
 # git ignore generator
