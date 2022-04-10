@@ -374,7 +374,7 @@ function forgit::rebase -d "git rebase"
     else
         set graph ""
     end
-    set preview "git log $graph --color=always --format='$forgit_log_format' $argv $forgit_emojify"
+    set cmd "git log $graph --color=always --format='$forgit_log_format' $argv $forgit_emojify"
 
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
     set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
@@ -392,7 +392,7 @@ function forgit::rebase -d "git rebase"
         --preview=\"$preview\"
         $FORGIT_REBASE_FZF_OPTS
     "
-    set commit (eval "$preview" | FZF_DEFAULT_OPTS="$opts" fzf |
+    set commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf |
         grep -Eo '[a-f0-9]+' | head -1)
 
     if test $commit
