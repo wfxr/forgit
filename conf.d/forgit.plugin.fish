@@ -257,7 +257,7 @@ function forgit::checkout::branch -d "git checkout branch selector" --argument-n
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
 
-    set cmd "git branch --color=always --verbose --all | sort -k1.1,1.1 -r"
+    set cmd "git branch --color=always --all | sort -k1.1,1.1 -r"
     set branch (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')
 
     test -z "$branch" && return 1
