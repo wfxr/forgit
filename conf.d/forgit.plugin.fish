@@ -84,7 +84,7 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
     end
 
     set repo (git rev-parse --show-toplevel)
-    set preview "cd $repo && echo {} | sed 's/.*] *//' | sed 's/  ->  / /' | xargs git diff --color=always $commits -- | $forgit_diff_pager"
+    set preview "cd '$repo' && echo {} | sed 's/.*] *//' | sed 's/  ->  / /' | xargs git diff --color=always $commits -- | $forgit_diff_pager"
     
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
