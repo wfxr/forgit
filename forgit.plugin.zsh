@@ -51,7 +51,7 @@ forgit::diff() {
         fi
     }
     repo="$(git rev-parse --show-toplevel)"
-    cmd="cd $repo && echo {} |sed 's/.*] *//' | sed 's/  ->  / /' |xargs git diff --color=always $commits -- | $forgit_diff_pager"
+    cmd="cd '$repo' && echo {} |sed 's/.*] *//' | sed 's/  ->  / /' |xargs git diff --color=always $commits -- | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($cmd |LESS='-r' less)\"
@@ -235,7 +235,7 @@ forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
     local cmd preview opts branch
-    cmd="git branch --color=always --verbose --all | sort -k1.1,1.1 -r"
+    cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
     preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
