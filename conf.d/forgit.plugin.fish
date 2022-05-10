@@ -249,7 +249,7 @@ function forgit::branch::delete -d "git checkout branch deleter"
         $FORGIT_BRANCH_DELETE_FZF_OPTS
         "
 
-    set cmd "git branch --color=always --verbose --all | sort -k1.1,1.1 -r"
+    set cmd "git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
     set branches (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')
 
     if test -n "$branches"
