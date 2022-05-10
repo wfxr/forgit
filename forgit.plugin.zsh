@@ -235,7 +235,7 @@ forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
     local cmd preview opts branch
-    cmd="git branch --color=always --verbose --all | sort -k1.1,1.1 -r"
+    cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
     preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
