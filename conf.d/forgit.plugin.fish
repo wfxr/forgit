@@ -237,6 +237,31 @@ function forgit::checkout::commit -d "git checkout commit selector" --argument-n
         FZF_DEFAULT_OPTS="$opts" fzf  | grep -Eo '[a-f0-9]+' | head -1 | xargs -I% git checkout % --
 end
 
+function forgit::branch::delete -d "git checkout branch deleter"
+    forgit::inside_work_tree || return 1
+
+    set preview "git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s --multi --tiebreak=index --header-lines=1
+        --preview=\"$preview\"
+        $FORGIT_BRANCH_DELETE_FZF_OPTS
+        "
+
+    set cmd "git branch --color=always | LC_ALL=C sort -k1.1,1.1 -rs"
+    set branches (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')
+
+    if test -n "$branches"
+        for branch in $branches
+            echo $branch | tr '\n' '\0' | xargs -I{} -0 git branch -D {}
+        end
+        git status --short
+        return
+    end
+end
+
+
 
 function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'input_branch_name'
     forgit::inside_work_tree || return 1
@@ -566,6 +591,13 @@ if test -z "$FORGIT_NO_ALIASES"
     else
         alias gcb 'forgit::checkout::branch'
     end
+
+    if test -n "$forgit_branch_delete"
+        alias $forgit_branch_delete 'forgit::branch::delete'
+    else
+        alias gbd 'forgit::branch::delete'
+    end
+
 
     if test -n "$forgit_clean"
         alias $forgit_clean 'forgit::clean'
