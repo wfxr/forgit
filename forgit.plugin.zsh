@@ -296,6 +296,23 @@ forgit::checkout::commit() {
         FZF_DEFAULT_OPTS="$opts" fzf |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git checkout % --
 }
 
+forgit::branch::delete() {
+    forgit::inside_work_tree || return 1
+    local preview opts cmd branches
+    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s --multi --tiebreak=index --header-lines=1
+        --preview=\"$preview\"
+        $FORGIT_BRANCH_DELETE_FZF_OPTS
+    "
+
+    cmd="git branch --color=always | LC_ALL=C sort -k1.1,1.1 -rs"
+    branches=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')
+    echo -n "$branches" | tr '\n' '\0' | xargs -I{} -0 git branch -D {}
+}
+
 # git revert-commit selector
 forgit::revert::commit() {
     forgit::inside_work_tree || return 1
@@ -394,6 +411,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_checkout_file:-gcf}"='forgit::checkout::file'
     alias "${forgit_checkout_branch:-gcb}"='forgit::checkout::branch'
     alias "${forgit_checkout_commit:-gco}"='forgit::checkout::commit'
+    alias "${forgit_branch_delete:-gbd}"='forgit::branch::delete'
     alias "${forgit_revert_commit:-grc}"='forgit::revert::commit'
     alias "${forgit_checkout_tag:-gct}"='forgit::checkout::tag'
     alias "${forgit_clean:-gclean}"='forgit::clean'
