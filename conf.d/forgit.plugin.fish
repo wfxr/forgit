@@ -26,7 +26,7 @@ test -z "$forgit_diff_pager";   and set -g forgit_diff_pager   (git config pager
 test -z "$forgit_ignore_pager"; and set -g forgit_ignore_pager (type -q bat >/dev/null 2>&1 && echo 'bat -l gitignore --color=always' || echo 'cat')
 test -z "$forgit_log_format";   and set -g forgit_log_format   "-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset"
 
-# https://github.com/wfxr/emoji-cli
+# optional render emoji characters (https://github.com/wfxr/emoji-cli)
 type -q emojify >/dev/null 2>&1 && set -g forgit_emojify '|emojify'
 
 # git commit viewer
