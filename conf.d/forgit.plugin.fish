@@ -72,7 +72,8 @@ function forgit::extract_file --argument-names 'path'
     set no_m_or_double_question (echo $no_leading_whitespace | cut -d ' ' -f 2-)
     set if_renamed (echo $no_m_or_double_question | sed 's/.* -> //')
     set no_quotes (echo $if_renamed | tr -d "\"")
-    set no_spaces (echo $no_quotes | string escape --no-quoted)
+    set no_leading_whitespace_again (echo $no_quotes | sed 's/^[[:space:]]*//')
+    set no_spaces (echo $no_leading_whitespace_again | string escape --no-quoted)
     echo $no_spaces
 end
 
@@ -92,8 +93,7 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
         end
     end
 
-    set repo (git rev-parse --show-toplevel)
-    set preview "cd '$repo' && echo {} | sed 's/.*] *//' | sed 's/  ->  / /' | xargs git diff --color=always $commits -- | $forgit_diff_pager"
+    set preview "forgit::extract_file {} | xargs git diff --color=always $commits -- | $forgit_diff_pager"
     
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
