@@ -11,6 +11,7 @@ forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
 forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_pager")}
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
 forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
+forgit_blame_pager=${FORGIT_BLAME_PAGER:-$(git config pager.blame || echo "$forgit_pager")}
 
 forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset}
 
@@ -336,6 +337,22 @@ forgit::revert::commit() {
     done
 }
 
+# git blame viewer
+forgit::blame() {
+    forgit::inside_work_tree || return 1
+    [[ $# -ne 0 ]] && git blame "$@" && return 0
+    local opts flags preview file
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        $FORGIT_BLAME_FZF_OPTS
+    "
+    flags=$(git rev-parse --flags "$@")
+    preview="git blame {1} --date=short $flags | $forgit_blame_pager"
+    file=$(FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
+    [[ -z "$file" ]] && return 1
+    eval git blame "$file" "$flags"
+}
+
 # git ignore generator
 export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gitignore}
 export FORGIT_GI_REPO_LOCAL="${FORGIT_GI_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME/.cache}/forgit/gi/repos/dvcs/gitignore}"
@@ -419,6 +436,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
     alias "${forgit_rebase:-grb}"='forgit::rebase'
     alias "${forgit_fixup:-gfu}"='forgit::fixup'
+    alias "${forgit_blame:-gb}"='forgit::blame'
 fi
 
 # set installation path (for use by `bin/git-forgit`)
