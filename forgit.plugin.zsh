@@ -347,7 +347,13 @@ forgit::blame() {
         $FORGIT_BLAME_FZF_OPTS
     "
     flags=$(git rev-parse --flags "$@")
-    preview="git blame {1} --date=short $flags | $forgit_blame_pager"
+    preview="
+        if (git ls-files {} --error-unmatch) &>/dev/null; then
+            git blame {} --date=short $flags | $forgit_blame_pager
+        else
+            echo File not tracked
+        fi
+    "
     file=$(FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
     [[ -z "$file" ]] && return 1
     eval git blame "$file" "$flags"
