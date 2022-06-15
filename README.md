@@ -63,6 +63,14 @@ source <(curl -sSL git.io/forgit)
 source (curl -sSL git.io/forgit-fish | psub)
 ```
 
+### Fig
+
+[Fig](https://fig.io) adds apps, shortcuts, and autocomplete to your existing terminal.
+
+Install `forgit` in just one click.
+
+<a href="https://fig.io/plugins/other/forgit" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
+
 ### 📝 Features
 
 - **Interactive `git add` selector** (`ga`)
