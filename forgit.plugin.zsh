@@ -442,7 +442,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
     alias "${forgit_rebase:-grb}"='forgit::rebase'
     alias "${forgit_fixup:-gfu}"='forgit::fixup'
-    alias "${forgit_blame:-gb}"='forgit::blame'
+    alias "${forgit_blame:-gbl}"='forgit::blame'
 fi
 
 # set installation path (for use by `bin/git-forgit`)
