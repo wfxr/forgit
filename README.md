@@ -111,6 +111,8 @@ Install `forgit` in just one click.
 
 - **Interactive `git rebase -i` selector** (`grb`)
 
+- **Interactive `git blame` selector** (`gbl`)
+
 - **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
 
 ### ⌨  Keybinds
@@ -158,6 +160,7 @@ forgit_clean=gclean
 forgit_stash_show=gss
 forgit_cherry_pick=gcp
 forgit_rebase=grb
+forgit_blame=gbl
 forgit_fixup=gfu
 ```
 
@@ -198,13 +201,14 @@ Forgit will use the default configured pager from git (`core.pager`,
 `pager.show`, `pager.diff`) but can be altered with the following environment
 variables:
 
-| Use case             | Option                | Fallbacks to                                 |
-| ------------         | -------------------   | -------------------------------------------- |
-| common pager         | `FORGIT_PAGER`        | `git config core.pager` _or_ `cat`           |
-| pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER` |
-| pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER` |
-| pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat` |
-| git log format       | `FORGIT_GLO_FORMAT`   | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset` |
+| Use case             | Option                | Fallbacks to                                  |
+| ------------         | -------------------   | --------------------------------------------- |
+| common pager         | `FORGIT_PAGER`        | `git config core.pager` _or_ `cat`            |
+| pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER`  |
+| pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER`  |
+| pager on `git blame` | `FORGIT_BLAME_PAGER`  | `git config pager.blame` _or_ `$FORGIT_PAGER` |
+| pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat`  |
+| git log format       | `FORGIT_GLO_FORMAT`   | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset`  |
 
 #### fzf options
 
@@ -239,6 +243,7 @@ Customizing fzf options for each command individually is also supported:
 | `gss`    | `FORGIT_STASH_FZF_OPTS`           |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
 | `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
+| `gbl`     | `FORGIT_BLAME_FZF_OPTS`          |
 | `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
 
 Complete loading order of fzf options is:
