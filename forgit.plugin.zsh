@@ -3,6 +3,8 @@
 forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 forgit::info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
+# tac is not available on OSX, tail -r is not available on Linux, so we use either of them
+forgit::reverse_lines() { (tac 2> /dev/null || tail -r) }
 
 # optional render emoji characters (https://github.com/wfxr/emoji-cli)
 hash emojify &>/dev/null && forgit_emojify='|emojify'
@@ -159,8 +161,8 @@ forgit::cherry::pick() {
         -m -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
-    git cherry "$base" "$target" --abbrev -v |
-        FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f2 |
+    git cherry "$base" "$target" --abbrev -v | forgit::reverse_lines |
+        FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f2 | forgit::reverse_lines |
         xargs -I% git cherry-pick %
 }
 
