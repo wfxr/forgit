@@ -243,8 +243,9 @@ Customizing fzf options for each command individually is also supported:
 | `gss`    | `FORGIT_STASH_FZF_OPTS`           |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
 | `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
-| `gbl`     | `FORGIT_BLAME_FZF_OPTS`          |
+| `gbl`    | `FORGIT_BLAME_FZF_OPTS`           |
 | `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
+| `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
 
 Complete loading order of fzf options is:
 
