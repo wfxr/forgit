@@ -159,8 +159,8 @@ forgit::cherry::pick() {
         -m -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
-    git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
-        FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f1 |
+    git cherry "$base" "$target" --abbrev -v |
+        FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f2 |
         xargs -I% git cherry-pick %
 }
 

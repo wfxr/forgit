@@ -344,8 +344,8 @@ function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
     "
     echo $base
     echo $target
-    git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
-        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f1 |
+    git cherry "$base" "$target" --abbrev -v |
+        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f2 |
         xargs -I% git cherry-pick %
 end
 
