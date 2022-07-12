@@ -339,7 +339,7 @@ function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
     set opts "
         --preview=\"$preview\"
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0
+        -m -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
     echo $base
