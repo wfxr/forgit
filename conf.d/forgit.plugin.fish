@@ -340,7 +340,7 @@ function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
         echo "Please specify target branch"
         return 1
     end
-    set preview "echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
+    set preview "echo {2} | xargs -I% git show --color=always % | $forgit_show_pager"
     set opts "
         --preview=\"$preview\"
         $FORGIT_FZF_DEFAULT_OPTS

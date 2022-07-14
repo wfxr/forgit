@@ -154,7 +154,7 @@ forgit::cherry::pick() {
     base=$(git branch --show-current)
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
-    preview="echo {1} | xargs -I% git show --color=always % | $forgit_show_pager"
+    preview="echo {2} | xargs -I% git show --color=always % | $forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         --preview=\"$preview\"
