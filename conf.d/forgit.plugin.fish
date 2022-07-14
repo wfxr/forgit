@@ -14,7 +14,7 @@ end
 
 function forgit::reverse_lines
     # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
-    if command -v foo &> /dev/null
+    if command -v tac &> /dev/null
         tac
     else
         tail -r
