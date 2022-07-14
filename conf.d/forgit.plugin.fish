@@ -12,6 +12,11 @@ function forgit::inside_work_tree
     git rev-parse --is-inside-work-tree >/dev/null;
 end
 
+function forgit::reverse_lines
+    # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
+    tac 2> /dev/null || tail -r
+end
+
 set -g forgit_pager        "$FORGIT_PAGER"
 set -g forgit_show_pager   "$FORGIT_SHOW_PAGER"
 set -g forgit_diff_pager   "$FORGIT_DIFF_PAGER"
@@ -339,12 +344,13 @@ function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
     set opts "
         --preview=\"$preview\"
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0
+        -m -0 --tiebreak=index
+        $FORGIT_CHERRY_PICK_FZF_OPTS
     "
     echo $base
     echo $target
-    git cherry "$base" "$target" --abbrev -v | cut -d ' ' -f2- |
-        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f1 |
+    git cherry "$base" "$target" --abbrev -v | forgit::reverse_lines |
+        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f2 | forgit::reverse_lines |
         xargs -I% git cherry-pick %
 end
 
