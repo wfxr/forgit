@@ -54,12 +54,16 @@ forgit::diff() {
         fi
     }
     repo="$(git rev-parse --show-toplevel)"
-    cmd="cd '$repo' && echo {} |sed 's/.*] *//' | sed 's/  ->  / /' |xargs -I% git diff --color=always $commits -- % | $forgit_diff_pager"
+    get_files="cd '$repo' && echo {} | sed 's/.*] *//' | sed 's/  ->  / /'"
+    preview_cmd="$get_files | xargs -I% git diff --color=always $commits -- % | $forgit_diff_pager"
+    # Show additional context on enter compared to preview
+    enter_cmd="$get_files | xargs -I% git diff --color=always -U10000 $commits -- % | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($cmd |LESS='-r' less)\"
-        --preview=\"$cmd\"
+        +m -0 --bind=\"enter:execute($enter_cmd | LESS='-r' less)\"
+        --preview=\"$preview_cmd\"
         $FORGIT_DIFF_FZF_OPTS
+        --prompt=\"$commits > \"
     "
     eval "git diff --name-status $commits -- ${files[*]} | sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]\t\2/'" |
         sed 's/\t/  ->  /2' | expand -t 8 |

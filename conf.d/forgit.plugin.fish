@@ -102,13 +102,16 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
         end
     end
 
-    set preview "forgit::extract_file {} | xargs git diff --color=always $commits -- | $forgit_diff_pager"
-    
+    set preview_cmd "forgit::extract_file {} | xargs -I% git diff --color=always $commits -- % | $forgit_diff_pager"
+    # Show additional context on enter compared to preview
+    set enter_cmd "forgit::extract_file {} | xargs -I% git diff --color=always -U10000 $commits -- % | $forgit_diff_pager"
+
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($preview |env LESS='-r' less)\"
-        --preview=\"$preview\"
+        +m -0 --bind=\"enter:execute($enter_cmd | env LESS='-r' less)\"
+        --preview=\"$preview_cmd\"
         $FORGIT_DIFF_FZF_OPTS
+        --prompt=\"$commits > \"
     "
 
     eval git diff --name-status $commits -- $files* | 
