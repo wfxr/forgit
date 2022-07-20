@@ -270,9 +270,11 @@ FORGIT_LOG_FZF_OPTS='
 ```
 #### other options
 
-| Option              | Description    | Default                                      |
-|---------------------|----------------|----------------------------------------------|
-| `FORGIT_LOG_FORMAT` | git log format | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
+| Option                      | Description                              | Default                                       |
+|-----------------------------|------------------------------------------|-----------------------------------------------|
+| `FORGIT_LOG_FORMAT`         | git log format                           | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
+| `FORGIT_PREVIEW_CONTEXT`    | lines of diff context in preview mode    | 3                                             |
+| `FORGIT_FULLSCREEN_CONTEXT` | lines of diff context in fullscreen mode | 10                                            |
 
 ### 📦 Optional dependencies
 
