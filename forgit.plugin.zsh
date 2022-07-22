@@ -177,7 +177,7 @@ forgit::cherry::pick() {
 
 forgit::rebase() {
     forgit::inside_work_tree || return 1
-    local cmd preview opts graph files commit
+    local cmd preview opts graph files target_commit prev_commit
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
     cmd="git log $graph --color=always --format='$forgit_log_format' $* $forgit_emojify"
@@ -190,8 +190,16 @@ forgit::rebase() {
         --preview=\"$preview\"
         $FORGIT_REBASE_FZF_OPTS
     "
-    commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
-    [[ -n "$commit" ]] && git rebase -i "$commit"
+    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
+    if [[ -n "$target_commit" ]]; then
+        # "$target_commit~" is invalid when the commit is the first commit, but we can use "--root" instead
+        if [[ "$(git rev-parse "$target_commit")" == "$(git rev-list --max-parents=0 HEAD)" ]]; then
+            prev_commit="--root"
+        else
+            prev_commit="$target_commit~"
+        fi
+        git rebase -i "$prev_commit"
+    fi
 }
 
 forgit::fixup() {

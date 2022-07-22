@@ -437,10 +437,16 @@ function forgit::rebase -d "git rebase"
         --preview=\"$preview\"
         $FORGIT_REBASE_FZF_OPTS
     "
-    set commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
+    set target_commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
 
-    if test $commit
-        git rebase -i "$commit"
+    if test $target_commit
+        # "$target_commit~" is invalid when the commit is the first commit, but we can use "--root" instead
+        set prev_commit "$target_commit~"
+        if test "(git rev-parse '$target_commit')" = "(git rev-list --max-parents=0 HEAD)"
+            set prev_commit "--root"
+        end
+
+        git rebase -i "$prev_commit"
     end
 end
 
