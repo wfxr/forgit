@@ -29,11 +29,13 @@ set -g forgit_log_format   "$FORGIT_LOG_FORMAT"
 
 set -x FORGIT_INSTALL_DIR (dirname (dirname (status -f)))
 
-test -z "$forgit_pager";        and set -g forgit_pager        (git config core.pager || echo 'cat')
-test -z "$forgit_show_pager";   and set -g forgit_show_pager   (git config pager.show || echo "$forgit_pager")
-test -z "$forgit_diff_pager";   and set -g forgit_diff_pager   (git config pager.diff || echo "$forgit_pager")
-test -z "$forgit_ignore_pager"; and set -g forgit_ignore_pager (type -q bat >/dev/null 2>&1 && echo 'bat -l gitignore --color=always' || echo 'cat')
-test -z "$forgit_log_format";   and set -g forgit_log_format   "-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset"
+test -z "$forgit_pager";              and set -g forgit_pager        (git config core.pager || echo 'cat')
+test -z "$forgit_show_pager";         and set -g forgit_show_pager   (git config pager.show || echo "$forgit_pager")
+test -z "$forgit_diff_pager";         and set -g forgit_diff_pager   (git config pager.diff || echo "$forgit_pager")
+test -z "$forgit_ignore_pager";       and set -g forgit_ignore_pager (type -q bat >/dev/null 2>&1 && echo 'bat -l gitignore --color=always' || echo 'cat')
+test -z "$forgit_log_format";         and set -g forgit_log_format   "-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset"
+test -z "$forgit_fullscreen_context"; and set -g forgit_fullscreen_context "10"
+test -z "$forgit_preview_context";    and set -g forgit_preview_context "3"
 
 # optional render emoji characters (https://github.com/wfxr/emoji-cli)
 type -q emojify >/dev/null 2>&1 && set -g forgit_emojify '|emojify'
@@ -43,7 +45,8 @@ function forgit::log -d "git commit viewer"
     forgit::inside_work_tree || return 1
 
     set files (echo $argv | sed -nE 's/.* -- (.*)/\1/p')
-    set preview "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+    set preview_cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always -U$forgit_preview_context % -- $files | $forgit_show_pager"
+    set enter_cmd "echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always -U$forgit_fullscreen_context % -- $files | $forgit_show_pager"
 
     if test -n "$FORGIT_COPY_CMD"
         set copy_cmd $FORGIT_COPY_CMD
@@ -54,9 +57,9 @@ function forgit::log -d "git commit viewer"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($preview |env LESS='-r' less)\"
+        --bind=\"enter:execute($enter_cmd |env LESS='-r' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |$copy_cmd)\"
-        --preview=\"$preview\"
+        --preview=\"$preview_cmd\"
         $FORGIT_LOG_FZF_OPTS
     "
 
@@ -102,13 +105,15 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
         end
     end
 
-    set preview "forgit::extract_file {} | xargs git diff --color=always $commits -- | $forgit_diff_pager"
-    
+    set preview_cmd "forgit::extract_file {} | xargs -I% git diff --color=always -U$forgit_preview_context $commits -- % | $forgit_diff_pager"
+    set enter_cmd "forgit::extract_file {} | xargs -I% git diff --color=always -U$forgit_fullscreen_context $commits -- % | $forgit_diff_pager"
+
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($preview |env LESS='-r' less)\"
-        --preview=\"$preview\"
+        +m -0 --bind=\"enter:execute($enter_cmd | env LESS='-r' less)\"
+        --preview=\"$preview_cmd\"
         $FORGIT_DIFF_FZF_OPTS
+        --prompt=\"$commits > \"
     "
 
     eval git diff --name-status $commits -- $files* | 

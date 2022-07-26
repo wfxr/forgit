@@ -16,19 +16,22 @@ forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -
 forgit_blame_pager=${FORGIT_BLAME_PAGER:-$(git config pager.blame || echo "$forgit_pager")}
 
 forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset}
+forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
+forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
 
 # git commit viewer
 forgit::log() {
     forgit::inside_work_tree || return 1
-    local cmd opts graph files log_format
+    local opts graph files log_format preview_cmd enter_cmd
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
-    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files | $forgit_show_pager"
+    preview_cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always -U$forgit_preview_context % -- $files | $forgit_show_pager"
+    enter_cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always -U$forgit_fullscreen_context % -- $files | $forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($cmd | LESS='-r' less)\"
+        --bind=\"enter:execute($enter_cmd | LESS='-r' less)\"
         --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]' |${FORGIT_COPY_CMD:-pbcopy})\"
-        --preview=\"$cmd\"
+        --preview=\"$preview_cmd\"
         $FORGIT_LOG_FZF_OPTS
     "
     graph=--graph
@@ -41,7 +44,7 @@ forgit::log() {
 # git diff viewer
 forgit::diff() {
     forgit::inside_work_tree || return 1
-    local cmd files opts commits repo
+    local files opts commits repo get_files preview_cmd enter_cmd
     [[ $# -ne 0 ]] && {
         if git rev-parse "$1" -- &>/dev/null ; then
             if [[ $# -gt 1 ]] && git rev-parse "$2" -- &>/dev/null; then
@@ -54,12 +57,15 @@ forgit::diff() {
         fi
     }
     repo="$(git rev-parse --show-toplevel)"
-    cmd="cd '$repo' && echo {} |sed 's/.*] *//' | sed 's/  ->  / /' |xargs -I% git diff --color=always $commits -- % | $forgit_diff_pager"
+    get_files="cd '$repo' && echo {} | sed 's/.*] *//' | sed 's/  ->  / /'"
+    preview_cmd="$get_files | xargs -I% git diff --color=always -U$forgit_preview_context $commits -- % | $forgit_diff_pager"
+    enter_cmd="$get_files | xargs -I% git diff --color=always -U$forgit_fullscreen_context $commits -- % | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($cmd |LESS='-r' less)\"
-        --preview=\"$cmd\"
+        +m -0 --bind=\"enter:execute($enter_cmd | LESS='-r' less)\"
+        --preview=\"$preview_cmd\"
         $FORGIT_DIFF_FZF_OPTS
+        --prompt=\"$commits > \"
     "
     eval "git diff --name-status $commits -- ${files[*]} | sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]\t\2/'" |
         sed 's/\t/  ->  /2' | expand -t 8 |
