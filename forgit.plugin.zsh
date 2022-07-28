@@ -201,7 +201,7 @@ forgit::rebase() {
     "
     target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
     if [[ -n "$target_commit" ]]; then
-        prev_commit=$(forgit::previous_commit $target_commit)
+        prev_commit=$(forgit::previous_commit "$target_commit")
 
         git rebase -i "$prev_commit"
     fi
@@ -225,7 +225,7 @@ forgit::fixup() {
     "
     target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
     if [[ -n "$target_commit" ]] && git commit --fixup "$target_commit"; then
-        prev_commit=$(forgit::previous_commit $target_commit)
+        prev_commit=$(forgit::previous_commit "$target_commit")
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
         # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
         GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$prev_commit"
