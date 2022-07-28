@@ -6,6 +6,15 @@ forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
 forgit::reverse_lines() { tac 2> /dev/null || tail -r; }
 
+forgit::previous_commit() {
+    # "SHA~" is invalid when the commit is the first commit, but we can use "--root" instead
+    if [[ "$(git rev-parse "$1")" == "$(git rev-list --max-parents=0 HEAD)" ]]; then
+        echo "--root"
+    else
+        echo "$1~"
+    fi
+}
+
 # optional render emoji characters (https://github.com/wfxr/emoji-cli)
 hash emojify &>/dev/null && forgit_emojify='|emojify'
 
@@ -192,12 +201,8 @@ forgit::rebase() {
     "
     target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
     if [[ -n "$target_commit" ]]; then
-        # "$target_commit~" is invalid when the commit is the first commit, but we can use "--root" instead
-        if [[ "$(git rev-parse "$target_commit")" == "$(git rev-list --max-parents=0 HEAD)" ]]; then
-            prev_commit="--root"
-        else
-            prev_commit="$target_commit~"
-        fi
+        prev_commit=$(forgit::previous_commit $target_commit)
+
         git rebase -i "$prev_commit"
     fi
 }
@@ -220,12 +225,7 @@ forgit::fixup() {
     "
     target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
     if [[ -n "$target_commit" ]] && git commit --fixup "$target_commit"; then
-        # "$target_commit~" is invalid when the commit is the first commit, but we can use "--root" instead
-        if [[ "$(git rev-parse "$target_commit")" == "$(git rev-list --max-parents=0 HEAD)" ]]; then
-            prev_commit="--root"
-        else
-            prev_commit="$target_commit~"
-        fi
+        prev_commit=$(forgit::previous_commit $target_commit)
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
         # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
         GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$prev_commit"
