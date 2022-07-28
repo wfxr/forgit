@@ -21,6 +21,15 @@ function forgit::reverse_lines
     end
 end
 
+function forgit::previous_commit
+    # "SHA~" is invalid when the commit is the first commit, but we can use "--root" instead
+    if test (git rev-parse $argv) = (git rev-list --max-parents=0 HEAD)
+        echo "--root"
+    else
+        echo "$argv~"
+    end
+end
+
 # extract the first git sha occuring in the input and strip trailing newline
 set -g forgit_extract_sha  "grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'"
 
@@ -399,11 +408,7 @@ function forgit::fixup -d "git fixup"
     set target_commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
 
     if test -n "$target_commit" && git commit --fixup "$target_commit"
-        # "$target_commit~" is invalid when the commit is the first commit, but we can use "--root" instead
-        set prev_commit "$target_commit~"
-        if test "(git rev-parse '$target_commit')" = "(git rev-list --max-parents=0 HEAD)"
-            set prev_commit "--root"
-        end
+        set prev_commit (forgit::previous_commit $target_commit)
 
         GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$prev_commit"
     end
@@ -437,10 +442,12 @@ function forgit::rebase -d "git rebase"
         --preview=\"$preview\"
         $FORGIT_REBASE_FZF_OPTS
     "
-    set commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
+    set target_commit (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$forgit_extract_sha")
 
-    if test $commit
-        git rebase -i "$commit"
+    if test $target_commit
+        set prev_commit (forgit::previous_commit $target_commit)
+
+        git rebase -i "$prev_commit"
     end
 end
 
