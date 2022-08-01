@@ -26,6 +26,7 @@ forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$forgit_
 forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$forgit_pager")}
 forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
 forgit_blame_pager=${FORGIT_BLAME_PAGER:-$(git config pager.blame || echo "$forgit_pager")}
+forgit_enter_pager=${FORGIT_ENTER_PAGER:-"LESS='-r' less"}
 
 forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset}
 forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
@@ -41,7 +42,7 @@ forgit::log() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($enter_cmd | LESS='-r' less)\"
+        --bind=\"enter:execute($enter_cmd | $forgit_enter_pager)\"
         --bind=\"ctrl-y:execute-silent(echo {} | $forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
         --preview=\"$preview_cmd\"
         $FORGIT_LOG_FZF_OPTS
@@ -74,7 +75,7 @@ forgit::diff() {
     enter_cmd="$get_files | xargs -I% git diff --color=always -U$forgit_fullscreen_context $commits -- % | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($enter_cmd | LESS='-r' less)\"
+        +m -0 --bind=\"enter:execute($enter_cmd | $forgit_enter_pager)\"
         --preview=\"$preview_cmd\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"$commits > \"
@@ -145,7 +146,7 @@ forgit::stash::show() {
     cmd="echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | LESS='-r' less)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | $forgit_enter_pager)\"
         --preview=\"$cmd\"
         $FORGIT_STASH_FZF_OPTS
     "
