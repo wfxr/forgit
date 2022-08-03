@@ -117,8 +117,14 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
         end
     end
 
-    set preview_cmd "forgit::extract_file {} | xargs -I% git diff --color=always -U$forgit_preview_context $commits -- % | $forgit_diff_pager"
-    set enter_cmd "forgit::extract_file {} | xargs -I% git diff --color=always -U$forgit_fullscreen_context $commits -- % | $forgit_diff_pager"
+    # Git stashes are named "stash@{x}", which contains the fzf placeholder "{x}".
+    # In order to support passing stashes as arguments to forgit::diff, we have to
+    # prevent fzf from interpreting this substring by escaping the opening bracket.
+    # The string is evaluated a few subsequent times, so we need multiple escapes.
+    set escaped_commits (echo $commits | sed 's/{/\\\\\\\\{/g')
+
+    set preview_cmd "forgit::extract_file {} | xargs -I% git diff --color=always -U$forgit_preview_context $escaped_commits -- % | $forgit_diff_pager"
+    set enter_cmd "forgit::extract_file {} | xargs -I% git diff --color=always -U$forgit_fullscreen_context $escaped_commits -- % | $forgit_diff_pager"
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
