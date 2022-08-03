@@ -49,6 +49,8 @@ test -z "$forgit_log_format";         and set -g forgit_log_format   "-%C(auto)%
 test -z "$forgit_fullscreen_context"; and set -g forgit_fullscreen_context "10"
 test -z "$forgit_preview_context";    and set -g forgit_preview_context "3"
 
+set -g forgit_log_preview_options "--graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+
 # optional render emoji characters (https://github.com/wfxr/emoji-cli)
 type -q emojify >/dev/null 2>&1 && set -g forgit_emojify '|emojify'
 
@@ -270,7 +272,7 @@ end
 function forgit::branch::delete -d "git checkout branch deleter"
     forgit::inside_work_tree || return 1
 
-    set preview "git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    set preview "git log {1} $forgit_log_preview_options"
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
@@ -303,7 +305,7 @@ function forgit::checkout::branch -d "git checkout branch selector" --argument-n
         return $checkout_status
     end
 
-    set preview "git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    set preview "git log {1} $forgit_log_preview_options"
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS

@@ -28,6 +28,7 @@ forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -
 forgit_blame_pager=${FORGIT_BLAME_PAGER:-$(git config pager.blame || echo "$forgit_pager")}
 
 forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset}
+forgit_log_preview_options="--graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
 forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
 forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
 
@@ -255,7 +256,7 @@ forgit::checkout::branch() {
     [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
     local cmd preview opts branch
     cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
-    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    preview="git log {1} $forgit_log_preview_options"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --header-lines=1
@@ -284,7 +285,7 @@ forgit::checkout::tag() {
     [[ $# -ne 0 ]] && { git checkout "$@"; return $?; }
     local cmd opts preview
     cmd="git tag -l --sort=-v:refname"
-    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    preview="git log {1} $forgit_log_preview_options"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
@@ -318,7 +319,7 @@ forgit::checkout::commit() {
 forgit::branch::delete() {
     forgit::inside_work_tree || return 1
     local preview opts cmd branches
-    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    preview="git log {1} $forgit_log_preview_options"
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
