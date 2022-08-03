@@ -374,9 +374,43 @@ function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target'
         -m -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
-    git cherry "$base" "$target" --abbrev -v | forgit::reverse_lines |
-        env FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f2 | forgit::reverse_lines |
-        xargs -I% git cherry-pick %
+    set fzf_selection (git cherry "$base" "$target" --abbrev -v | forgit::reverse_lines |
+        env FZF_DEFAULT_OPTS="$opts" fzf)
+
+    set fzf_exitval $status
+    test $fzf_exitval != 0 && return $fzf_exitval
+    set commits (echo "$fzf_selection" | forgit::reverse_lines | cut -d' ' -f2)
+
+    git cherry-pick $commits
+
+end
+
+function forgit::cherry::pick::from::branch -d "git cherry-picking with interactive branch selection"
+    forgit::inside_work_tree || return 1
+
+    set preview "git log {1} $forgit_log_preview_options"
+
+    set opts "
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index --header-lines=1
+        --preview=\"$preview\"
+        $FORGIT_CHERRY_PICK_FROM_BRANCH_FZF_OPTS
+        "
+
+    set cmd "git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
+
+    # loop until either the branch selector is closed or a commit to be cherry
+    # picked has been selected from within a branch
+    while true
+
+        set branch (eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')
+        test -z "$branch" && return 1
+
+        forgit::cherry::pick "$branch"
+
+        set exitval $status
+        test $exitval != 130 && return $exitval
+    end
 end
 
 function forgit::fixup -d "git fixup"
@@ -640,9 +674,9 @@ if test -z "$FORGIT_NO_ALIASES"
     end
 
     if test -n "$forgit_cherry_pick"
-        alias $forgit_cherry_pick 'forgit::cherry::pick'
+        alias $forgit_cherry_pick 'forgit::cherry::pick::from::branch'
     else
-        alias gcp 'forgit::cherry::pick'
+        alias gcp 'forgit::cherry::pick::from::branch'
     end
 
     if test -n "$forgit_rebase"
