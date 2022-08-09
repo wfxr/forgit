@@ -30,7 +30,7 @@ function forgit::previous_commit
     end
 end
 
-# extract the first git sha occuring in the input and strip trailing newline
+# extract the first git sha occurring in the input and strip trailing newline
 set -g forgit_extract_sha  "grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'"
 
 set -g forgit_pager        "$FORGIT_PAGER"

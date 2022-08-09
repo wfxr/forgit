@@ -18,7 +18,7 @@ forgit::previous_commit() {
 # optional render emoji characters (https://github.com/wfxr/emoji-cli)
 hash emojify &>/dev/null && forgit_emojify='|emojify'
 
-# extract the first git sha occuring in the input and strip trailing newline
+# extract the first git sha occurring in the input and strip trailing newline
 forgit_extract_sha="grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'"
 
 forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
