@@ -37,6 +37,7 @@ set -g forgit_pager        "$FORGIT_PAGER"
 set -g forgit_show_pager   "$FORGIT_SHOW_PAGER"
 set -g forgit_diff_pager   "$FORGIT_DIFF_PAGER"
 set -g forgit_ignore_pager "$FORGIT_IGNORE_PAGER"
+set -g forgit_enter_pager  "$FORGIT_ENTER_PAGER"
 set -g forgit_log_format   "$FORGIT_LOG_FORMAT"
 
 set -x FORGIT_INSTALL_DIR (dirname (dirname (status -f)))
@@ -45,6 +46,7 @@ test -z "$forgit_pager";              and set -g forgit_pager        (git config
 test -z "$forgit_show_pager";         and set -g forgit_show_pager   (git config pager.show || echo "$forgit_pager")
 test -z "$forgit_diff_pager";         and set -g forgit_diff_pager   (git config pager.diff || echo "$forgit_pager")
 test -z "$forgit_ignore_pager";       and set -g forgit_ignore_pager (type -q bat >/dev/null 2>&1 && echo 'bat -l gitignore --color=always' || echo 'cat')
+test -z "$forgit_enter_pager";        and set -g forgit_enter_pager  "env LESS='-r' less"
 test -z "$forgit_log_format";         and set -g forgit_log_format   "-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset"
 test -z "$forgit_fullscreen_context"; and set -g forgit_fullscreen_context "10"
 test -z "$forgit_preview_context";    and set -g forgit_preview_context "3"
@@ -69,7 +71,7 @@ function forgit::log -d "git commit viewer"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($enter_cmd |env LESS='-r' less)\"
+        --bind=\"enter:execute($enter_cmd | $forgit_enter_pager)\"
         --bind=\"ctrl-y:execute-silent(echo {} | $forgit_extract_sha | $copy_cmd)\"
         --preview=\"$preview_cmd\"
         $FORGIT_LOG_FZF_OPTS
@@ -122,7 +124,7 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
 
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($enter_cmd | env LESS='-r' less)\"
+        +m -0 --bind=\"enter:execute($enter_cmd | $forgit_enter_pager)\"
         --preview=\"$preview_cmd\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"$commits > \"
@@ -329,7 +331,7 @@ function forgit::stash::show -d "git stash viewer"
     set preview "echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$forgit_diff_pager"
     set opts "
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($preview |env LESS='-r' less)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($preview | $forgit_enter_pager)\"
         --preview=\"$preview\"
         $FORGIT_STASH_FZF_OPTS
     "
