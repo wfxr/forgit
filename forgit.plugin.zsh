@@ -71,8 +71,13 @@ forgit::diff() {
     }
     repo="$(git rev-parse --show-toplevel)"
     get_files="cd '$repo' && echo {} | sed 's/.*] *//' | sed 's/  ->  / /'"
-    preview_cmd="$get_files | xargs -I% git diff --color=always -U$forgit_preview_context $commits -- % | $forgit_diff_pager"
-    enter_cmd="$get_files | xargs -I% git diff --color=always -U$forgit_fullscreen_context $commits -- % | $forgit_diff_pager"
+    # Git stashes are named "stash@{x}", which contains the fzf placeholder "{x}".
+    # In order to support passing stashes as arguments to forgit::diff, we have to
+    # prevent fzf from interpreting this substring by escaping the opening bracket.
+    # The string is evaluated a few subsequent times, so we need multiple escapes.
+    escaped_commits=${commits//\{/\\\\\{}
+    preview_cmd="$get_files | xargs -I% git diff --color=always -U$forgit_preview_context $escaped_commits -- % | $forgit_diff_pager"
+    enter_cmd="$get_files | xargs -I% git diff --color=always -U$forgit_fullscreen_context $escaped_commits -- % | $forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($enter_cmd | $forgit_enter_pager)\"
