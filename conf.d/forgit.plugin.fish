@@ -300,17 +300,11 @@ function forgit::branch::delete -d "git checkout branch deleter" --wraps "git br
 end
 
 
-# note we "wrap" delete, we just need a snazzy way to get the branch list here
-function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'input_branch_name' --wraps "git branch --delete" 
+function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'input_branch_name' --wraps "git branch"
     forgit::inside_work_tree || return 1
 
     if test -n "$input_branch_name"
-        if git branch --list | grep "$input_branch_name" > /dev/null
-            git switch "$input_branch_name"
-        else
-            git switch -c "$input_branch_name"
-        end
-
+        git checkout -b "$input_branch_name"
         set checkout_status $status
         git status --short
         return $checkout_status
