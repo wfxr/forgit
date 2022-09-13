@@ -29,6 +29,7 @@ forgit_blame_pager=${FORGIT_BLAME_PAGER:-$(git config pager.blame || echo "$forg
 forgit_enter_pager=${FORGIT_ENTER_PAGER:-"LESS='-r' less"}
 
 forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset}
+forgit_log_preview_options="--graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
 forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
 forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
 
@@ -174,7 +175,7 @@ forgit::clean() {
 }
 
 forgit::cherry::pick() {
-    local base target preview opts
+    local base target preview opts fzf_selection fzf_exitval
     base=$(git branch --show-current)
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
@@ -185,9 +186,44 @@ forgit::cherry::pick() {
         -m -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
-    git cherry "$base" "$target" --abbrev -v | forgit::reverse_lines |
-        FZF_DEFAULT_OPTS="$opts" fzf | cut -d' ' -f2 | forgit::reverse_lines |
-        xargs -I% git cherry-pick %
+    fzf_selection=$(git cherry "$base" "$target" --abbrev -v | forgit::reverse_lines |
+        FZF_DEFAULT_OPTS="$opts" fzf)
+    fzf_exitval=$?
+    [[ $fzf_exitval != 0 ]] && return $fzf_exitval
+
+    commits=()
+    while IFS="" read -r line
+    do
+        commits+=("$line")
+    done < <(echo "$fzf_selection" | forgit::reverse_lines | cut -d' ' -f2)
+
+    git cherry-pick "${commits[@]}"
+}
+
+forgit::cherry::pick::from::branch() {
+    forgit::inside_work_tree || return 1
+    [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
+    local cmd preview opts branch exitval
+    cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
+    preview="git log {1} $forgit_log_preview_options"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index --header-lines=1
+        --preview=\"$preview\"
+        $FORGIT_CHERRY_PICK_FROM_BRANCH_FZF_OPTS
+        "
+    # loop until either the branch selector is closed or a commit to be cherry
+    # picked has been selected from within a branch
+    while true
+    do
+        branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
+        [[ -z "$branch" ]] && return 1
+
+        forgit::cherry::pick "$branch"
+
+        exitval=$?
+        [[ $exitval != 130 ]] && return $exitval
+    done
 }
 
 forgit::rebase() {
@@ -261,7 +297,7 @@ forgit::checkout::branch() {
     [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
     local cmd preview opts branch
     cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
-    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    preview="git log {1} $forgit_log_preview_options"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --header-lines=1
@@ -290,7 +326,7 @@ forgit::checkout::tag() {
     [[ $# -ne 0 ]] && { git checkout "$@"; return $?; }
     local cmd opts preview
     cmd="git tag -l --sort=-v:refname"
-    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    preview="git log {1} $forgit_log_preview_options"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
@@ -324,7 +360,7 @@ forgit::checkout::commit() {
 forgit::branch::delete() {
     forgit::inside_work_tree || return 1
     local preview opts cmd branches
-    preview="git log {1} --graph --pretty=format:'$forgit_log_format' --color=always --abbrev-commit --date=relative"
+    preview="git log {1} $forgit_log_preview_options"
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -463,7 +499,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_checkout_tag:-gct}"='forgit::checkout::tag'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
-    alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick'
+    alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick::from::branch'
     alias "${forgit_rebase:-grb}"='forgit::rebase'
     alias "${forgit_fixup:-gfu}"='forgit::fixup'
     alias "${forgit_blame:-gbl}"='forgit::blame'
