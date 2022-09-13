@@ -294,7 +294,18 @@ forgit::checkout::file() {
 # git checkout-branch selector
 forgit::checkout::branch() {
     forgit::inside_work_tree || return 1
-    [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
+    # if called with arguments, check if branch exists, else create a new one
+    if [[ $# -ne 0 ]]; then
+        if git show-branch "$@" &>/dev/null; then
+            git switch "$@"
+        else
+            git switch -c "$@"
+        fi
+        checkout_status=$?
+        git status --short
+        return $checkout_status
+    fi
+
     local cmd preview opts branch
     cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
     preview="git log {1} $forgit_log_preview_options"
