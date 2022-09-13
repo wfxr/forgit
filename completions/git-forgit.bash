@@ -6,6 +6,9 @@
 #
 #   /usr/share/bash-completion/completions
 #   ~/.local/share/bash-completion/completions
+#
+# When using forgit via the shell plugin, source this file explicitly after
+# forgit.plugin.zsh to enable tab completion for shell functions and aliases.
 
 _git_branch_delete()
 {
@@ -104,3 +107,49 @@ _git_forgit()
 			;;
 	esac
 }
+
+# Check if forgit plugin is loaded
+if [[ $(type -t forgit::add) == function ]]
+then
+	# We're reusing existing git completion functions, so load those first
+	# and check if completion function exists afterwards.
+	_completion_loader git
+	[[ $(type -t __git_complete) == function ]] || return 1
+
+	# Completion for forgit plugin shell functions
+	__git_complete forgit::add _git_add
+	__git_complete forgit::branch::delete _git_branch_delete
+	__git_complete forgit::checkout::branch _git_checkout_branch
+	__git_complete forgit::checkout::commit _git_checkout
+	__git_complete forgit::checkout::file _git_checkout_file
+	__git_complete forgit::checkout::tag _git_checkout_tag
+	__git_complete forgit::cherry::pick _git_cherry_pick
+	__git_complete forgit::cherry::pick::from::branch _git_checkout_branch
+	__git_complete forgit::clean _git_clean
+	__git_complete forgit::diff _git_diff
+	__git_complete forgit::fixup _git_branch
+	__git_complete forgit::log _git_log
+	__git_complete forgit::rebase _git_rebase
+	__git_complete forgit::reset::head _git_reset
+	__git_complete forgit::revert::commit _git_revert
+	__git_complete forgit::stash::show _git_stash_show
+
+	# Completion for forgit plugin shell aliases
+	if [[ -z "$FORGIT_NO_ALIASES" ]]; then
+		__git_complete "${forgit_add}" _git_add
+		__git_complete "${forgit_branch_delete}" _git_branch_delete
+		__git_complete "${forgit_checkout_branch}" _git_checkout_branch
+		__git_complete "${forgit_checkout_commit}" _git_checkout
+		__git_complete "${forgit_checkout_file}" _git_checkout_file
+		__git_complete "${forgit_checkout_tag}" _git_checkout_tag
+		__git_complete "${forgit_cherry_pick}" _git_checkout_branch
+		__git_complete "${forgit_clean}" _git_clean
+		__git_complete "${forgit_diff}" _git_diff
+		__git_complete "${forgit_fixup}" _git_branch
+		__git_complete "${forgit_log}" _git_log
+		__git_complete "${forgit_rebase}" _git_rebase
+		__git_complete "${forgit_reset_head}" _git_reset
+		__git_complete "${forgit_revert_commit}" _git_revert
+		__git_complete "${forgit_stash_show}" _git_stash_show
+	fi
+fi
