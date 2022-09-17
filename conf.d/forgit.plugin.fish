@@ -93,6 +93,11 @@ function forgit::log -d "git commit viewer"
 
     eval "git log $graph --color=always --format='$log_format' $argv $forgit_emojify" |
         env FZF_DEFAULT_OPTS="$opts" fzf 
+
+    set fzf_exit_code $status
+    # exit successfully on 130 (ctrl-c/esc)
+    [ $fzf_exit_code = 130 ] && return 0
+    return $fzf_exit_code
 end
 
 function forgit::extract_file --argument-names 'path'
@@ -144,6 +149,10 @@ function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
      expand -t 8 |
      env FZF_DEFAULT_OPTS="$opts" fzf
 
+    set fzf_exit_code $status
+    # exit successfully on 130 (ctrl-c/esc)
+    [ $fzf_exit_code = 130 ] && return 0
+    return $fzf_exit_code
 end
 
 # git add selector
@@ -347,6 +356,11 @@ function forgit::stash::show -d "git stash viewer"
         $FORGIT_STASH_FZF_OPTS
     "
     git stash list | env FZF_DEFAULT_OPTS="$opts" fzf
+
+    set fzf_exit_code $status
+    # exit successfully on 130 (ctrl-c/esc)
+    [ $fzf_exit_code = 130 ] && return 0
+    return $fzf_exit_code
 end
 
 # git clean selector

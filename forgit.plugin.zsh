@@ -53,6 +53,10 @@ forgit::log() {
     log_format=${FORGIT_GLO_FORMAT:-$forgit_log_format}
     eval "git log $graph --color=always --format='$log_format' $* $forgit_emojify" |
         FZF_DEFAULT_OPTS="$opts" fzf
+    fzf_exit_code=$?
+    # exit successfully on 130 (ctrl-c/esc)
+    [[ $fzf_exit_code == 130 ]] && return 0
+    return $fzf_exit_code
 }
 
 # git diff viewer
@@ -89,6 +93,10 @@ forgit::diff() {
     eval "git diff --name-status $commits -- ${files[*]} | sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]\t\2/'" |
         sed 's/\t/  ->  /2' | expand -t 8 |
         FZF_DEFAULT_OPTS="$opts" fzf
+    fzf_exit_code=$?
+    # exit successfully on 130 (ctrl-c/esc)
+    [[ $fzf_exit_code == 130 ]] && return 0
+    return $fzf_exit_code
 }
 
 # git add selector
@@ -157,6 +165,10 @@ forgit::stash::show() {
         $FORGIT_STASH_FZF_OPTS
     "
     git stash list | FZF_DEFAULT_OPTS="$opts" fzf
+    fzf_exit_code=$?
+    # exit successfully on 130 (ctrl-c/esc)
+    [[ $fzf_exit_code == 130 ]] && return 0
+    return $fzf_exit_code
 }
 
 # git clean selector
