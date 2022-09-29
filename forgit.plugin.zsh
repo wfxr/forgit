@@ -102,8 +102,6 @@ forgit::diff() {
 # git add selector
 forgit::add() {
     forgit::inside_work_tree || return 1
-    # Add files if passed as arguments
-    [[ $# -ne 0 ]] && git add "$@" && git status -su && return
 
     local changed unmerged untracked files opts preview extract
     changed=$(git config --get-color color.status.changed red)
@@ -128,7 +126,7 @@ forgit::add() {
         --preview=\"$preview\"
         $FORGIT_ADD_FZF_OPTS
     "
-    files=$(git -c color.status=always -c status.relativePaths=true status -su |
+    files=$(git -c color.status=always -c status.relativePaths=true status -su "$@" |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
