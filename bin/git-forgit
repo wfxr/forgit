@@ -10,8 +10,6 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
-set -e
-
 source "$FORGIT_INSTALL_DIR/forgit.plugin.zsh"
 
 cmd="$1"
