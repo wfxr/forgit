@@ -18,22 +18,6 @@ function forgit::reset::head -d "git reset HEAD (unstage) selector"
     "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" reset_head "$argv"
 end
 
-function forgit::checkout::file -d "git checkout-file selector" --argument-names 'file_name' --wraps "git checkout --"
-    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" checkout_file "$argv"
-end
-
-function forgit::checkout::commit -d "git checkout commit selector" --argument-names 'commit_id' --wraps "git checkout"
-    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" checkout_commit "$argv"
-end
-
-function forgit::branch::delete -d "git checkout branch deleter" --wraps "git branch --delete"
-    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" branch_delete "$argv"
-end
-
-function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'input_branch_name' --wraps "git branch"
-    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" checkout_branch "$argv"
-end
-
 function forgit::stash::show -d "git stash viewer"
     "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" stash_show "$argv"
 end
@@ -50,20 +34,44 @@ function forgit::cherry::pick::from::branch -d "git cherry-picking with interact
     "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" cherry_pick_from_branch "$argv"
 end
 
-function forgit::fixup -d "git fixup"
-    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" fixup "$argv"
-end
-
 function forgit::rebase -d "git rebase"
     "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" rebase "$argv"
 end
 
-function forgit::ignore -d "git ignore generator"
-    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" ignore "$argv"
+function forgit::fixup -d "git fixup"
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" fixup "$argv"
+end
+
+function forgit::checkout::file -d "git checkout-file selector" --argument-names 'file_name' --wraps "git checkout --"
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" checkout_file "$argv"
+end
+
+function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'input_branch_name' --wraps "git branch"
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" checkout_branch "$argv"
+end
+
+function forgit::checkout::tag -d "git checkout tag selector" --argument-names 'tag_name' --wraps "git checkout"
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" checkout_tag "$argv"
+end
+
+function forgit::checkout::commit -d "git checkout commit selector" --argument-names 'commit_id' --wraps "git checkout"
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" checkout_commit "$argv"
+end
+
+function forgit::branch::delete -d "git checkout branch deleter" --wraps "git branch --delete"
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" branch_delete "$argv"
 end
 
 function forgit::revert::commit --argument-names 'commit_hash' --wraps "git revert --"
     "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" revert_commit "$argv"
+end
+
+function forgit::blame
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" blame "$argv"
+end
+
+function forgit::ignore -d "git ignore generator"
+    "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit" ignore "$argv"
 end
 
 function forgit::ignore::update
