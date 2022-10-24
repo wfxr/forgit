@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # MIT (c) Wenxuan Zhang
 
-forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
+forgit::error() { printf "%b[Error]%b %s\n" '\e[0;31m' '\e[0m' "$@" >&2; return 1; }
 
 # set installation path
 if [[ -n "$ZSH_VERSION" ]]; then
@@ -13,12 +13,11 @@ if [[ -n "$ZSH_VERSION" ]]; then
 elif [[ -n "$BASH_VERSION" ]]; then
     FORGIT_INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
 else
-    forgit::warn "Only zsh and bash are fully supported"
+    forgit::error "Only zsh and bash are supported"
 fi
-if [[ -n "$FORGIT_INSTALL_DIR" ]]; then
-    export FORGIT_INSTALL_DIR
-fi
+export FORGIT_INSTALL_DIR
 
+# register shell functions
 forgit::log() {
     "$FORGIT_INSTALL_DIR/bin/git-forgit" log "$@"
 }
