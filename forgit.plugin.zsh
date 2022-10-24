@@ -3,7 +3,7 @@
 
 forgit::error() { printf "%b[Error]%b %s\n" '\e[0;31m' '\e[0m' "$@" >&2; return 1; }
 
-# set installation path
+# determine installation path
 if [[ -n "$ZSH_VERSION" ]]; then
     # shellcheck disable=2277,2296,2299
     0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
@@ -15,95 +15,95 @@ elif [[ -n "$BASH_VERSION" ]]; then
 else
     forgit::error "Only zsh and bash are supported"
 fi
-export FORGIT_INSTALL_DIR
+export FORGIT="$FORGIT_INSTALL_DIR/bin/git-forgit"
 
 # register shell functions
 forgit::log() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" log "$@"
+    "$FORGIT" log "$@"
 }
 
 forgit::diff() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" diff "$@"
+    "$FORGIT" diff "$@"
 }
 
 forgit::add() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" add "$@"
+    "$FORGIT" add "$@"
 }
 
 forgit::reset::head() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" reset_head "$@"
+    "$FORGIT" reset_head "$@"
 }
 
 forgit::stash::show() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" stash_show "$@"
+    "$FORGIT" stash_show "$@"
 }
 
 forgit::clean() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" clean "$@"
+    "$FORGIT" clean "$@"
 }
 
 forgit::cherry::pick() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" cherry_pick "$@"
+    "$FORGIT" cherry_pick "$@"
 }
 
 forgit::cherry::pick::from::branch() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" cherry_pick_from_branch "$@"
+    "$FORGIT" cherry_pick_from_branch "$@"
 }
 
 forgit::rebase() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" rebase "$@"
+    "$FORGIT" rebase "$@"
 }
 
 forgit::fixup() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" fixup "$@"
+    "$FORGIT" fixup "$@"
 }
 
 forgit::checkout::file() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" checkout_file "$@"
+    "$FORGIT" checkout_file "$@"
 }
 
 forgit::checkout::branch() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" checkout_branch "$@"
+    "$FORGIT" checkout_branch "$@"
 }
 
 forgit::checkout::tag() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" checkout_tag "$@"
+    "$FORGIT" checkout_tag "$@"
 }
 
 forgit::checkout::commit() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" checkout_commit "$@"
+    "$FORGIT" checkout_commit "$@"
 }
 
 forgit::branch::delete() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" branch_delete "$@"
+    "$FORGIT" branch_delete "$@"
 }
 
 forgit::revert::commit() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" revert_commit "$@"
+    "$FORGIT" revert_commit "$@"
 }
 
 forgit::blame() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" blame "$@"
+    "$FORGIT" blame "$@"
 }
 
 forgit::ignore() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" ignore "$@"
+    "$FORGIT" ignore "$@"
 }
 
 forgit::ignore::update() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" ignore_update "$@"
+    "$FORGIT" ignore_update "$@"
 }
 
 forgit::ignore::get() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" ignore_get "$@"
+    "$FORGIT" ignore_get "$@"
 }
 
 forgit::ignore::list() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" ignore_list "$@"
+    "$FORGIT" ignore_list "$@"
 }
 
 forgit::ignore::clean() {
-    "$FORGIT_INSTALL_DIR/bin/git-forgit" ignore_clean "$@"
+    "$FORGIT" ignore_clean "$@"
 }
 
 # register aliases
