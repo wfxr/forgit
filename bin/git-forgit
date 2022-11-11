@@ -12,6 +12,9 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
+# Set shell for fzf preview commands
+SHELL=/bin/bash
+
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
 --ansi
