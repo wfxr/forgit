@@ -4,91 +4,91 @@ set -g FORGIT_INSTALL_DIR (dirname (dirname (status -f)))
 set -g FORGIT "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit"
 
 function forgit::log -d "git commit viewer"
-    "$FORGIT" log "$argv"
+    "$FORGIT" log $argv
 end
 
 function forgit::diff -d "git diff viewer" --argument-names arg1 arg2
-    "$FORGIT" diff "$argv"
+    "$FORGIT" diff $argv
 end
 
 function forgit::add -d "git add selector" --wraps "git add"
-    "$FORGIT" add "$argv"
+    "$FORGIT" add $argv
 end
 
 function forgit::reset::head -d "git reset HEAD (unstage) selector"
-    "$FORGIT" reset_head "$argv"
+    "$FORGIT" reset_head $argv
 end
 
 function forgit::stash::show -d "git stash viewer"
-    "$FORGIT" stash_show "$argv"
+    "$FORGIT" stash_show $argv
 end
 
 function forgit::clean -d "git clean selector"
-    "$FORGIT" clean "$argv"
+    "$FORGIT" clean $argv
 end
 
 function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target' --wraps "git cherry-pick"
-    "$FORGIT" cherry_pick "$argv"
+    "$FORGIT" cherry_pick $argv
 end
 
 function forgit::cherry::pick::from::branch -d "git cherry-picking with interactive branch selection"
-    "$FORGIT" cherry_pick_from_branch "$argv"
+    "$FORGIT" cherry_pick_from_branch $argv
 end
 
 function forgit::rebase -d "git rebase"
-    "$FORGIT" rebase "$argv"
+    "$FORGIT" rebase $argv
 end
 
 function forgit::fixup -d "git fixup"
-    "$FORGIT" fixup "$argv"
+    "$FORGIT" fixup $argv
 end
 
 function forgit::checkout::file -d "git checkout-file selector" --argument-names 'file_name' --wraps "git checkout --"
-    "$FORGIT" checkout_file "$argv"
+    "$FORGIT" checkout_file $argv
 end
 
 function forgit::checkout::branch -d "git checkout branch selector" --argument-names 'input_branch_name' --wraps "git branch"
-    "$FORGIT" checkout_branch "$argv"
+    "$FORGIT" checkout_branch $argv
 end
 
 function forgit::checkout::tag -d "git checkout tag selector" --argument-names 'tag_name' --wraps "git checkout"
-    "$FORGIT" checkout_tag "$argv"
+    "$FORGIT" checkout_tag $argv
 end
 
 function forgit::checkout::commit -d "git checkout commit selector" --argument-names 'commit_id' --wraps "git checkout"
-    "$FORGIT" checkout_commit "$argv"
+    "$FORGIT" checkout_commit $argv
 end
 
 function forgit::branch::delete -d "git checkout branch deleter" --wraps "git branch --delete"
-    "$FORGIT" branch_delete "$argv"
+    "$FORGIT" branch_delete $argv
 end
 
 function forgit::revert::commit --argument-names 'commit_hash' --wraps "git revert --"
-    "$FORGIT" revert_commit "$argv"
+    "$FORGIT" revert_commit $argv
 end
 
 function forgit::blame
-    "$FORGIT" blame "$argv"
+    "$FORGIT" blame $argv
 end
 
 function forgit::ignore -d "git ignore generator"
-    "$FORGIT" ignore "$argv"
+    "$FORGIT" ignore $argv
 end
 
 function forgit::ignore::update
-    "$FORGIT" ignore_update "$argv"
+    "$FORGIT" ignore_update $argv
 end
 
 function forgit::ignore::get
-    "$FORGIT" ignore_get "$argv"
+    "$FORGIT" ignore_get $argv
 end
 
 function forgit::ignore::list
-    "$FORGIT" ignore_list "$argv"
+    "$FORGIT" ignore_list $argv
 end
 
 function forgit::ignore::clean
-    "$FORGIT" ignore_clean "$argv"
+    "$FORGIT" ignore_clean $argv
 end
 
 # register aliases
