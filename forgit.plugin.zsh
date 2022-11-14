@@ -2,6 +2,7 @@
 # MIT (c) Wenxuan Zhang
 
 forgit::error() { printf "%b[Error]%b %s\n" '\e[0;31m' '\e[0m' "$@" >&2; return 1; }
+forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 
 # determine installation path
 if [[ -n "$ZSH_VERSION" ]]; then
@@ -9,13 +10,29 @@ if [[ -n "$ZSH_VERSION" ]]; then
     0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
     # shellcheck disable=2277,2296,2298
     0="${${(M)0:#/*}:-$PWD/$0}"
-    FORGIT_INSTALL_DIR="${0:h}"
+    INSTALL_DIR="${0:h}"
 elif [[ -n "$BASH_VERSION" ]]; then
-    FORGIT_INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
+    INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
 else
     forgit::error "Only zsh and bash are supported"
 fi
-export FORGIT="$FORGIT_INSTALL_DIR/bin/git-forgit"
+FORGIT="$INSTALL_DIR/bin/git-forgit"
+
+# backwards compatibility:
+# export all user-defined FORGIT variables to make them available in git-forgit
+unexported_vars=0
+set | awk -F '=' '{ print $1 }' | grep FORGIT_ | while read -r var; do
+    if ! export | grep -q "^$var="; then
+        if [[ $unexported_vars == 0 ]]; then
+            forgit::warn "Config options have to be exported in future versions of forgit."
+            forgit::warn "Please update your config accordingly:"
+        fi
+        forgit::warn "  export $var"
+        unexported_vars=$((unexported_vars + 1))
+        # shellcheck disable=SC2163
+        export "$var"
+    fi
+done
 
 # register shell functions
 forgit::log() {

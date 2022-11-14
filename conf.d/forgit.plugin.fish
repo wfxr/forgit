@@ -1,7 +1,26 @@
 # MIT (c) Chris Apple
 
-set -g FORGIT_INSTALL_DIR (dirname (dirname (status -f)))
-set -g FORGIT "$FORGIT_INSTALL_DIR/conf.d/bin/git-forgit"
+set INSTALL_DIR (dirname (dirname (status -f)))
+set FORGIT "$INSTALL_DIR/conf.d/bin/git-forgit"
+
+function forgit::warn
+    printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$argv" >&2;
+end
+
+# backwards compatibility:
+# export all user-defined FORGIT variables to make them available in git-forgit
+set unexported_vars 0
+set | awk -F ' ' '{ print $1 }' | grep FORGIT_ | while read var
+    if ! set -x | grep -q "^$var "
+        if test $unexported_vars = 0
+            forgit::warn "Config options have to be exported in future versions of forgit."
+            forgit::warn "Please update your config accordingly:"
+        end
+        forgit::warn "  set -x $var \"$$var\""
+        set unexported_vars (math $unexported_vars + 1)
+        set -x $var $$var
+    end
+end
 
 function forgit::log -d "git commit viewer"
     "$FORGIT" log $argv
