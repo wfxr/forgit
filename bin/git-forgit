@@ -521,6 +521,39 @@ _forgit_ignore_clean() {
     [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
 }
 
+valid_commands=(
+    "add"
+    "blame"
+    "branch_delete"
+    "checkout_branch"
+    "checkout_commit"
+    "checkout_file"
+    "checkout_tag"
+    "cherry_pick"
+    "cherry_pick_from_branch"
+    "clean"
+    "diff"
+    "ignore"
+    "log"
+    "rebase fixup"
+    "reset_head"
+    "revert_commit"
+    "stash_show"
+)
+
 cmd="$1"
 shift
+
+# shellcheck disable=SC2076
+if [[ ! " ${valid_commands[*]} " =~ " ${cmd} " ]]; then
+    if [[ -z "$cmd" ]]; then
+        printf "forgit: missing command\n\n"
+    else
+        printf "forgit: '%s' is not a valid forgit command.\n\n" "$cmd"
+    fi
+    printf "The following commands are supported:\n"
+    printf "\t%s\n" "${valid_commands[@]}"
+    exit 1
+fi
+
 _forgit_"${cmd}" "$@"
