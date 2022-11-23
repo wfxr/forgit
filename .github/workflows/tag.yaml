@@ -1,0 +1,20 @@
+name: Tag
+
+on:
+  schedule:
+    # Run on every first day of the month
+    - cron: '0 0 1 * *'
+
+jobs:
+
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Create Tag
+        run: .github/scripts/tag.sh
