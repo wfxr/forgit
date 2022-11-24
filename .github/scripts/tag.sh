@@ -2,7 +2,7 @@
 
 set -e
 
-head_tag=$(git describe --exact-match 2>/dev/null | true)
+head_tag=$(git describe --exact-match 2>/dev/null || true)
 
 if [[ ${head_tag} =~ [\d{2}.\d{2}.\d+] ]]
 then
