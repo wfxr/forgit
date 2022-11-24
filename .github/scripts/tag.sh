@@ -14,5 +14,5 @@ else
     git tag -a ${version} -m "Release ${version}"
     git push origin ${version}
     echo "Pushed new tag:"
-    echo "${{github.server_url}}/${{github.repository}}/tag/${version}"
+    echo "${REPO_URL}/releases/tag/${version}"
 fi

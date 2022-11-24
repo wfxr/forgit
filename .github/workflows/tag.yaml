@@ -18,3 +18,5 @@ jobs:
 
       - name: Create Tag
         run: .github/scripts/tag.sh
+        env:
+          REPO_URL: ${{github.server_url}}/${{github.repository}}
