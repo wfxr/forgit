@@ -41,7 +41,7 @@ zgen load 'wfxr/forgit'
 # for antigen
 antigen bundle 'wfxr/forgit'
 
-# for fisher
+# for fisher (requires fisher v4.4.3 or higher)
 fisher install wfxr/forgit
 
 # for omf
@@ -51,16 +51,7 @@ omf install https://github.com/wfxr/forgit
 zinit load wfxr/forgit
 
 # manually
-# Clone the repository and source it in your shell's rc file.
-```
-
-You can run the following command to try `forgit` without installing:
-
-``` bash
-# for bash / zsh
-source <(curl -sSL git.io/forgit)
-# for fish
-source (curl -sSL git.io/forgit-fish | psub)
+# Clone the repository and source it in your shell's rc file or put bin/git-forgit into your $PATH
 ```
 
 ### Fig
@@ -69,7 +60,7 @@ source (curl -sSL git.io/forgit-fish | psub)
 
 Install `forgit` in just one click.
 
-<a href="https://fig.io/plugins/other/forgit" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
+[![Install with Fig](https://fig.io/badges/install-with-fig.svg)](https://fig.io/plugins/other/forgit)
 
 ### 📝 Features
 
@@ -137,9 +128,10 @@ For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 
 ### ⚙  Options
 
-#### aliases
+Options can be set via environment variables. They have to be **exported** in
+order to be recognized by `forgit`.
 
-##### shell
+#### shell aliases
 
 You can change the default aliases by defining these variables below.
 (To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
@@ -166,7 +158,7 @@ forgit_fixup=gfu
 
 #### git
 
-You can use git aliases by making `git-forgit` available in `$PATH`:
+You can use forgit as a subcommand of git by making `git-forgit` available in `$PATH`:
 
 ```sh
 # after `forgit` was loaded
@@ -177,10 +169,10 @@ export PATH="$PATH:$FORGIT_INSTALL_DIR/bin"
 
 Then any forgit command will be a subcommand of git:
 
-```
-$ git forgit log
-$ git forgit add
-$ git forgit diff
+```cmd
+git forgit log
+git forgit add
+git forgit diff
 ```
 
 Optionally you can add [aliases in git](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases):
@@ -189,7 +181,7 @@ Optionally you can add [aliases in git](https://git-scm.com/book/en/v2/Git-Basic
 git config --global alias.cf 'forgit checkout_file'
 ```
 
-And use the alias in git:
+And use forgit functions via a git alias:
 
 ```sh
 git cf
@@ -216,7 +208,7 @@ You can add default fzf options for `forgit`, including keybinds, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
 
 ``` bash
-FORGIT_FZF_DEFAULT_OPTS="
+export FORGIT_FZF_DEFAULT_OPTS="
 --exact
 --border
 --cycle
@@ -256,18 +248,21 @@ Complete loading order of fzf options is:
 Examples:
 
 - `ctrl-d` to drop the selected stash but do not quit fzf (`gss` specific).
-```
-FORGIT_STASH_FZF_OPTS='
+
+```sh
+export FORGIT_STASH_FZF_OPTS='
 --bind="ctrl-d:reload(git stash drop $(cut -d: -f1 <<<{}) 1>/dev/null && git stash list)"
 '
 ```
 
 - `ctrl-e` to view the logs in a vim buffer (`glo` specific).
-```
-FORGIT_LOG_FZF_OPTS='
+
+```sh
+export FORGIT_LOG_FZF_OPTS='
 --bind="ctrl-e:execute(echo {} |grep -Eo [a-f0-9]+ |head -1 |xargs git show |vim -)"
 '
 ```
+
 #### other options
 
 | Option                      | Description                              | Default                                       |

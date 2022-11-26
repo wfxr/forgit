@@ -47,7 +47,7 @@ jobs:
         fish --version; echo
 
     - name: Shellcheck
-      run: shellcheck forgit.plugin.sh
+      run: shellcheck forgit.plugin.sh bin/git-forgit
 
     - name: Test bash
       run: bash forgit.plugin.sh
