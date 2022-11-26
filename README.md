@@ -96,6 +96,8 @@ Install `forgit` in just one click.
 
 - **Interactive `git stash` viewer** (`gss`)
 
+- **Interactive `git stash push` selector** (`gsp`)
+
 - **Interactive `git clean` selector** (`gclean`)
 
 - **Interactive `git cherry-pick` selector** (`gcp`)
@@ -150,6 +152,7 @@ forgit_checkout_commit=gco
 forgit_revert_commit=grc
 forgit_clean=gclean
 forgit_stash_show=gss
+forgit_stash_push=gsp
 forgit_cherry_pick=gcp
 forgit_rebase=grb
 forgit_blame=gbl
@@ -233,6 +236,7 @@ Customizing fzf options for each command individually is also supported:
 | `gco`    | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
 | `grc`    | `FORGIT_REVERT_COMMIT_OPTS`       |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`           |
+| `gsp`    | `FORGIT_STASH_PUSH_OPTS`          |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
 | `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
 | `gbl`    | `FORGIT_BLAME_FZF_OPTS`           |

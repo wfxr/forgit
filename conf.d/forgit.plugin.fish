@@ -42,6 +42,10 @@ function forgit::stash::show -d "git stash viewer"
     "$FORGIT" stash_show $argv
 end
 
+function forgit::stash::push -d "git stash push selector" ()
+    "$FORGIT" stash_push $argv
+end
+
 function forgit::clean -d "git clean selector"
     "$FORGIT" clean $argv
 end
@@ -171,6 +175,12 @@ if test -z "$FORGIT_NO_ALIASES"
         alias $forgit_stash_show 'forgit::stash::show'
     else
         alias gss 'forgit::stash::show'
+    end
+
+    if test -n "$forgit_stash_push"
+        alias $forgit_stash_push 'forgit::stash::push'
+    else
+        alias gsp 'forgit::stash::push'
     end
 
     if test -n "$forgit_cherry_pick"

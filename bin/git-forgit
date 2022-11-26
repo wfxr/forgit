@@ -204,6 +204,30 @@ _forgit_stash_show() {
     return $fzf_exit_code
 }
 
+# git stash push selector
+_forgit_stash_push() {
+    _forgit_inside_work_tree || return 1
+    # Stash files if passed as arguments
+    [[ $# -ne 0 ]] && git stash push -u "$@" && return
+    local opts preview files
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m
+        $FORGIT_STASH_PUSH_OPTS
+    "
+    preview="
+        if (git ls-files {} --error-unmatch) &> /dev/null; then
+            git diff --color=always {} | $_forgit_diff_pager
+        else
+            git diff --color=always /dev/null {} | $_forgit_diff_pager
+        fi
+    "
+    # Show both modified and untracked files
+    files=$(git ls-files --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
+    [[ -z "$files" ]] && return 1
+    echo "${files[@]}" | tr '\n' '\0' | git stash push -u --pathspec-file-nul --pathspec-from-file -
+}
+
 # git clean selector
 _forgit_clean() {
     _forgit_inside_work_tree || return 1
@@ -542,6 +566,7 @@ valid_commands=(
     "reset_head"
     "revert_commit"
     "stash_show"
+    "stash_push"
 )
 
 cmd="$1"
