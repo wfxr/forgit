@@ -15,6 +15,9 @@
 # Set shell for fzf preview commands
 SHELL=/bin/bash
 
+# Get absolute forgit path
+FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
 --ansi
@@ -69,11 +72,11 @@ _forgit_log() {
     local opts graph files log_format preview_cmd enter_cmd
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     preview_cmd="echo {} | $_forgit_extract_sha | xargs -I% git show --color=always -U$_forgit_preview_context % -- $files | $_forgit_show_pager"
-    enter_cmd="echo {} | $_forgit_extract_sha | xargs -I% git show --color=always -U$_forgit_fullscreen_context % -- $files | $_forgit_show_pager"
+    enter_cmd="echo {} | $_forgit_extract_sha | xargs -I% ${FORGIT} diff %^! $files"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
+        --bind=\"enter:execute($enter_cmd)\"
         --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
         --preview=\"$preview_cmd\"
         $FORGIT_LOG_FZF_OPTS
