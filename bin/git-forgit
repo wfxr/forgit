@@ -249,7 +249,7 @@ _forgit_cherry_pick_from_branch() {
     _forgit_inside_work_tree || return 1
     local cmd preview opts branch exitval input_branch args
     args=("$@")
-    if [[ $# -ne 0 ]] && [[ $(git rev-parse --verify ${args[0]} 2>/dev/null) ]]; then
+    if [[ $# -ne 0 ]] && [[ $(git rev-parse --verify "${args[0]}" 2>/dev/null) ]]; then
         input_branch=${args[0]}
     fi
     cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
