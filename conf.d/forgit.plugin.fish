@@ -50,7 +50,7 @@ function forgit::cherry::pick -d "git cherry-picking" --argument-names 'target' 
     "$FORGIT" cherry_pick $argv
 end
 
-function forgit::cherry::pick::from::branch -d "git cherry-picking with interactive branch selection"
+function forgit::cherry::pick::from::branch -d "git cherry-picking with interactive branch selection" --wraps "git cherry-pick"
     "$FORGIT" cherry_pick_from_branch $argv
 end
 
