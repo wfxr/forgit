@@ -224,7 +224,7 @@ _forgit_stash_push() {
         fi
     "
     # Show both modified and untracked files
-    files=$(git ls-files --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
+    files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
     [[ -z "$files" ]] && return 1
     echo "${files[@]}" | tr '\n' '\0' | git stash push -u --pathspec-file-nul --pathspec-from-file -
 }
