@@ -247,8 +247,11 @@ _forgit_cherry_pick() {
 
 _forgit_cherry_pick_from_branch() {
     _forgit_inside_work_tree || return 1
-    [[ $# -ne 0 ]] && { git checkout -b "$@"; return $?; }
-    local cmd preview opts branch exitval
+    local cmd preview opts branch exitval input_branch args
+    args=("$@")
+    if [[ $# -ne 0 ]]; then
+        input_branch=${args[0]}
+    fi
     cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
     preview="git log {1} $_forgit_log_preview_options"
     opts="
@@ -261,13 +264,19 @@ _forgit_cherry_pick_from_branch() {
     # picked has been selected from within a branch
     while true
     do
-        branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
+        if [[ -z $input_branch ]]; then
+            branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
+        else
+            branch=$input_branch
+        fi
+
+        unset input_branch
         [[ -z "$branch" ]] && return 1
 
         _forgit_cherry_pick "$branch"
 
         exitval=$?
-        [[ $exitval != 130 ]] && return $exitval
+        [[ $exitval != 130 ]] || [[ $# -ne 0 ]] && return $exitval
     done
 }
 
