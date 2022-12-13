@@ -208,6 +208,21 @@ _forgit_stash_show() {
 # git stash push selector
 _forgit_stash_push() {
     _forgit_inside_work_tree || return 1
+    local msg args
+    args=( "$@" )
+    while (( "$#" )); do
+        case "$1" in
+            # allow message as argument
+            -m|--message)
+            msg="$2"
+            shift 2
+            ;;
+            # ignore -u as it's used implicitly
+            -u|--include-untracked) shift ;;
+            # pass to git directly when encountering anything else
+            *) git stash push "${args[@]}" && return $?
+        esac
+    done
     local opts preview files
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -224,7 +239,7 @@ _forgit_stash_push() {
     # Show both modified and untracked files
     files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
     [[ -z "$files" ]] && return 1
-    echo "${files[@]}" | tr '\n' '\0' | git stash push ${1:+-m "$1"} -u --pathspec-file-nul --pathspec-from-file -
+    echo "${files[@]}" | tr '\n' '\0' | git stash push ${msg:+-m "$msg"} -u --pathspec-file-nul --pathspec-from-file -
 }
 
 # git clean selector
