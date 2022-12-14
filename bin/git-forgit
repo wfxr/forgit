@@ -235,6 +235,7 @@ _forgit_cherry_pick() {
         FZF_DEFAULT_OPTS="$opts" fzf | sort -nk1 | cut -f2-)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
+    [[ -z "$fzf_selection" ]] && return $fzf_exitval
 
     commits=()
     while IFS="" read -r line
