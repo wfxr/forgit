@@ -58,6 +58,10 @@ forgit::stash::show() {
     "$FORGIT" stash_show "$@"
 }
 
+forgit::stash::push() {
+    "$FORGIT" stash_push "$@"
+}
+
 forgit::clean() {
     "$FORGIT" clean "$@"
 }
@@ -142,6 +146,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_checkout_tag:-gct}"='forgit::checkout::tag'
     alias "${forgit_clean:-gclean}"='forgit::clean'
     alias "${forgit_stash_show:-gss}"='forgit::stash::show'
+    alias "${forgit_stash_push:-gsp}"='forgit::stash::push'
     alias "${forgit_cherry_pick:-gcp}"='forgit::cherry::pick::from::branch'
     alias "${forgit_rebase:-grb}"='forgit::rebase'
     alias "${forgit_fixup:-gfu}"='forgit::fixup'

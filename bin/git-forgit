@@ -65,6 +65,7 @@ _forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Cre
 _forgit_log_preview_options="--graph --pretty=format:'$_forgit_log_format' --color=always --abbrev-commit --date=relative"
 _forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
 _forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
+_forgit_is_file_tracked="(git ls-files {} --error-unmatch) &> /dev/null"
 
 # git commit viewer
 _forgit_log() {
@@ -202,6 +203,43 @@ _forgit_stash_show() {
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
     return $fzf_exit_code
+}
+
+# git stash push selector
+_forgit_stash_push() {
+    _forgit_inside_work_tree || return 1
+    local msg args
+    args=( "$@" )
+    while (( "$#" )); do
+        case "$1" in
+            # allow message as argument
+            -m|--message)
+            msg="$2"
+            shift 2
+            ;;
+            # ignore -u as it's used implicitly
+            -u|--include-untracked) shift ;;
+            # pass to git directly when encountering anything else
+            *) git stash push "${args[@]}" && return $?
+        esac
+    done
+    local opts preview files
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m
+        $FORGIT_STASH_PUSH_OPTS
+    "
+    preview="
+        if $_forgit_is_file_tracked; then
+            git diff --color=always {} | $_forgit_diff_pager
+        else
+            git diff --color=always /dev/null {} | $_forgit_diff_pager
+        fi
+    "
+    # Show both modified and untracked files
+    files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
+    [[ -z "$files" ]] && return 1
+    echo "${files[@]}" | tr '\n' '\0' | git stash push ${msg:+-m "$msg"} -u --pathspec-file-nul --pathspec-from-file -
 }
 
 # git clean selector
@@ -473,7 +511,7 @@ _forgit_blame() {
     "
     flags=$(git rev-parse --flags "$@")
     preview="
-        if (git ls-files {} --error-unmatch) &>/dev/null; then
+        if $_forgit_is_file_tracked; then
             git blame {} --date=short $flags | $_forgit_blame_pager
         else
             echo File not tracked
@@ -551,6 +589,7 @@ valid_commands=(
     "reset_head"
     "revert_commit"
     "stash_show"
+    "stash_push"
 )
 
 cmd="$1"
