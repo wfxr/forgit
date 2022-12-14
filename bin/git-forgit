@@ -228,6 +228,11 @@ _forgit_cherry_pick() {
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # you generally want to cherry pick newest->oldest when you multiselect
+    # The instances of "cut", "nl" and "sort" all serve this purpose
+    # Please see https://github.com/wfxr/forgit/issues/253 for more details
+
     preview="echo {} | cut -f2- | $_forgit_extract_sha | xargs -I% git show --color=always % | $_forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -460,6 +465,11 @@ _forgit_revert_commit() {
         $FORGIT_REVERT_COMMIT_OPTS
     "
 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # you generally want to revert oldest->newest when you multiselect
+    # The instances of "cut", "nl" and "sort" all serve this purpose
+    # Please see https://github.com/wfxr/forgit/issues/253 for more details
+
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     preview="echo {} | cut -f2- | $_forgit_extract_sha | xargs -I% git show --color=always % -- $files | $_forgit_show_pager"
 
@@ -467,7 +477,8 @@ _forgit_revert_commit() {
     IFS=$'\n' commits=($(eval "$cmd" | 
         nl |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m | 
-        sort --numeric-sort --key=1 | cut -f2- |
+        sort --numeric-sort --key=1 | 
+        cut -f2- |
         sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'))
 
     [ ${#commits[@]} -eq 0 ] && return 1
