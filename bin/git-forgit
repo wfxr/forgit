@@ -224,15 +224,15 @@ _forgit_cherry_pick() {
     base=$(git branch --show-current)
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
-    preview="echo {} | $_forgit_extract_sha | xargs -I% git show --color=always % | $_forgit_show_pager"
+    preview="echo {} | cut -f2- | $_forgit_extract_sha | xargs -I% git show --color=always % | $_forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         --preview=\"$preview\"
-        -m -0 --tiebreak=index
+        --multi --ansi --with-nth 2.. -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
-    fzf_selection=$(git cherry "$base" "$target" --abbrev -v | _forgit_reverse_lines |
-        FZF_DEFAULT_OPTS="$opts" fzf)
+    fzf_selection=$(git cherry "$base" "$target" --abbrev -v | nl | _forgit_reverse_lines |
+        FZF_DEFAULT_OPTS="$opts" fzf | sort -nk1 | cut -f2-)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
 
