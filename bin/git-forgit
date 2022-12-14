@@ -221,9 +221,13 @@ _forgit_clean() {
 
 _forgit_cherry_pick() {
     local base target preview opts fzf_selection fzf_exitval
+
     base=$(git branch --show-current)
+    [[ -z "$base" ]] && echo "Current commit is not on a branch." && return 1
+
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
+
     preview="echo {} | cut -f2- | $_forgit_extract_sha | xargs -I% git show --color=always % | $_forgit_show_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -232,7 +236,7 @@ _forgit_cherry_pick() {
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
     fzf_selection=$(git cherry "$base" "$target" --abbrev -v | nl | _forgit_reverse_lines |
-        FZF_DEFAULT_OPTS="$opts" fzf | sort -nk1 | cut -f2-)
+        FZF_DEFAULT_OPTS="$opts" fzf | sort --numeric-sort --key=1 --reverse | cut -f2-)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
     [[ -z "$fzf_selection" ]] && return $fzf_exitval
