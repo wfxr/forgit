@@ -247,6 +247,8 @@ _forgit_cherry_pick() {
         commits+=("$line")
     done < <(echo "$fzf_selection" | _forgit_reverse_lines | cut -d' ' -f2)
 
+    [ ${#commits[@]} -eq 0 ] && return 1
+
     git cherry-pick "${commits[@]}"
 }
 
@@ -448,23 +450,29 @@ _forgit_branch_delete() {
 _forgit_revert_commit() {
     _forgit_inside_work_tree || return 1
     [[ $# -ne 0 ]] && { git revert "$@"; return $?; }
+
     local cmd opts files preview commits IFS
     cmd="git log --graph --color=always --format='$_forgit_log_format' $* $_forgit_emojify"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s --tiebreak=index
+        --ansi --with-nth 2..
         $FORGIT_REVERT_COMMIT_OPTS
     "
+
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
-    preview="echo {} | $_forgit_extract_sha | xargs -I% git show --color=always % -- $files | $_forgit_show_pager"
+    preview="echo {} | cut -f2- | $_forgit_extract_sha | xargs -I% git show --color=always % -- $files | $_forgit_show_pager"
+
     # shellcheck disable=2207
-    IFS=$'\n' commits=($(eval "$cmd" |
-        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m |
+    IFS=$'\n' commits=($(eval "$cmd" | 
+        nl |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m | 
+        sort --numeric-sort --key=1 | cut -f2- |
         sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'))
+
     [ ${#commits[@]} -eq 0 ] && return 1
-    for commit in "${commits[@]}"; do
-        git revert "$commit"
-    done
+
+    git revert "${commits[@]}"
 }
 
 # git blame viewer
