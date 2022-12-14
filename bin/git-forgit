@@ -12,8 +12,10 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
-# Set shell for fzf preview commands
-SHELL=/bin/bash
+# shellcheck suggests "command -v xxx" instead. But it's not a replacement to
+# `which`. See https://github.com/koalaman/shellcheck/issues/1162
+# shellcheck disable=2230
+SHELL="$(which bash)" # Set shell for fzf preview commands
 
 # Get absolute forgit path
 FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
