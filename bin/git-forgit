@@ -229,7 +229,7 @@ _forgit_cherry_pick() {
     target="$1"
 
     # in this function, we do something interesting to maintain proper ordering as it's assumed 
-    # you generally want to cherry pick newest->oldest when you multiselect
+    # you generally want to cherry pick oldest->newest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
 
@@ -466,7 +466,7 @@ _forgit_revert_commit() {
     "
 
     # in this function, we do something interesting to maintain proper ordering as it's assumed 
-    # you generally want to revert oldest->newest when you multiselect
+    # you generally want to revert newest->oldest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
 
