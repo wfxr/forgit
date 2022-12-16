@@ -187,7 +187,7 @@ _forgit_reset_head() {
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
     files="$(git diff --staged --name-only | FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD $rootdir/% && git status --short && return
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD "$rootdir"/% && git status --short && return
     echo 'Nothing to unstage.'
 }
 
