@@ -177,16 +177,17 @@ _forgit_add() {
 # git reset HEAD (unstage) selector
 _forgit_reset_head() {
     _forgit_inside_work_tree || return 1
-    local cmd files opts
-    cmd="git diff --cached --color=always -- {} | $_forgit_diff_pager "
+    local cmd files opts rootdir
+    rootdir=$(git rev-parse --show-toplevel)
+    cmd="git diff --staged --color=always -- $rootdir/{} | $_forgit_diff_pager "
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
         --preview=\"$cmd\"
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
-    files="$(git diff --cached --name-only --relative | FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD % && git status --short && return
+    files="$(git diff --staged --name-only | FZF_DEFAULT_OPTS="$opts" fzf)"
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git reset -q HEAD "$rootdir"/% && git status --short && return
     echo 'Nothing to unstage.'
 }
 
