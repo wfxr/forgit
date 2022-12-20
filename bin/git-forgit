@@ -282,7 +282,7 @@ _forgit_cherry_pick() {
         --multi --ansi --with-nth 2.. -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
-    fzf_selection=$(git log --right-only --color=always --cherry-pick --oneline $base...$target | nl |
+    fzf_selection=$(git log --right-only --color=always --cherry-pick --oneline "$base"..."$target" | nl |
         FZF_DEFAULT_OPTS="$opts" fzf | sort --numeric-sort --key=1 | cut -f 2- | cut -c 1-8)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
