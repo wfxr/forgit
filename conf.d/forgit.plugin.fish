@@ -2,6 +2,9 @@
 
 set INSTALL_DIR (dirname (dirname (status -f)))
 set FORGIT "$INSTALL_DIR/conf.d/bin/git-forgit"
+if [ ! -e "$FORGIT" ]
+    set FORGIT "$INSTALL_DIR/vendor_conf.d/bin/git-forgit"
+end
 
 function forgit::warn
     printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$argv" >&2;
