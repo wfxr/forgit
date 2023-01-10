@@ -167,7 +167,6 @@ if test -z "$FORGIT_NO_ALIASES"
         alias gbd 'forgit::branch::delete'
     end
 
-
     if test -n "$forgit_clean"
         alias $forgit_clean 'forgit::clean'
     else
@@ -214,6 +213,12 @@ if test -z "$FORGIT_NO_ALIASES"
         alias $forgit_revert_commit 'forgit::revert::commit'
     else
         alias grc 'forgit::revert::commit'
+    end
+
+    if test -n "$forgit_blame"
+        alias $forgit_blame 'forgit::blame'
+    else
+        alias gbl 'forgit::blame'
     end
 
 end
