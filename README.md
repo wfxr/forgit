@@ -289,6 +289,8 @@ export FORGIT_LOG_FZF_OPTS='
 - `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
 - You can use the commands as sub-commands of `git`, see [#147](https://github.com/wfxr/forgit/issues/147) for details.
+- Put [completions/git-forgit.bash](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) in
+  `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
 
 ### 📃 License
 
