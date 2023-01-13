@@ -170,7 +170,7 @@ _forgit_add() {
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
         sh -c "$extract")
-    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' |xargs -0 -I% git add % && git status -su && return
+    [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' | git add --pathspec-file-nul --pathspec-from-file - && git status -su && return
     echo 'Nothing to add.'
 }
 
@@ -396,7 +396,7 @@ _forgit_checkout_file() {
         $FORGIT_CHECKOUT_FILE_FZF_OPTS
     "
     files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git checkout %
+    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | git checkout --pathspec-file-nul --pathspec-from-file -
 }
 
 # git checkout-branch selector
