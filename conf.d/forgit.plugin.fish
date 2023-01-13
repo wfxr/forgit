@@ -221,4 +221,10 @@ if test -z "$FORGIT_NO_ALIASES"
         alias gbl 'forgit::blame'
     end
 
+    if test -n "$forgit_checkout_tag"
+        alias $forgit_checkout_tag 'forgit::checkout::tag'
+    else
+        alias gct 'forgit::checkout::tag'
+    end
+
 end
