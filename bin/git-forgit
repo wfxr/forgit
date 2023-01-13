@@ -540,7 +540,7 @@ _forgit_blame() {
     flags=$(git rev-parse --flags "$@")
     preview="
         if $_forgit_is_file_tracked; then
-            git blame {} --date=short $flags | $_forgit_blame_pager
+            git blame {} --date=${FORGIT_BLAME_DATE:-short} $flags | $_forgit_blame_pager
         else
             echo File not tracked
         fi
