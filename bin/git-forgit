@@ -74,7 +74,7 @@ _forgit_is_file_tracked="(git ls-files {} --error-unmatch) &> /dev/null"
 _forgit_log() {
     _forgit_inside_work_tree || return 1
     local opts graph files log_format preview_cmd enter_cmd
-    files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
+    files=$(sed -nE 's/.*-- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     preview_cmd="echo {} | $_forgit_extract_sha | xargs -I% git show --color=always -U$_forgit_preview_context % -- $files | $_forgit_show_pager"
     enter_cmd="echo {} | $_forgit_extract_sha | xargs -I% ${FORGIT} diff %^! $files"
     opts="
