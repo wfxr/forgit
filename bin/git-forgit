@@ -289,10 +289,10 @@ _forgit_cherry_pick() {
     [[ -z "$fzf_selection" ]] && return $fzf_exitval
 
     commits=()
-    while IFS="" read -r line
+    while IFS=" " read -r line
     do
         commits+=("$line")
-    done < <(echo "$fzf_selection" | _forgit_reverse_lines | cut -d' ' -f2)
+    done < <(echo "$fzf_selection" | _forgit_reverse_lines)
 
     [ ${#commits[@]} -eq 0 ] && return 1
 
