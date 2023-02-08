@@ -114,7 +114,7 @@ _forgit_diff() {
     repo="$(git rev-parse --show-toplevel)"
     # Store file names into an array so that they can be passed separately to 'git diff' later.
     # This is necessary for properly supporting renames as well as whitespaces in file names.
-    get_files="while read f; do files+=(\$f); done < <(echo {} | sed 's/.*] *//' | sed 's/  ->  /\\\n/')"
+    get_files="while IFS="$'\n'" read f; do files+=(\$f); done < <(echo {} | sed 's/.*] *//' | sed 's/  ->  /\\\n/')"
     # Git stashes are named "stash@{x}", which contains the fzf placeholder "{x}".
     # In order to support passing stashes as arguments to _forgit_diff, we have to
     # prevent fzf from interpreting this substring by escaping the opening bracket.
