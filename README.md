@@ -50,6 +50,9 @@ omf install https://github.com/wfxr/forgit
 # for zinit
 zinit load wfxr/forgit
 
+# for oh-my-zsh
+git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
+
 # manually
 # Clone the repository and source it in your shell's rc file or put bin/git-forgit into your $PATH
 ```
