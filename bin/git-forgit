@@ -114,17 +114,23 @@ _forgit_diff() {
         fi
     }
     repo="$(git rev-parse --show-toplevel)"
-    # Store file names into an array so that they can be passed separately to 'git diff' later.
-    # This is necessary for properly supporting renames as well as whitespaces in file names.
-    get_files="while IFS= read -r -d '' f; do files+=(\\\"\$f\\\"); done < <(echo {} | sed 's/.*] *//' | sed 's/  ->  /\\\x0/' | sed 's/$/\\\x0/')"
+    # Construct a null-terminated list of the filenames
+    # The input looks like one of these lines:
+    #   [R100]  file  ->  another file
+    #   [A]     file with spaces
+    #   [D]     oldfile
+    # And we transform it to this representation for further usage with "xargs -0":
+    #   file\0another file\0
+    #   file with spaces\0
+    #   oldfile\0
+    get_files="cd '$repo' && echo {} | sed 's/.*] *//' | sed 's/  ->  /\\\x0/' | sed 's/$/\\\x0/'"
     # Git stashes are named "stash@{x}", which contains the fzf placeholder "{x}".
     # In order to support passing stashes as arguments to _forgit_diff, we have to
     # prevent fzf from interpreting this substring by escaping the opening bracket.
     # The string is evaluated a few subsequent times, so we need multiple escapes.
     escaped_commits=${commits//\{/\\\\\{}
-    git_diff="cd '$repo' && git diff --color=always"
-    preview_cmd="$get_files && $git_diff -U$_forgit_preview_context $escaped_commits -- \\\"\${files[@]}\\\" | $_forgit_diff_pager"
-    enter_cmd="$get_files && $git_diff -U$_forgit_fullscreen_context $escaped_commits -- \\\"\${files[@]}\\\" | $_forgit_diff_pager"
+    preview_cmd="$get_files | xargs -0 git diff --color=always -U$_forgit_preview_context $escaped_commits -- | $_forgit_diff_pager"
+    enter_cmd="$get_files | xargs -0 git diff --color=always -U$_forgit_fullscreen_context $escaped_commits -- | $_forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
