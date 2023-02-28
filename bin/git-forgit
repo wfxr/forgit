@@ -12,11 +12,13 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
+# Set shell for fzf preview commands
 # Disable shellcheck for "which", because it suggests "command -v xxx" instead,
 # which is not a working replacement.
 # See https://github.com/koalaman/shellcheck/issues/1162
 # shellcheck disable=2230
-SHELL="$(which bash)" # Set shell for fzf preview commands
+SHELL="$(which bash)"
+export SHELL
 
 # Get absolute forgit path
 FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
@@ -112,14 +114,26 @@ _forgit_diff() {
         fi
     }
     repo="$(git rev-parse --show-toplevel)"
-    get_files="cd '$repo' && echo {} | sed 's/.*] *//' | sed 's/  ->  / /'"
+    # Construct a null-terminated list of the filenames
+    # The input looks like one of these lines:
+    #   [R100]  file  ->  another file
+    #   [A]     file with spaces
+    #   [D]     oldfile
+    # And we transform it to this representation for further usage with "xargs -0":
+    #   file\0another file\0
+    #   file with spaces\0
+    #   oldfile\0
+    # We have to do a two-step sed -> tr pipe because OSX's sed implementation does
+    # not support the null-character directly.
+    get_files="echo {} | sed 's/.*] *//' | sed 's/  ->  /\\\n/' | tr '\\\n' '\\\0'"
     # Git stashes are named "stash@{x}", which contains the fzf placeholder "{x}".
     # In order to support passing stashes as arguments to _forgit_diff, we have to
     # prevent fzf from interpreting this substring by escaping the opening bracket.
     # The string is evaluated a few subsequent times, so we need multiple escapes.
     escaped_commits=${commits//\{/\\\\\{}
-    preview_cmd="$get_files | xargs -I% git diff --color=always -U$_forgit_preview_context $escaped_commits -- % | $_forgit_diff_pager"
-    enter_cmd="$get_files | xargs -I% git diff --color=always -U$_forgit_fullscreen_context $escaped_commits -- % | $_forgit_diff_pager"
+    git_diff="git diff --color=always $escaped_commits"
+    preview_cmd="cd '$repo' && $get_files | xargs -0 $git_diff -U$_forgit_preview_context -- | $_forgit_diff_pager"
+    enter_cmd="cd '$repo' && $get_files | xargs -0 $git_diff -U$_forgit_fullscreen_context -- | $_forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
