@@ -162,7 +162,7 @@ forgit_blame=gbl
 forgit_fixup=gfu
 ```
 
-#### git
+#### git integration
 
 You can use forgit as a subcommand of git by making `git-forgit` available in `$PATH`:
 
@@ -192,6 +192,32 @@ And use forgit functions via a git alias:
 ```sh
 git cf
 ```
+
+#### git options
+
+If you want to customize `git`'s behavior within forgit there is a dedicated variable for each forgit command.
+These are passed to the according `git` calls.
+
+| Command  | Option                            |
+|----------|-----------------------------------|
+| `ga`     | `FORGIT_ADD_GIT_OPTS`             |
+| `glo`    | `FORGIT_LOG_GIT_OPTS`             |
+| `gd`     | `FORGIT_DIFF_GIT_OPTS`            |
+| `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS`      |
+| `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS`   |
+| `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS` |
+| `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS`   |
+| `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS`    |
+| `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS` |
+| `grc`    | `FORGIT_REVERT_COMMIT_GIT_OPTS`   |
+| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS`      |
+| `gsp`    | `FORGIT_STASH_PUSH_GIT_OPTS`      |
+| `gclean` | `FORGIT_CLEAN_GIT_OPTS`           |
+| `grb`    | `FORGIT_REBASE_GIT_OPTS`          |
+| `gbl`    | `FORGIT_BLAME_GIT_OPTS`           |
+| `gfu`    | `FORGIT_FIXUP_GIT_OPTS`           |
+| `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`     |
+
 
 #### pagers
 
@@ -237,9 +263,9 @@ Customizing fzf options for each command individually is also supported:
 | `gbd`    | `FORGIT_BRANCH_DELETE_FZF_OPTS`   |
 | `gct`    | `FORGIT_CHECKOUT_TAG_FZF_OPTS`    |
 | `gco`    | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
-| `grc`    | `FORGIT_REVERT_COMMIT_OPTS`       |
+| `grc`    | `FORGIT_REVERT_COMMIT_FZF_OPTS`   |
 | `gss`    | `FORGIT_STASH_FZF_OPTS`           |
-| `gsp`    | `FORGIT_STASH_PUSH_OPTS`          |
+| `gsp`    | `FORGIT_STASH_PUSH_FZF_OPTS`      |
 | `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
 | `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
 | `gbl`    | `FORGIT_BLAME_FZF_OPTS`           |
