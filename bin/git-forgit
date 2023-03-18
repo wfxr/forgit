@@ -296,18 +296,16 @@ _forgit_cherry_pick() {
         --multi --ansi --with-nth 2.. -0 --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
+    # Note: do not add any pipe after the fzf call here, otherwise the fzf_exitval is not propagated properly.
+    # Any eventual post processing can be done afterwards when the "commits" variable is assigned below.
     fzf_selection=$(git log --right-only --color=always --cherry-pick --oneline "$base"..."$target" | nl |
-        FZF_DEFAULT_OPTS="$opts" fzf | sort --numeric-sort --key=1 | cut -f 2- | cut -c 1-8)
+        FZF_DEFAULT_OPTS="$opts" fzf)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
     [[ -z "$fzf_selection" ]] && return $fzf_exitval
 
-    commits=()
-    while IFS="" read -r line
-    do
-        commits+=("$line")
-    done < <(echo "$fzf_selection" | _forgit_reverse_lines | cut -d' ' -f2)
-
+    # shellcheck disable=2207
+    IFS=$'\n' commits=($(echo "$fzf_selection" | sort --numeric-sort --key=1 | cut -f2 | cut -d' ' -f1 | _forgit_reverse_lines))
     [ ${#commits[@]} -eq 0 ] && return 1
 
     git cherry-pick "${commits[@]}"
