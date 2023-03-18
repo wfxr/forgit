@@ -217,6 +217,7 @@ _forgit_stash_show() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | $_forgit_enter_pager)\"
+        --bind=\"ctrl-y:execute-silent(echo {} | cut -d: -f1 | tr -d '[:space:]' | ${FORGIT_COPY_CMD:-pbcopy})\"
         --preview=\"$cmd\"
         $FORGIT_STASH_FZF_OPTS
     "
