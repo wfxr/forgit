@@ -315,13 +315,17 @@ _forgit_cherry_pick() {
 
 _forgit_cherry_pick_from_branch() {
     _forgit_inside_work_tree || return 1
-    local cmd preview opts branch exitval input_branch args
+    local cmd preview opts branch exitval input_branch args base
+
+    base=$(git branch --show-current)
+    [[ -z "$base" ]] && echo "Current commit is not on a branch." && return 1
+
     args=("$@")
     if [[ $# -ne 0 ]]; then
         input_branch=${args[0]}
     fi
     cmd="git branch --color=always --all | LC_ALL=C sort -k1.1,1.1 -rs"
-    preview="git log {1} $_forgit_log_preview_options"
+    preview="git log --right-only --color=always --cherry-pick --oneline $base...{1}"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --header-lines=1
