@@ -116,8 +116,8 @@ Install `forgit` in just one click.
 | Key                                           | Action                    |
 | :-------------------------------------------: | ------------------------- |
 | <kbd>Enter</kbd>                              | Confirm                   |
-| <kbd>Tab</kbd>                                | Toggle mark and move up   |
-| <kbd>Shift</kbd> - <kbd>Tab</kbd>             | Toggle mark and move down |
+| <kbd>Tab</kbd>                                | Toggle mark and move down |
+| <kbd>Shift</kbd> - <kbd>Tab</kbd>             | Toggle mark and move up   |
 | <kbd>?</kbd>                                  | Toggle preview window     |
 | <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap       |
 | <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort               |
