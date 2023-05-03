@@ -320,7 +320,7 @@ _forgit_cherry_pick() {
     IFS=${old_IFS}
     [ ${#commits[@]} -eq 0 ] && return 1
 
-    $git_cherry_pick "${commits[@]}"
+    eval $git_cherry_pick "${commits[@]}"
 }
 
 _forgit_cherry_pick_from_branch() {
@@ -382,7 +382,7 @@ _forgit_rebase() {
     if [[ -n "$target_commit" ]]; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
 
-        $git_rebase "$prev_commit"
+        eval $git_rebase "$prev_commit"
     fi
 }
 
@@ -462,12 +462,12 @@ _forgit_checkout_branch() {
     if [[ "$branch" == "remotes/origin/"* ]]; then
         if git branch | grep -qw "${branch#remotes/origin/}"; then
             # hack to force creating a new branch which tracks the remote if a local branch already exists
-            $git_checkout -b "track/${branch#remotes/origin/}" --track "$branch"
+            eval $git_checkout -b "track/${branch#remotes/origin/}" --track "$branch"
         elif ! $git_checkout --track "$branch" 2>/dev/null; then
-            $git_checkout "$branch"
+            eval $git_checkout "$branch"
         fi
     else
-        $git_checkout "$branch"
+        eval $git_checkout "$branch"
     fi
 }
 
@@ -487,7 +487,7 @@ _forgit_checkout_tag() {
     "
     tag="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf)"
     [[ -z "$tag" ]] && return 1
-    $git_checkout "$tag"
+    eval $git_checkout "$tag"
 }
 
 # git checkout-commit selector
@@ -534,7 +534,7 @@ _forgit_branch_delete() {
 _forgit_revert_commit() {
     _forgit_inside_work_tree || return 1
     local git_revert cmd opts files preview commits IFS
-    git_revert="git branch $FORGIT_REVERT_COMMIT_GIT_OPTS"
+    git_revert="git revert $FORGIT_REVERT_COMMIT_GIT_OPTS"
     [[ $# -ne 0 ]] && { $git_revert "$@"; return $?; }
 
     cmd="git log --graph --color=always --format='$_forgit_log_format' $* $_forgit_emojify"
@@ -565,7 +565,7 @@ _forgit_revert_commit() {
 
     [ ${#commits[@]} -eq 0 ] && return 1
 
-    $git_revert "${commits[@]}"
+    eval $git_revert "${commits[@]}"
 }
 
 # git blame viewer
