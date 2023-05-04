@@ -53,6 +53,9 @@ zinit load wfxr/forgit
 # for oh-my-zsh
 git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 
+# for brew
+brew install forgit
+
 # manually
 # Clone the repository and source it in your shell's rc file or put bin/git-forgit into your $PATH
 ```
