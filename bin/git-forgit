@@ -19,9 +19,17 @@
 # shellcheck disable=2230
 SHELL="$(which bash)"
 export SHELL
-
 # Get absolute forgit path
 FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+
+do_fzf() {
+  if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" ]; }; then
+   fzf-tmux ${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}} "$@"
+  else
+   fzf -0 "$@"
+  fi
+}
+
 
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
@@ -91,7 +99,7 @@ _forgit_log() {
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
     log_format=${FORGIT_GLO_FORMAT:-$_forgit_log_format}
     eval "git log $graph --color=always --format='$log_format' $FORGIT_LOG_GIT_OPTS $* $_forgit_emojify" |
-        FZF_DEFAULT_OPTS="$opts" fzf
+        FZF_DEFAULT_OPTS="$opts" do_fzf
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
@@ -136,14 +144,14 @@ _forgit_diff() {
     enter_cmd="cd '$repo' && $get_files | xargs -0 $git_diff -U$_forgit_fullscreen_context -- | $_forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
+        +m --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
         --preview=\"$preview_cmd\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"$commits > \"
     "
     eval "git diff --name-status $FORGIT_DIFF_GIT_OPTS $commits -- ${files[*]} | sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]	\2/'" |
         sed 's/	/  ->  /2' | expand -t 8 |
-        FZF_DEFAULT_OPTS="$opts" fzf
+        FZF_DEFAULT_OPTS="$opts" do_fzf
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
@@ -183,7 +191,7 @@ _forgit_add() {
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
-        FZF_DEFAULT_OPTS="$opts" fzf |
+        FZF_DEFAULT_OPTS="$opts" do_fzf |
         sh -c "$extract")
     [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' | $git_add --pathspec-file-nul --pathspec-from-file - && git status -su && return
     echo 'Nothing to add.'
@@ -202,7 +210,7 @@ _forgit_reset_head() {
         --preview=\"$cmd\"
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
-    files="$(git diff --staged --name-only | FZF_DEFAULT_OPTS="$opts" fzf)"
+    files="$(git diff --staged --name-only | FZF_DEFAULT_OPTS="$opts" do_fzf)"
     # shellcheck disable=2086
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% $git_reset_head "$rootdir"/% && git status --short && return
     echo 'Nothing to unstage.'
@@ -221,7 +229,7 @@ _forgit_stash_show() {
         --preview=\"$cmd\"
         $FORGIT_STASH_FZF_OPTS
     "
-    $git_stash_list | FZF_DEFAULT_OPTS="$opts" fzf
+    $git_stash_list | FZF_DEFAULT_OPTS="$opts" do_fzf
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
@@ -261,7 +269,7 @@ _forgit_stash_push() {
         fi
     "
     # Show both modified and untracked files
-    files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
+    files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" do_fzf --preview="$preview")
     [[ -z "$files" ]] && return 1
     echo "${files[@]}" | tr '\n' '\0' | $git_stash_push ${msg:+-m "$msg"} -u --pathspec-file-nul --pathspec-from-file -
 }
@@ -277,7 +285,7 @@ _forgit_clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    files=$(git clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" do_fzf |sed 's#/$##')
     # shellcheck disable=2086
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% $git_clean -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
@@ -294,7 +302,7 @@ _forgit_cherry_pick() {
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
 
-    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed
     # you generally want to cherry pick oldest->newest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
@@ -309,7 +317,7 @@ _forgit_cherry_pick() {
     # Note: do not add any pipe after the fzf call here, otherwise the fzf_exitval is not propagated properly.
     # Any eventual post processing can be done afterwards when the "commits" variable is assigned below.
     fzf_selection=$(git log --right-only --color=always --cherry-pick --oneline "$base"..."$target" | nl |
-        FZF_DEFAULT_OPTS="$opts" fzf)
+        FZF_DEFAULT_OPTS="$opts" do_fzf)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
     [[ -z "$fzf_selection" ]] && return $fzf_exitval
@@ -348,7 +356,7 @@ _forgit_cherry_pick_from_branch() {
     while true
     do
         if [[ -z $input_branch ]]; then
-            branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
+            branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" do_fzf | awk '{print $1}')"
         else
             branch=$input_branch
         fi
@@ -379,7 +387,7 @@ _forgit_rebase() {
         --preview=\"$preview\"
         $FORGIT_REBASE_FZF_OPTS
     "
-    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")
+    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" do_fzf | eval "$_forgit_extract_sha")
     if [[ -n "$target_commit" ]]; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
 
@@ -404,7 +412,7 @@ _forgit_fixup() {
         --preview=\"$preview\"
         $FORGIT_FIXUP_FZF_OPTS
     "
-    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")
+    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" do_fzf | eval "$_forgit_extract_sha")
     if [[ -n "$target_commit" ]] && $git_fixup "$target_commit"; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
@@ -427,7 +435,7 @@ _forgit_checkout_file() {
         --preview=\"$cmd\"
         $FORGIT_CHECKOUT_FILE_FZF_OPTS
     "
-    files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf)"
+    files="$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" do_fzf)"
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | $git_checkout --pathspec-file-nul --pathspec-from-file -
 }
 
@@ -455,7 +463,7 @@ _forgit_checkout_branch() {
         --preview=\"$preview\"
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
-    branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
+    branch="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" do_fzf | awk '{print $1}')"
     [[ -z "$branch" ]] && return 1
 
     git_checkout="git checkout $FORGIT_CHECKOUT_BRANCH_GIT_OPTS"
@@ -486,7 +494,7 @@ _forgit_checkout_tag() {
         --preview=\"$preview\"
         $FORGIT_CHECKOUT_TAG_FZF_OPTS
     "
-    tag="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf)"
+    tag="$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" do_fzf)"
     [[ -z "$tag" ]] && return 1
     $git_checkout "$tag"
 }
@@ -509,7 +517,7 @@ _forgit_checkout_commit() {
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
     # shellcheck disable=2086
     eval "git log $graph --color=always --format='$_forgit_log_format' $_forgit_emojify" |
-        FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha" | xargs -I% $git_checkout % --
+        FZF_DEFAULT_OPTS="$opts" do_fzf | eval "$_forgit_extract_sha" | xargs -I% $git_checkout % --
 }
 
 _forgit_branch_delete() {
@@ -526,7 +534,7 @@ _forgit_branch_delete() {
     "
 
     cmd="git branch --color=always | LC_ALL=C sort -k1.1,1.1 -rs"
-    branches=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')
+    branches=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" do_fzf | awk '{print $1}')
     # shellcheck disable=2086
     echo -n "$branches" | tr '\n' '\0' | xargs -I{} -0 $git_branch -D {}
 }
@@ -546,7 +554,7 @@ _forgit_revert_commit() {
         $FORGIT_REVERT_COMMIT_FZF_OPTS
     "
 
-    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed
     # you generally want to revert newest->oldest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
@@ -557,10 +565,10 @@ _forgit_revert_commit() {
     ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
     IFS=$'\n'
     # shellcheck disable=2207
-    commits=($(eval "$cmd" | 
+    commits=($(eval "$cmd" |
         nl |
-        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m | 
-        sort --numeric-sort --key=1 | 
+        FZF_DEFAULT_OPTS="$opts" do_fzf --preview="$preview" -m |
+        sort --numeric-sort --key=1 |
         cut -f2- |
         sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'))
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
@@ -588,7 +596,7 @@ _forgit_blame() {
             echo File not tracked
         fi
     "
-    file=$(FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
+    file=$(FZF_DEFAULT_OPTS="$opts" do_fzf --preview="$preview")
     [[ -z "$file" ]] && return 1
     # shellcheck disable=2086
     eval $git_blame "$file" "$flags"
@@ -613,7 +621,7 @@ _forgit_ignore() {
     IFS=$'\n'
     # shellcheck disable=SC2206,2207
     args=($@) && [[ $# -eq 0 ]] && args=($(_forgit_ignore_list | nl -nrn -w4 -s'  ' |
-        FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}'))
+        FZF_DEFAULT_OPTS="$opts" do_fzf | awk '{print $2}'))
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
