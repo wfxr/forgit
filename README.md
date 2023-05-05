@@ -68,6 +68,17 @@ Install `forgit` in just one click.
 
 [![Install with Fig](https://fig.io/badges/install-with-fig.svg)](https://fig.io/plugins/other/forgit)
 
+### `fzf-tmux` support
+
+If `FZF_TMUX` is not 0, or if `FZF_TMUX_OPTS` are set, then `forgit` will use `fzf-tmux`.
+
+More information can be found in [the fzf README](https://github.com/junegunn/fzf#fzf-tmux-script).
+
+When `fzf-tmux` is used, the "Exit if no matches" behavior is disabled because it can cause flicker
+with the tmux popup window. If you'd rather not see the empty pane or popup when using `fzf-tmux`,
+you can add `--exit-0` or `-0` to `FZF_TMUX_OPTS` to get the immediate close behavior with slight
+flicker.
+
 ### 📝 Features
 
 - **Interactive `git add` selector** (`ga`)

@@ -22,8 +22,15 @@ export SHELL
 # Get absolute forgit path
 FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
 
+# This function provides an abstraction for conditionally invoking
+# either `fzf` or `fzf-tmux` depending on the state of the current shell.
+#
+# While the fzf docs say that `fzf-tmux` is safe to use in scripts even outside
+# of a tmux session, we still employ defensive variable tests.
 do_fzf() {
   if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" ]; }; then
+   # We don't hardcode --exit-0 here because it causes flicker when using
+   # tmux + popups instead of panes. Could be revisited.
    fzf-tmux ${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}} "$@"
   else
    fzf -0 "$@"
