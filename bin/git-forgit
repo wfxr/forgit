@@ -31,7 +31,7 @@ do_fzf() {
   if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" ]; }; then
    # We don't hardcode --exit-0 here because it causes flicker when using
    # tmux + popups instead of panes. Could be revisited.
-   fzf-tmux ${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}} "$@"
+   fzf-tmux "${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}}" "$@"
   else
    fzf -0 "$@"
   fi
