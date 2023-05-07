@@ -39,15 +39,15 @@ $FORGIT_FZF_DEFAULT_OPTS
 
 # If FORGIT_FZF_SHOW_NO_MATCHES is 1, then we don't pass `--exit-0` to fzf/fzf-tmux.
 if [ "${FORGIT_FZF_SHOW_NO_MATCHES:-0}" != 1 ]; then
-    FORGIT_FZF_DEFAULT_OPTS="--exit-0 $FORGIT_FZF_DEFAULT_OPTS"
+    FORGIT_FZF_DEFAULT_OPTS="
+${FORGIT_FZF_DEFAULT_OPTS}
+--exit-0
+"
 fi
 
 FORGIT_USE_FZF_TMUX=0
 if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" || "${FORGIT_FZF_TMUX_OPTS}"]; }; then
-    FORGIT_FZF_TMUX_OPTS="
-    ${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}}
-    $FORGIT_FZF_TMUX_OPTS
-    "
+    FORGIT_FZF_TMUX_OPTS="${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}} ${FORGIT_FZF_TMUX_OPTS}"
     FORGIT_USE_FZF_TMUX=1
 fi
 
@@ -58,8 +58,9 @@ fi
 # While the fzf docs say that `fzf-tmux` is safe to use in scripts even outside
 # of a tmux session, we still employ defensive variable tests.
 do_fzf() {
+    export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"
     if [ "${FORGIT_USE_FZF_TMUX}" == 1 ]; then
-        fzf-tmux "${FORGIT_FZF_TMUX_OPTS}" -- ${FZF_DEFAULT_OPTS} "$@"
+        fzf-tmux "$FORGIT_FZF_TMUX_OPTS" "$@"
     else
         fzf "$@"
     fi
