@@ -22,22 +22,6 @@ export SHELL
 # Get absolute forgit path
 FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
 
-# This function provides an abstraction for conditionally invoking
-# either `fzf` or `fzf-tmux` depending on the state of the current shell.
-#
-# While the fzf docs say that `fzf-tmux` is safe to use in scripts even outside
-# of a tmux session, we still employ defensive variable tests.
-do_fzf() {
-  if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" ]; }; then
-   # We don't hardcode --exit-0 here because it causes flicker when using
-   # tmux + popups instead of panes. Could be revisited.
-   fzf-tmux "${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}}" "$@"
-  else
-   fzf -0 "$@"
-  fi
-}
-
-
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
 --ansi
@@ -52,6 +36,34 @@ $FZF_DEFAULT_OPTS
 +1
 $FORGIT_FZF_DEFAULT_OPTS
 "
+
+# If FORGIT_FZF_SHOW_NO_MATCHES is 1, then we don't pass `--exit-0` to fzf/fzf-tmux.
+if [ "${FORGIT_FZF_SHOW_NO_MATCHES:-0}" != 1 ]; then
+    FORGIT_FZF_DEFAULT_OPTS="--exit-0 $FORGIT_FZF_DEFAULT_OPTS"
+fi
+
+FORGIT_USE_FZF_TMUX=0
+if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" || "${FORGIT_FZF_TMUX_OPTS}"]; }; then
+    FORGIT_FZF_TMUX_OPTS="
+    ${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}}
+    $FORGIT_FZF_TMUX_OPTS
+    "
+    FORGIT_USE_FZF_TMUX=1
+fi
+
+
+# This function provides an abstraction for conditionally invoking
+# either `fzf` or `fzf-tmux` depending on the state of the current shell.
+#
+# While the fzf docs say that `fzf-tmux` is safe to use in scripts even outside
+# of a tmux session, we still employ defensive variable tests.
+do_fzf() {
+    if [ "${FORGIT_USE_FZF_TMUX}" == 1 ]; then
+        fzf-tmux "${FORGIT_FZF_TMUX_OPTS}" -- ${FZF_DEFAULT_OPTS} "$@"
+    else
+        fzf "$@"
+    fi
+}
 
 _forgit_warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 _forgit_info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
@@ -191,7 +203,7 @@ _forgit_add() {
         fi"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -0 -m --nth 2..,..
+        -m --nth 2..,..
         --preview=\"$preview\"
         $FORGIT_ADD_FZF_OPTS
     "
@@ -213,7 +225,7 @@ _forgit_reset_head() {
     cmd="git diff --staged --color=always -- $rootdir/{} | $_forgit_diff_pager "
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0
+        -m
         --preview=\"$cmd\"
         $FORGIT_RESET_HEAD_FZF_OPTS
     "
@@ -231,7 +243,7 @@ _forgit_stash_show() {
     cmd="echo {} |cut -d: -f1 |xargs -I% git stash show --color=always --ext-diff % |$_forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($cmd | $_forgit_enter_pager)\"
+        +s +m --tiebreak=index --bind=\"enter:execute($cmd | $_forgit_enter_pager)\"
         --bind=\"ctrl-y:execute-silent(echo {} | cut -d: -f1 | tr -d '[:space:]' | ${FORGIT_COPY_CMD:-pbcopy})\"
         --preview=\"$cmd\"
         $FORGIT_STASH_FZF_OPTS
@@ -288,7 +300,7 @@ _forgit_clean() {
     git_clean="git clean $FORGIT_CLEAN_GIT_OPTS"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0
+        -m
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
@@ -318,7 +330,7 @@ _forgit_cherry_pick() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         --preview=\"$preview\"
-        --multi --ansi --with-nth 2.. -0 --tiebreak=index
+        --multi --ansi --with-nth 2.. --tiebreak=index
         $FORGIT_CHERRY_PICK_FZF_OPTS
     "
     # Note: do not add any pipe after the fzf call here, otherwise the fzf_exitval is not propagated properly.
@@ -438,7 +450,7 @@ _forgit_checkout_file() {
     cmd="git diff --color=always -- {} | $_forgit_diff_pager"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -m -0
+        -m 
         --preview=\"$cmd\"
         $FORGIT_CHECKOUT_FILE_FZF_OPTS
     "
