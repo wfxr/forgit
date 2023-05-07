@@ -68,17 +68,6 @@ Install `forgit` in just one click.
 
 [![Install with Fig](https://fig.io/badges/install-with-fig.svg)](https://fig.io/plugins/other/forgit)
 
-### `fzf-tmux` support
-
-If `FZF_TMUX` is not 0, or if `FZF_TMUX_OPTS` are set, then `forgit` will use `fzf-tmux`.
-
-More information can be found in [the fzf README](https://github.com/junegunn/fzf#fzf-tmux-script).
-
-If you use a command that can return no results, for example `gd`, and you are using `fzf-tmux`, you might
-see flicker as the pane or popup is opened and then closed. Setting the variable `FORGIT_FZF_SHOW_NO_MATCHES=1`
-will leave the open pane or popup window open. This might be useful if you don't like the flicker or if you
-need to make sure that `fzf` or `forgit` aren't closing for other reasons.
-
 ### 📝 Features
 
 - **Interactive `git add` selector** (`ga`)
@@ -317,6 +306,17 @@ export FORGIT_LOG_FZF_OPTS='
 | `FORGIT_LOG_FORMAT`         | git log format                           | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
 | `FORGIT_PREVIEW_CONTEXT`    | lines of diff context in preview mode    | 3                                             |
 | `FORGIT_FULLSCREEN_CONTEXT` | lines of diff context in fullscreen mode | 10                                            |
+### `fzf-tmux` support
+
+If `FZF_TMUX` is not 0, or if `FZF_TMUX_OPTS` are set, then `forgit` will use `fzf-tmux`.
+
+More information can be found in [the fzf README](https://github.com/junegunn/fzf#fzf-tmux-script).
+
+If you use a command that can return no results, for example `gd`, and you are using `fzf-tmux`, you might
+see flicker as the pane or popup is opened and then closed. Setting the variable `FORGIT_FZF_SHOW_NO_MATCHES=1`
+will leave the open pane or popup window open. This might be useful if you don't like the flicker or if you
+need to make sure that `fzf` or `forgit` aren't closing for other reasons.
+
 
 ### 📦 Optional dependencies
 
