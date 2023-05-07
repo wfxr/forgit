@@ -534,7 +534,7 @@ _forgit_branch_delete() {
 _forgit_revert_commit() {
     _forgit_inside_work_tree || return 1
     local git_revert cmd opts files preview commits IFS
-    git_revert="git branch $FORGIT_REVERT_COMMIT_GIT_OPTS"
+    git_revert="git revert $FORGIT_REVERT_COMMIT_GIT_OPTS"
     [[ $# -ne 0 ]] && { $git_revert "$@"; return $?; }
 
     cmd="git log --graph --color=always --format='$_forgit_log_format' $* $_forgit_emojify"
