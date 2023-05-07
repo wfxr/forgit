@@ -74,10 +74,10 @@ If `FZF_TMUX` is not 0, or if `FZF_TMUX_OPTS` are set, then `forgit` will use `f
 
 More information can be found in [the fzf README](https://github.com/junegunn/fzf#fzf-tmux-script).
 
-When `fzf-tmux` is used, the "Exit if no matches" behavior is disabled because it can cause flicker
-with the tmux popup window. If you'd rather not see the empty pane or popup when using `fzf-tmux`,
-you can add `--exit-0` or `-0` to `FZF_TMUX_OPTS` to get the immediate close behavior with slight
-flicker.
+If you use a command that can return no results, for example `gd`, and you are using `fzf-tmux`, you might
+see flicker as the pane or popup is opened and then closed. Setting the variable `FORGIT_FZF_SHOW_NO_MATCHES=1`
+will leave the open pane or popup window open. This might be useful if you don't like the flicker or if you
+need to make sure that `fzf` or `forgit` aren't closing for other reasons.
 
 ### 📝 Features
 
