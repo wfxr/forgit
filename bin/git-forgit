@@ -46,7 +46,7 @@ ${FORGIT_FZF_DEFAULT_OPTS}
 fi
 
 FORGIT_USE_FZF_TMUX=0
-if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" || "${FORGIT_FZF_TMUX_OPTS}"]; }; then
+if [ -n "${TMUX_PANE-}" ] && { [ "${FZF_TMUX:-0}" != 0 ] || [ -n "${FZF_TMUX_OPTS-}" ] ||[ -n "${FORGIT_FZF_TMUX_OPTS-}" ]; }; then
     FORGIT_FZF_TMUX_OPTS="${FZF_TMUX_OPTS:--d${FZF_TMUX_HEIGHT:-40%}} ${FORGIT_FZF_TMUX_OPTS}"
     FORGIT_USE_FZF_TMUX=1
 fi
