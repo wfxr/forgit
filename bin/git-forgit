@@ -37,8 +37,8 @@ $FZF_DEFAULT_OPTS
 $FORGIT_FZF_DEFAULT_OPTS
 "
 
-# If FORGIT_FZF_SHOW_NO_MATCHES is 1, then we don't pass `--exit-0` to fzf/fzf-tmux.
-if [ "${FORGIT_FZF_SHOW_NO_MATCHES:-0}" != 1 ]; then
+# If FORGIT_SHOW_FZF_ON_EMPTY_LIST is 1, then we don't pass `--exit-0` to fzf/fzf-tmux.
+if [ "${FORGIT_SHOW_FZF_ON_EMPTY_LIST:-0}" != 1 ]; then
     FORGIT_FZF_DEFAULT_OPTS="
 ${FORGIT_FZF_DEFAULT_OPTS}
 --exit-0
