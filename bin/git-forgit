@@ -195,13 +195,14 @@ _forgit_add() {
         sed 's/^.*]  //' |
         sed 's/.* -> //' |
         sed -e 's/^\\\"//' -e 's/\\\"\$//'"
-    preview="
+    preview_cmd="
         file=\$(echo {} | $extract)
         if (git status -s -- \\\"\$file\\\" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
             git diff --color=always --no-index -- /dev/null \\\"\$file\\\" | $_forgit_diff_pager | sed '2 s/added:/untracked:/'
         else
             git diff --color=always -- \\\"\$file\\\" | $_forgit_diff_pager
         fi"
+    preview="bash -c $preview_cmd"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m --nth 2..,..
