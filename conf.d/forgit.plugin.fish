@@ -1,9 +1,9 @@
 # MIT (c) Chris Apple
 
 set INSTALL_DIR (dirname (dirname (status -f)))
-set FORGIT "$INSTALL_DIR/conf.d/bin/git-forgit"
+set -x FORGIT "$INSTALL_DIR/conf.d/bin/git-forgit"
 if [ ! -e "$FORGIT" ]
-    set FORGIT "$INSTALL_DIR/vendor_conf.d/bin/git-forgit"
+    set -x FORGIT "$INSTALL_DIR/vendor_conf.d/bin/git-forgit"
 end
 
 function forgit::warn
