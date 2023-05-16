@@ -130,6 +130,8 @@ forgit::ignore::clean() {
     "$FORGIT" ignore_clean "$@"
 }
 
+export FORGIT_INSTALL_DIR=$INSTALL_DIR
+
 # register aliases
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
