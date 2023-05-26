@@ -1,0 +1,101 @@
+#compdef git-forgit
+#description Utility tool for using git interactively
+#
+# forgit completions for zsh
+#
+# Place this file in your $fpath (e.g. /usr/share/zsh/site-functions) to enable
+# tab completions for forgit as a git subcommmand. When using forgit as a shell
+# plugin, additionally source completions/git-forgit.zsh after
+# forgit.plugin.zsh to enable tab completion for shell functions and aliases.
+
+_git-branches() {
+	_alternative "branches:branchname:($(git branch -a --format '%(refname:short)'))"
+}
+
+_git-checkout-file() {
+	_alternative "files:filename:($(git ls-files --modified))"
+}
+
+_git-stash-show() {
+	_alternative "files:filename:($(git stash list | sed -n -e 's/:.*//p'))"
+}
+
+# The completions for git already define a _git-diff completion function, but
+# it provides the wrong results when called from _git-forgit because it heavily
+# depends on the context it's been called from (usage of $curcontext and
+# $CURRENT), so we use a simplified version here which always provides the same
+# results independent of the context.
+_git-forgit-diff() {
+	_alternative \
+		'commit-ranges::__git_commit_ranges' \
+		'blobs-and-trees-in-treeish::__git_blobs_and_trees_in_treeish' \
+		'files::__git_changed-in-working-tree_files' \
+		'blobs::__git_blobs '
+}
+
+_git-staged() {
+	_alternative "files:filename:($(git diff --name-only --staged))"
+}
+
+_git-forgit() {
+	local subcommand cword cmd
+	subcommand="${words[1]}"
+	if [[ "$subcommand" != "forgit" ]]; then
+		# Forgit is obviously called via a git alias. Get the original
+		# aliased subcommand and proceed as if it was the previous word.
+		cmd=$(git config --get "alias.$subcommand" | cut -d ' ' -f 2)
+		cword=$((CURRENT + 1))
+	else
+		cword=$CURRENT
+		cmd=${words[2]}
+	fi
+
+	case ${cword} in
+	1) ;;
+	2)
+		local -a subcommands
+		subcommands=(
+			'add:git add selector'
+			'blame:git blame viewer'
+			'branch_delete:git branch deletion selector'
+			'checkout_branch:git checkout branch selector'
+			'checkout_commit:git checkout commit selector'
+			'checkout_file:git checkout-file selector'
+			'checkout_tag:git checkout tag selector'
+			'cherry_pick:git cherry-picking'
+			'cherry_pick_from_branch:git cherry-picking with interactive branch selection'
+			'clean:git clean selector'
+			'diff:git diff viewer'
+			'fixup:git fixup'
+			'ignore:git ignore generator'
+			'log:git commit viewer'
+			'rebase:git rebase'
+			'reset_head:git reset HEAD (unstage) selector'
+			'revert_commit:git revert commit selector'
+			'stash_show:git stash viewer'
+			'stash_push:git stash push selector'
+		)
+		_describe -t commands 'git forgit' subcommands
+		;;
+	*)
+		case ${cmd} in
+			add) _git-add ;;
+			branch_delete) _git-branches ;;
+			checkout_branch) _git-branches ;;
+			checkout_commit) __git_recent_commits ;;
+			checkout_file) _git-checkout-file ;;
+			checkout_tag) __git_tags ;;
+			cherry_pick) _git-cherry-pick ;;
+			cherry_pick_from_branch) _git-branches ;;
+			clean) _git-clean ;;
+			diff) _git-forgit-diff ;;
+			fixup) __git_branch_names ;;
+			log) _git-log ;;
+			rebase) _git-rebase ;;
+			reset_head) _git-staged ;;
+			revert_commit) __git_recent_commits ;;
+			stash_show) _git-stash-show ;;
+		esac
+		;;
+	esac
+}

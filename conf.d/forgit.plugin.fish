@@ -87,15 +87,15 @@ function forgit::checkout::commit -d "git checkout commit selector" --argument-n
     "$FORGIT" checkout_commit $argv
 end
 
-function forgit::branch::delete -d "git checkout branch deleter" --wraps "git branch --delete"
+function forgit::branch::delete -d "git branch deletion selector" --wraps "git branch --delete"
     "$FORGIT" branch_delete $argv
 end
 
-function forgit::revert::commit --argument-names 'commit_hash' --wraps "git revert --"
+function forgit::revert::commit -d "git revert commit selector" --argument-names 'commit_hash' --wraps "git revert --"
     "$FORGIT" revert_commit $argv
 end
 
-function forgit::blame
+function forgit::blame -d "git blame viewer"
     "$FORGIT" blame $argv
 end
 
