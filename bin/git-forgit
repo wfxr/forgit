@@ -194,6 +194,7 @@ _forgit_reset_head() {
     _forgit_inside_work_tree || return 1
     local git_reset_head cmd files opts rootdir
     git_reset_head="git reset -q $FORGIT_RESET_HEAD_GIT_OPTS HEAD"
+    [[ $# -ne 0 ]] && $git_reset_head "$@" && git status --short && return
     rootdir=$(git rev-parse --show-toplevel)
     cmd="git diff --staged --color=always -- $rootdir/{} | $_forgit_diff_pager "
     opts="
