@@ -314,16 +314,26 @@ export FORGIT_LOG_FZF_OPTS='
 
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
+### Completions
+
+#### Bash
+
+- Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) in
+  `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
+- Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) explicitly to have
+  bash tab completion for forgit shell functions and aliases (e.g. `gcb <tab>` completes branches).
+
+#### Zsh
+
+- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g. `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases.
+- Source [`completions/git-forgit.zsh`](completions/git-forgit.zsh) to have zsh tab completion for forgit shell functions and aliases (e.g. `gcb <tab>` completes branches).
+
 ### 💡 Tips
 
 - Most of the commands accept optional arguments (eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
 - `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
 - You can use the commands as sub-commands of `git`, see [#147](https://github.com/wfxr/forgit/issues/147) for details.
-- Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) in
-  `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
-- Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) explicitly to have
-  bash tab completion for forgit shell functions and aliases (e.g. `gcb <tab>` completes branches).
 
 ### 📃 License
 
