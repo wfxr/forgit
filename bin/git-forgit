@@ -164,7 +164,10 @@ _forgit_add() {
     untracked=$(git config --get-color color.status.untracked red)
     # NOTE: paths listed by 'git status -su' mixed with quoted and unquoted style
     # remove indicators | remove original path for rename case | remove surrounding quotes
-    extract="sed 's/^.*]  //' | sed 's/.* -> //' | sed -e 's/^\\\"//' -e 's/\\\"\$//'"
+    extract="
+        sed 's/^.*]  //' |
+        sed 's/.* -> //' |
+        sed -e 's/^\\\"//' -e 's/\\\"\$//'"
     preview="
         file=\$(echo {} | $extract)
         if (git status -s -- \\\"\$file\\\" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
