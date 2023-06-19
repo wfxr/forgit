@@ -138,6 +138,7 @@ _forgit_diff() {
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
         --preview=\"$preview_cmd\"
+        --bind=\"alt-e:execute-silent($EDITOR \$\($get_files\) >/dev/tty </dev/tty)+refresh-preview\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"$commits > \"
     "
@@ -178,6 +179,7 @@ _forgit_add() {
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
         --preview=\"$preview\"
+        --bind=\"alt-e:execute-silent($EDITOR \$\(echo {} | $extract\) >/dev/tty </dev/tty)+refresh-preview\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
