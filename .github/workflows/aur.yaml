@@ -1,0 +1,18 @@
+name: AUR
+
+on:
+  release:
+    types:
+      - "released"
+
+jobs:
+  aur:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish
+        uses: zokugun/github-actions-aur-releaser@v1
+        with:
+          package_name: forgit
+          aur_private_key: ${{ secrets.AUR_PRIVATE_KEY }}
+          aur_username: ${{ secrets.AUR_USERNAME }}
+          aur_email: ${{ secrets.AUR_EMAIL }}
