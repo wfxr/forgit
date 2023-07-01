@@ -249,7 +249,7 @@ _forgit_stash_push() {
             # ignore -u as it's used implicitly
             -u|--include-untracked) shift ;;
             # pass to git directly when encountering anything else
-            *) $git_stash_push "${args[@]}" && return $?
+            *) $git_stash_push "${args[@]}"; return $?
         esac
     done
     local opts preview files
