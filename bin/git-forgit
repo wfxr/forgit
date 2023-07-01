@@ -274,6 +274,7 @@ _forgit_stash_push() {
 # git clean selector
 _forgit_clean() {
     _forgit_inside_work_tree || return 1
+    [[ $# -ne 0 ]] && git clean "$@" &>/dev/null && return 0
     local git_clean files opts
     git_clean="git clean $FORGIT_CLEAN_GIT_OPTS"
     opts="
