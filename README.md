@@ -144,6 +144,12 @@ For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 Options can be set via environment variables. They have to be **exported** in
 order to be recognized by `forgit`.
 
+For instance, if you want to order branches in `gcb` by the last committed date you could:
+
+```shell
+export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
+```
+
 #### shell aliases
 
 You can change the default aliases by defining these variables below.
