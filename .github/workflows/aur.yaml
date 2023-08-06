@@ -1,9 +1,11 @@
 name: AUR
 
 on:
-  release:
+  workflow_run:
+    workflows:
+      - "Release"
     types:
-      - "released"
+      - completed
 
 jobs:
   aur:
