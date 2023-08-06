@@ -53,6 +53,18 @@ _forgit_previous_commit() {
     fi
 }
 
+_forgit_contains_non_flags() {
+    while (("$#")); do
+        case "$1" in
+        -*) shift ;;
+        *)
+            return 0
+            ;;
+        esac
+    done
+    return 1
+}
+
 # optional render emoji characters (https://github.com/wfxr/emoji-cli)
 hash emojify &>/dev/null && _forgit_emojify='|emojify'
 
@@ -157,7 +169,7 @@ _forgit_add() {
     local git_add changed unmerged untracked files opts preview extract
     git_add="git add $FORGIT_ADD_GIT_OPTS"
     # Add files if passed as arguments
-    [[ $# -ne 0 ]] && $git_add "$@" && git status -su && return
+    [[ $# -ne 0 ]] && { $git_add "$@" && git status -su; return $?; }
 
     changed=$(git config --get-color color.status.changed red)
     unmerged=$(git config --get-color color.status.unmerged red)
@@ -196,7 +208,7 @@ _forgit_reset_head() {
     _forgit_inside_work_tree || return 1
     local git_reset_head cmd files opts rootdir
     git_reset_head="git reset -q $FORGIT_RESET_HEAD_GIT_OPTS HEAD"
-    [[ $# -ne 0 ]] && $git_reset_head "$@" && git status --short && return
+    [[ $# -ne 0 ]] && { $git_reset_head "$@" && git status --short; return $?; }
     rootdir=$(git rev-parse --show-toplevel)
     cmd="git diff --staged --color=always -- $rootdir/{} | $_forgit_diff_pager "
     opts="
@@ -216,7 +228,7 @@ _forgit_stash_show() {
     _forgit_inside_work_tree || return 1
     local git_stash_show git_stash_list cmd opts
     git_stash_show="git stash show --color=always --ext-diff"
-    [[ $# -ne 0 ]] && $git_stash_show "$@" && return
+    [[ $# -ne 0 ]] && { $git_stash_show "$@"; return $?; }
     git_stash_list="git stash list $FORGIT_STASH_SHOW_GIT_OPTS"
     cmd="echo {} |cut -d: -f1 |xargs -I% $git_stash_show % |$_forgit_diff_pager"
     opts="
@@ -249,7 +261,7 @@ _forgit_stash_push() {
             # ignore -u as it's used implicitly
             -u|--include-untracked) shift ;;
             # pass to git directly when encountering anything else
-            *) $git_stash_push "${args[@]}" && return $?
+            *) $git_stash_push "${args[@]}"; return $?
         esac
     done
     local opts preview files
@@ -274,7 +286,7 @@ _forgit_stash_push() {
 # git clean selector
 _forgit_clean() {
     _forgit_inside_work_tree || return 1
-    [[ $# -ne 0 ]] && git clean "$@" &>/dev/null && return 0
+    _forgit_contains_non_flags "$@" && { git clean -q "$@"; return $?; }
     local git_clean files opts
     git_clean="git clean $FORGIT_CLEAN_GIT_OPTS"
     opts="
@@ -522,7 +534,7 @@ _forgit_branch_delete() {
     _forgit_inside_work_tree || return 1
     local git_branch preview opts cmd branches
     git_branch="git branch $FORGIT_BRANCH_DELETE_GIT_OPTS"
-    [[ $# -ne 0 ]] && $git_branch -D "$@" && return
+    [[ $# -ne 0 ]] && { $git_branch -D "$@"; return $?; }
     preview="git log {1} $_forgit_log_preview_options"
 
     opts="
@@ -582,7 +594,7 @@ _forgit_blame() {
     _forgit_inside_work_tree || return 1
     local git_blame opts flags preview file
     git_blame="git blame $FORGIT_BLAME_GIT_OPTS"
-    [[ $# -ne 0 ]] && $git_blame "$@" && return 0
+    _forgit_contains_non_flags "$@" && { $git_blame "$@"; return $?; }
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         $FORGIT_BLAME_FZF_OPTS
