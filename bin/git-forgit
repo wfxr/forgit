@@ -454,7 +454,7 @@ _forgit_checkout_branch() {
     _forgit_inside_work_tree || return 1
     # if called with arguments, check if branch exists, else create a new one
     if [[ $# -ne 0 ]]; then
-        if git show-branch "$@" &>/dev/null; then
+        if [[ "$*" == "-" ]] || git show-branch "$@" &>/dev/null; then
             git switch "$@"
         else
             git switch -c "$@"
