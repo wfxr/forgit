@@ -138,6 +138,9 @@ _forgit_diff() {
     # We have to do a two-step sed -> tr pipe because OSX's sed implementation does
     # not support the null-character directly.
     get_files="echo {} | sed 's/.*] *//' | sed 's/  ->  /\\\n/' | tr '\\\n' '\\\0'"
+    # Similar to the line above, but only gets a single file from a single line
+    # Gets the new name of renamed files
+    get_file="echo {} | sed 's/.*] *//' | sed 's/.*->  //'"
     # Git stashes are named "stash@{x}", which contains the fzf placeholder "{x}".
     # In order to support passing stashes as arguments to _forgit_diff, we have to
     # prevent fzf from interpreting this substring by escaping the opening bracket.
@@ -150,7 +153,7 @@ _forgit_diff() {
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
         --preview=\"$preview_cmd\"
-        --bind=\"alt-e:execute-silent($EDITOR \$\($get_files\) >/dev/tty </dev/tty)+refresh-preview\"
+        --bind=\"alt-e:execute-silent($EDITOR \\\"\$\($get_file)\\\" >/dev/tty </dev/tty)+refresh-preview\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"$commits > \"
     "
@@ -191,7 +194,7 @@ _forgit_add() {
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
         --preview=\"$preview\"
-        --bind=\"alt-e:execute-silent($EDITOR \$\(echo {} | $extract\) >/dev/tty </dev/tty)+refresh-preview\"
+        --bind=\"alt-e:execute-silent($EDITOR \\\"\$\(echo {} | $extract\)\\\" >/dev/tty </dev/tty)+refresh-preview\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
