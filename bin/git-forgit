@@ -159,7 +159,7 @@ _forgit_diff() {
     "
     eval "git diff --name-status $FORGIT_DIFF_GIT_OPTS $commits -- ${files[*]} | sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]	\2/'" |
         sed 's/	/  ->  /2' | expand -t 8 |
-        FZF_DEFAULT_OPTS="$opts" fzf
+        FZF_DEFAULT_OPTS="$opts" fzf_tp
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
@@ -200,7 +200,7 @@ _forgit_add() {
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
-        FZF_DEFAULT_OPTS="$opts" fzf |
+        FZF_DEFAULT_OPTS="$opts" fzf_tp |
         sh -c "$extract")
     [[ -n "$files" ]] && echo "$files"| tr '\n' '\0' | $git_add --pathspec-file-nul --pathspec-from-file - && git status -su && return
     echo 'Nothing to add.'
@@ -230,7 +230,8 @@ _forgit_reset_head() {
 _forgit_stash_show() {
     _forgit_inside_work_tree || return 1
     local git_stash_show git_stash_list cmd opts
-    git_stash_show="git stash show --color=always --ext-diff"
+    # git_stash_show="git stash show --include-untracked --color=always --ext-diff"
+    git_stash_show="git_stash_preview"
     [[ $# -ne 0 ]] && { $git_stash_show "$@"; return $?; }
     git_stash_list="git stash list $FORGIT_STASH_SHOW_GIT_OPTS"
     cmd="echo {} |cut -d: -f1 |xargs -I% $git_stash_show % |$_forgit_diff_pager"
@@ -241,7 +242,7 @@ _forgit_stash_show() {
         --preview=\"$cmd\"
         $FORGIT_STASH_FZF_OPTS
     "
-    $git_stash_list | FZF_DEFAULT_OPTS="$opts" fzf
+    $git_stash_list | FZF_DEFAULT_OPTS="$opts" fzf_tp
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
@@ -281,7 +282,7 @@ _forgit_stash_push() {
         fi
     "
     # Show both modified and untracked files
-    files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview")
+    files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf_tp --preview="$preview")
     [[ -z "$files" ]] && return 1
     echo "${files[@]}" | tr '\n' '\0' | $git_stash_push ${msg:+-m "$msg"} -u --pathspec-file-nul --pathspec-from-file -
 }
@@ -298,7 +299,7 @@ _forgit_clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    files=$(git clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf_tp |sed 's#/$##')
     # shellcheck disable=2086
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% $git_clean -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
@@ -315,7 +316,7 @@ _forgit_cherry_pick() {
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
 
-    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed
     # you generally want to cherry pick oldest->newest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
@@ -330,7 +331,7 @@ _forgit_cherry_pick() {
     # Note: do not add any pipe after the fzf call here, otherwise the fzf_exitval is not propagated properly.
     # Any eventual post processing can be done afterwards when the "commits" variable is assigned below.
     fzf_selection=$(git log --right-only --color=always --cherry-pick --oneline "$base"..."$target" | nl |
-        FZF_DEFAULT_OPTS="$opts" fzf)
+        FZF_DEFAULT_OPTS="$opts" fzf_tp)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
     [[ -z "$fzf_selection" ]] && return $fzf_exitval
@@ -568,7 +569,7 @@ _forgit_revert_commit() {
         $FORGIT_REVERT_COMMIT_FZF_OPTS
     "
 
-    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed
     # you generally want to revert newest->oldest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
@@ -579,10 +580,10 @@ _forgit_revert_commit() {
     ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
     IFS=$'\n'
     # shellcheck disable=2207
-    commits=($(eval "$cmd" | 
+    commits=($(eval "$cmd" |
         nl |
-        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m | 
-        sort --numeric-sort --key=1 | 
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m |
+        sort --numeric-sort --key=1 |
         cut -f2- |
         sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'))
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
