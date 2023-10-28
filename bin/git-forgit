@@ -80,6 +80,10 @@ _forgit_extract_sha() {
     grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'
 }
 
+# extract the first git sha and copy it to the clipboard
+_forgit_yank_sha() {
+    echo "$1" | _forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy}
+}
 
 # parse a space separated string into an array
 # arrays parsed with this function are global
@@ -682,7 +686,7 @@ _forgit_checkout_commit() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
         --preview=\"$FORGIT checkout_commit_preview {}\"
         $FORGIT_CHECKOUT_COMMIT_FZF_OPTS
     "
@@ -690,7 +694,7 @@ _forgit_checkout_commit() {
     [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
     commit="$(git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
         _forgit_emojify |
-        FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")"
+        FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_sha)"
     _forgit_git_checkout_commit "$commit"
 }
 
@@ -904,6 +908,7 @@ private_commands=(
     "reset_head_preview"
     "stash_push_preview"
     "stash_show_preview"
+    "yank_sha"
     "log_preview"
     "log_enter"
     "exec_diff"
