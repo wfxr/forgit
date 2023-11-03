@@ -95,6 +95,29 @@ _forgit_parse_array() {
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
 }
 
+# parse the input arguments and print only those after the "--"
+# separator as a single line of qouted arguments to stdout
+_forgit_quote_files() {
+    local files add
+    files=()
+    add=false
+    while (( "$#" )); do
+        case "$1" in
+            --)
+            add=true
+            shift
+            ;;
+            *)
+            if [ $add == true ]; then
+                files+=("'$1'")
+            fi
+            shift
+            ;;
+        esac
+    done
+    echo "${files[*]}"
+}
+
 _forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
 _forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$_forgit_pager")}
 _forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$_forgit_pager")}
@@ -129,14 +152,14 @@ _forgit_log_enter() {
 # git commit viewer
 _forgit_log() {
     _forgit_inside_work_tree || return 1
-    local opts graph files log_format
-    files=$(sed -nE 's/.*-- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
+    local opts graph quoted_files log_format
+    quoted_files=$(_forgit_quote_files "$@")
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($FORGIT log_enter {} $files)\"
-        --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
-        --preview=\"$FORGIT log_preview {} $files\"
+        --bind=\"enter:execute($FORGIT log_enter {} $quoted_files)\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
+        --preview=\"$FORGIT log_preview {} $quoted_files\"
         $FORGIT_LOG_FZF_OPTS
     "
     graph=()
