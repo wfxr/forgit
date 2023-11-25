@@ -75,7 +75,6 @@ _forgit_emojify() {
 }
 
 # extract the first git sha occurring in the input and strip trailing newline
-_forgit_extract_sha="grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'"
 _forgit_extract_sha() {
     grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'
 }
