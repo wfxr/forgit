@@ -182,7 +182,7 @@ You can use forgit as a subcommand of git by making `git-forgit` available in `$
 
 ```sh
 # after `forgit` was loaded
-export PATH="$PATH:$FORGIT_INSTALL_DIR/bin"
+PATH="$PATH:$FORGIT_INSTALL_DIR/bin"
 ```
 
 *Some plugin managers can help do this.*
