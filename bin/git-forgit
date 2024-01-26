@@ -405,7 +405,7 @@ _forgit_stash_show() {
 
 _forgit_stash_push_preview() {
     if _forgit_is_file_tracked "$1"; then
-        git diff --color=always "$1" | $_forgit_diff_pager
+        git diff --color=always -- "$1" | $_forgit_diff_pager
     else
         git diff --color=always /dev/null "$1" | $_forgit_diff_pager
     fi
