@@ -53,14 +53,33 @@ zinit load wfxr/forgit
 # for oh-my-zsh
 git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 
-# for brew
-brew install forgit
-
 # manually
 # Clone the repository and source it in your shell's rc file or put bin/git-forgit into your $PATH
 ```
 
-# Fig
+## Homebrew
+
+To install using brew
+```sh
+brew install forgit
+```
+
+Then add the following to your shell's config file:
+```sh
+# Fish:
+# ~/.config/fish/config.fish:
+[ -f $HOMEBREW_PREFIX/share/forgit/forgit.plugin.fish ]; and source $HOMEBREW_PREFIX/share/forgit/forgit.plugin.fish
+
+# Zsh:
+# ~/.zshrc:
+[ -f $HOMEBREW_PREFIX/share/forgit/forgit.plugin.zsh ] && source $HOMEBREW_PREFIX/share/forgit/forgit.plugin.zsh
+
+# Bash:
+# ~/.bashrc:
+[ -f $HOMEBREW_PREFIX/share/forgit/forgit.plugin.sh ] && source $HOMEBREW_PREFIX/share/forgit/forgit.plugin.sh
+```
+
+## Fig
 
 [Fig](https://fig.io) adds apps, shortcuts, and autocomplete to your existing terminal.
 
@@ -68,7 +87,7 @@ Install `forgit` in just one click.
 
 [![Install with Fig](https://fig.io/badges/install-with-fig.svg)](https://fig.io/plugins/other/forgit)
 
-# Arch User Repository
+## Arch User Repository
 
 [AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit, are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or [forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the master branch of this repository.
 
