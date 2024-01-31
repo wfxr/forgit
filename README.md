@@ -338,6 +338,13 @@ export FORGIT_LOG_FZF_OPTS='
 
 - Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g. `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`
 
+If you're having issues after updating, and commands such as `forgit::add` or aliases `ga` aren't working, remove your completions cache and restart your shell.
+
+```zsh
+> rm ~/.zcompdump
+> zsh
+```
+
 # 💡 Tips
 
 - Most of the commands accept optional arguments (eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
