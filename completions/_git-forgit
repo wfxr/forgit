@@ -104,8 +104,6 @@ if (( $+functions[forgit::add] )); then
 	# if not already loaded and check if completion function exists afterwards.
 	(( $+functions[_git-add] )) || _git
 	(( $+functions[_git-add] )) || return 1
-	(( $+functions[_git-branches] )) || _git-forgit
-	(( $+functions[_git-branches] )) || return 1
 	# Completions for forgit plugin shell functions (also works for aliases)
 	compdef _git-add forgit::add
 	compdef _git-branches forgit::branch::delete
