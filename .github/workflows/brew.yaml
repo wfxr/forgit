@@ -1,4 +1,4 @@
-name: brew
+name: Homebrew
 
 on:
   workflow_run:
@@ -8,7 +8,7 @@ on:
       - completed
 
 jobs:
-  aur:
+  brew:
     runs-on: ubuntu-latest
     steps:
       - name: Update Homebrew formula
