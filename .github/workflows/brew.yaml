@@ -1,4 +1,4 @@
-name: Homebrew
+name: brew
 
 on:
   workflow_run:
@@ -15,6 +15,6 @@ jobs:
         uses: dawidd6/action-homebrew-bump-formula@v3
         with:
           # Required, custom GitHub access token with the 'public_repo' and 'workflow' scopes
-          token: ${{secrets.TOKEN}}
+          token: ${{secrets.BREW_TOKEN}}
           # Formula name, required
           formula: forgit
