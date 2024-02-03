@@ -215,6 +215,6 @@ _forgit-dispatch() {
 # this is the case of calling the command and pressing tab
 # the very first time of a shell session, we have to manually 
 # call the dispatch function
-if [[ $zsh_eval_context[-1] == loadautofunc ]]; then
+if [[ $funcstack[1] == "_git-forgit" ]]; then
   _forgit-dispatch "$@"
 fi
