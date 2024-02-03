@@ -1,4 +1,4 @@
-#compdef git-forgit forgit::add forgit::branch::delete forgit::checkout::branch forgit::checkout::commit forgit::checkout::file forgit::checkout::tag forgit::cherry::pick forgit::cherry::pick::from::branch forgit::clean forgit::diff forgit::fixup forgit::log forgit::rebase forgit::reset::head forgit::revert::commit forgit::stash::show
+#compdef git-forgit -p forgit::*
 #description Utility tool for using git interactively
 #
 # forgit completions for zsh
@@ -36,21 +36,19 @@ _git-staged() {
 }
 
 _git-forgit() {
-	local subcommand cword cmd
+	local subcommand cmd
 	subcommand="${words[1]}"
-	if [[ "$subcommand" != "forgit" ]]; then
+	if [[ "$subcommand" != "forgit"* ]]; then
 		# Forgit is obviously called via a git alias. Get the original
 		# aliased subcommand and proceed as if it was the previous word.
 		cmd=$(git config --get "alias.$subcommand" | cut -d ' ' -f 2)
-		cword=$((CURRENT + 1))
 	else
-		cword=$CURRENT
-		cmd=${words[2]}
+		# The last word is the relevant command
+		cmd=${words[(( ${#words} - 1 ))]}
 	fi
-
-	case ${cword} in
-	1) ;;
-	2)
+	
+	case ${cmd} in
+	forgit)
 		local -a subcommands
 		subcommands=(
 			'add:git add selector'
@@ -75,26 +73,22 @@ _git-forgit() {
 		)
 		_describe -t commands 'git forgit' subcommands
 		;;
-	*)
-		case ${cmd} in
-			add) _git-add ;;
-			branch_delete) _git-branches ;;
-			checkout_branch) _git-branches ;;
-			checkout_commit) __git_recent_commits ;;
-			checkout_file) _git-checkout-file ;;
-			checkout_tag) __git_tags ;;
-			cherry_pick) _git-cherry-pick ;;
-			cherry_pick_from_branch) _git-branches ;;
-			clean) _git-clean ;;
-			diff) _git-forgit-diff ;;
-			fixup) __git_branch_names ;;
-			log) _git-log ;;
-			rebase) _git-rebase ;;
-			reset_head) _git-staged ;;
-			revert_commit) __git_recent_commits ;;
-			stash_show) _git-stash-show ;;
-		esac
-		;;
+	add) _git-add ;;
+	branch_delete) _git-branches ;;
+	checkout_branch) _git-branches ;;
+	checkout_commit) __git_recent_commits ;;
+	checkout_file) _git-checkout-file ;;
+	checkout_tag) __git_tags ;;
+	cherry_pick) _git-cherry-pick ;;
+	cherry_pick_from_branch) _git-branches ;;
+	clean) _git-clean ;;
+	diff) _git-forgit-diff ;;
+	fixup) __git_branch_names ;;
+	log) _git-log ;;
+	rebase) _git-rebase ;;
+	reset_head) _git-staged ;;
+	revert_commit) __git_recent_commits ;;
+	stash_show) _git-stash-show ;;
 	esac
 }
 
