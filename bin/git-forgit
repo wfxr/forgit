@@ -634,7 +634,7 @@ _forgit_ignore() {
     ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
     IFS=$'\n'
     # shellcheck disable=SC2206,2207
-    args=($@) && [[ $# -eq 0 ]] && args=($(_forgit_ignore_list | nl -nrn -w4 -s'  ' |
+    args=($@) && [[ $# -eq 0 ]] && args=($(_forgit_ignore_list | nl -w4 -s'  ' |
         FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}'))
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
     [ ${#args[@]} -eq 0 ] && return 1
