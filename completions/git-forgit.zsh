@@ -1,10 +1,5 @@
 #!/bin/zsh
-#
 # forgit completions for zsh plugin
-#
-# When using forgit via the shell plugin, place completions/_git-forgit in your
-# $fpath (e.g. /usr/share/zsh/site-functions) and source this file after
-# forgit.plugin.zsh to enable tab completion for shell functions and aliases.
 
 # Check if forgit plugin is loaded
 if (( $+functions[forgit::add] )); then
