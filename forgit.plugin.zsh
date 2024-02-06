@@ -11,6 +11,7 @@ if [[ -n "$ZSH_VERSION" ]]; then
     # shellcheck disable=2277,2296,2298
     0="${${(M)0:#/*}:-$PWD/$0}"
     INSTALL_DIR="${0:h}"
+    # shellcheck disable=SC2206
     fpath=("$INSTALL_DIR/completions" $fpath)
 elif [[ -n "$BASH_VERSION" ]]; then
     INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
@@ -178,7 +179,9 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
 fi
 
 if [[ -n "$ZSH_VERSION" ]]; then
+    # shellcheck source=/dev/null
     source "$INSTALL_DIR/completions/git-forgit.zsh"
 elif [[ -n "$BASH_VERSION" ]]; then
+    # shellcheck source=/dev/null
     source "$INSTALL_DIR/completions/git-forgit.bash"
 fi
