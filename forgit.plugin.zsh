@@ -10,13 +10,15 @@ if [[ -n "$ZSH_VERSION" ]]; then
     0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
     # shellcheck disable=2277,2296,2298
     0="${${(M)0:#/*}:-$PWD/$0}"
-    INSTALL_DIR="${0:h}"
+    FORGIT_INSTALL_DIR="${0:h}"
 elif [[ -n "$BASH_VERSION" ]]; then
-    INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
+    FORGIT_INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
 else
     forgit::error "Only zsh and bash are supported"
 fi
-FORGIT="$INSTALL_DIR/bin/git-forgit"
+
+export FORGIT_INSTALL_DIR
+FORGIT="$FORGIT_INSTALL_DIR/bin/git-forgit"
 
 # backwards compatibility:
 # export all user-defined FORGIT variables to make them available in git-forgit
@@ -35,6 +37,7 @@ set | awk -F '=' '{ print $1 }' | grep FORGIT_ | while read -r var; do
         export "$var"
     fi
 done
+unset unexported_vars
 [[ -n "$BASH_VERSION" ]] && set +o posix
 
 # register shell functions
@@ -129,8 +132,6 @@ forgit::ignore::list() {
 forgit::ignore::clean() {
     "$FORGIT" ignore_clean "$@"
 }
-
-export FORGIT_INSTALL_DIR=$INSTALL_DIR
 
 # register aliases
 # shellcheck disable=SC2139
