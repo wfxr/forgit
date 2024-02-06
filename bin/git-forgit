@@ -338,7 +338,7 @@ _forgit_cherry_pick() {
     ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
     IFS=$'\n'
     # shellcheck disable=2207
-    commits=($(echo "$fzf_selection" | sort --numeric-sort --key=1 | cut -f2 | cut -d' ' -f1 | _forgit_reverse_lines))
+    commits=($(echo "$fzf_selection" | sort -n -k 1 | cut -f2 | cut -d' ' -f1 | _forgit_reverse_lines))
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
     [ ${#commits[@]} -eq 0 ] && return 1
 
@@ -582,7 +582,7 @@ _forgit_revert_commit() {
     commits=($(eval "$cmd" | 
         nl |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$preview" -m | 
-        sort --numeric-sort --key=1 | 
+        sort -n -k 1 | 
         cut -f2- |
         sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'))
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
@@ -634,7 +634,7 @@ _forgit_ignore() {
     ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
     IFS=$'\n'
     # shellcheck disable=SC2206,2207
-    args=($@) && [[ $# -eq 0 ]] && args=($(_forgit_ignore_list | nl -nrn -w4 -s'  ' |
+    args=($@) && [[ $# -eq 0 ]] && args=($(_forgit_ignore_list | nl -w4 -s'  ' |
         FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}'))
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
     [ ${#args[@]} -eq 0 ] && return 1
