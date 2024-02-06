@@ -6,9 +6,6 @@
 #
 #   /usr/share/bash-completion/completions
 #   ~/.local/share/bash-completion/completions
-#
-# When using forgit via the shell plugin, source this file explicitly after
-# forgit.plugin.zsh to enable tab completion for shell functions and aliases.
 
 _git_branch_delete()
 {

@@ -179,4 +179,6 @@ fi
 
 if [[ -n "$ZSH_VERSION" ]]; then
     source "$INSTALL_DIR/completions/git-forgit.zsh"
+elif [[ -n "$BASH_VERSION" ]]; then
+    source "$INSTALL_DIR/completions/git-forgit.bash"
 fi
