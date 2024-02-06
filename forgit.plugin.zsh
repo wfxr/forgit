@@ -181,7 +181,4 @@ fi
 if [[ -n "$ZSH_VERSION" ]]; then
     # shellcheck source=/dev/null
     source "$INSTALL_DIR/completions/git-forgit.zsh"
-elif [[ -n "$BASH_VERSION" ]]; then
-    # shellcheck source=/dev/null
-    source "$INSTALL_DIR/completions/git-forgit.bash"
 fi
