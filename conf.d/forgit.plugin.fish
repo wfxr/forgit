@@ -1,10 +1,10 @@
 # MIT (c) Chris Apple
 
-set INSTALL_DIR (dirname (dirname (status -f)))
-set -x FORGIT_INSTALL_DIR "$INSTALL_DIR/conf.d"
+set -l install_dir (dirname (status dirname))
+set -x FORGIT_INSTALL_DIR "$install_dir/conf.d"
 set -x FORGIT "$FORGIT_INSTALL_DIR/bin/git-forgit"
-if [ ! -e "$FORGIT" ]
-    set -x FORGIT_INSTALL_DIR "$INSTALL_DIR/vendor_conf.d"
+if not test -e "$FORGIT"
+    set -x FORGIT_INSTALL_DIR "$install_dir/vendor_conf.d"
     set -x FORGIT "$FORGIT_INSTALL_DIR/bin/git-forgit"
 end
 
