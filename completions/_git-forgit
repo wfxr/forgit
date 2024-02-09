@@ -1,12 +1,10 @@
-#compdef git-forgit
+#compdef git-forgit -p forgit::*
 #description Utility tool for using git interactively
 #
 # forgit completions for zsh
 #
 # Place this file in your $fpath (e.g. /usr/share/zsh/site-functions) to enable
-# tab completions for forgit as a git subcommmand. When using forgit as a shell
-# plugin, additionally source completions/git-forgit.zsh after
-# forgit.plugin.zsh to enable tab completion for shell functions and aliases.
+# tab completions for forgit.
 
 _git-branches() {
 	_alternative "branches:branchname:($(git branch -a --format '%(refname:short)'))"
@@ -38,21 +36,19 @@ _git-staged() {
 }
 
 _git-forgit() {
-	local subcommand cword cmd
+	local subcommand cmd
 	subcommand="${words[1]}"
-	if [[ "$subcommand" != "forgit" ]]; then
+	if [[ "$subcommand" != "forgit"* ]]; then
 		# Forgit is obviously called via a git alias. Get the original
 		# aliased subcommand and proceed as if it was the previous word.
 		cmd=$(git config --get "alias.$subcommand" | cut -d ' ' -f 2)
-		cword=$((CURRENT + 1))
 	else
-		cword=$CURRENT
-		cmd=${words[2]}
+		# The last word is the relevant command
+		cmd=${words[(( ${#words} - 1 ))]}
 	fi
-
-	case ${cword} in
-	1) ;;
-	2)
+	
+	case ${cmd} in
+	forgit)
 		local -a subcommands
 		subcommands=(
 			'add:git add selector'
@@ -77,25 +73,50 @@ _git-forgit() {
 		)
 		_describe -t commands 'git forgit' subcommands
 		;;
-	*)
-		case ${cmd} in
-			add) _git-add ;;
-			branch_delete) _git-branches ;;
-			checkout_branch) _git-branches ;;
-			checkout_commit) __git_recent_commits ;;
-			checkout_file) _git-checkout-file ;;
-			checkout_tag) __git_tags ;;
-			cherry_pick) _git-cherry-pick ;;
-			cherry_pick_from_branch) _git-branches ;;
-			clean) _git-clean ;;
-			diff) _git-forgit-diff ;;
-			fixup) __git_branch_names ;;
-			log) _git-log ;;
-			rebase) _git-rebase ;;
-			reset_head) _git-staged ;;
-			revert_commit) __git_recent_commits ;;
-			stash_show) _git-stash-show ;;
-		esac
-		;;
+	add) _git-add ;;
+	branch_delete) _git-branches ;;
+	checkout_branch) _git-branches ;;
+	checkout_commit) __git_recent_commits ;;
+	checkout_file) _git-checkout-file ;;
+	checkout_tag) __git_tags ;;
+	cherry_pick) _git-cherry-pick ;;
+	cherry_pick_from_branch) _git-branches ;;
+	clean) _git-clean ;;
+	diff) _git-forgit-diff ;;
+	fixup) __git_branch_names ;;
+	log) _git-log ;;
+	rebase) _git-rebase ;;
+	reset_head) _git-staged ;;
+	revert_commit) __git_recent_commits ;;
+	stash_show) _git-stash-show ;;
 	esac
 }
+
+# We're reusing existing completion functions, so load those first
+# if not already loaded and check if completion function exists afterwards.
+(( $+functions[_git-add] )) || _git
+(( $+functions[_git-add] )) || return 1
+# Completions for forgit plugin shell functions (also works for aliases)
+compdef _git-add forgit::add
+compdef _git-branches forgit::branch::delete
+compdef _git-branches forgit::checkout::branch
+compdef __git_recent_commits forgit::checkout::commit
+compdef _git-checkout-file forgit::checkout::file
+compdef __git_tags forgit::checkout::tag
+compdef _git-cherry-pick forgit::cherry::pick
+compdef _git-branches forgit::cherry::pick::from::branch
+compdef _git-clean forgit::clean
+compdef _git-forgit-diff forgit::diff
+compdef __git_branch_names forgit::fixup
+compdef _git-log forgit::log
+compdef _git-rebase forgit::rebase
+compdef _git-staged forgit::reset::head
+compdef __git_recent_commits forgit::revert::commit
+compdef _git-stash-show forgit::stash::show
+
+# this is the case of calling the command and pressing tab
+# the very first time of a shell session, we have to manually 
+# call the dispatch function
+if [[ $funcstack[1] == "_git-forgit" ]]; then
+  _git-forgit "$@"
+fi
