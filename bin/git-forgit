@@ -66,7 +66,13 @@ _forgit_contains_non_flags() {
 }
 
 # optional render emoji characters (https://github.com/wfxr/emoji-cli)
-hash emojify &>/dev/null && _forgit_emojify='|emojify'
+_forgit_emojify() {
+    if hash emojify &>/dev/null; then
+        emojify
+    else
+        cat
+    fi
+}
 
 # extract the first git sha occurring in the input and strip trailing newline
 _forgit_extract_sha="grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'"
@@ -127,7 +133,8 @@ _forgit_log() {
     log_format=${FORGIT_GLO_FORMAT:-$_forgit_log_format}
     _forgit_log_git_opts=()
     _forgit_parse_array _forgit_log_git_opts "$FORGIT_LOG_GIT_OPTS"
-    eval "git log $graph --color=always --format='$log_format' ${_forgit_log_git_opts[*]} $* $_forgit_emojify" |
+    eval "git log $graph --color=always --format='$log_format' ${_forgit_log_git_opts[*]} $*" |
+        _forgit_emojify |
         FZF_DEFAULT_OPTS="$opts" fzf
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
@@ -511,7 +518,7 @@ _forgit_rebase() {
     git_rebase="git rebase -i ${_forgit_rebase_git_opts[*]}"
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    cmd="git log $graph --color=always --format='$_forgit_log_format' $* $_forgit_emojify"
+    cmd="git log $graph --color=always --format='$_forgit_log_format' $*"
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -520,7 +527,7 @@ _forgit_rebase() {
         --preview=\"$FORGIT file_preview {} $files\"
         $FORGIT_REBASE_FZF_OPTS
     "
-    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")
+    target_commit=$(eval "$cmd" | _forgit_emojify | FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")
     if [[ -n "$target_commit" ]]; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
 
@@ -544,7 +551,7 @@ _forgit_fixup() {
     git_fixup="git commit --fixup ${_forgit_fixup_git_opts[*]}"
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    cmd="git log $graph --color=always --format='$_forgit_log_format' $* $_forgit_emojify"
+    cmd="git log $graph --color=always --format='$_forgit_log_format' $*"
     files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*")
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -553,7 +560,7 @@ _forgit_fixup() {
         --preview=\"$FORGIT file_preview {} $files\"
         $FORGIT_FIXUP_FZF_OPTS
     "
-    target_commit=$(eval "$cmd" | FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")
+    target_commit=$(eval "$cmd" | _forgit_emojify | FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")
     if [[ -n "$target_commit" ]] && $git_fixup "$target_commit"; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
@@ -681,7 +688,8 @@ _forgit_checkout_commit() {
     "
     graph=--graph
     [[ $FORGIT_LOG_GRAPH_ENABLE == false ]] && graph=
-    commit="$(eval "git log $graph --color=always --format='$_forgit_log_format' $_forgit_emojify" |
+    commit="$(eval "git log $graph --color=always --format='$_forgit_log_format'" |
+        _forgit_emojify |
         FZF_DEFAULT_OPTS="$opts" fzf | eval "$_forgit_extract_sha")"
     _forgit_git_checkout_commit "$commit"
 }
@@ -734,7 +742,7 @@ _forgit_revert_commit() {
     local cmd opts files commits IFS
     [[ $# -ne 0 ]] && { _forgit_git_revert "$@"; return $?; }
 
-    cmd="git log --graph --color=always --format='$_forgit_log_format' $* $_forgit_emojify"
+    cmd="git log --graph --color=always --format='$_forgit_log_format' $*"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s --tiebreak=index
@@ -752,7 +760,8 @@ _forgit_revert_commit() {
     ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
     IFS=$'\n'
     # shellcheck disable=2207
-    commits=($(eval "$cmd" | 
+    commits=($(eval "$cmd" |
+        _forgit_emojify |
         nl |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$FORGIT revert_preview {}" -m |
         sort --numeric-sort --key=1 | 
