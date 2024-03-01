@@ -1,11 +1,9 @@
 name: Homebrew
 
 on:
-  workflow_run:
-    workflows:
-      - "Release"
-    types:
-      - completed
+  push:
+    tags:
+      - '*'
 
 jobs:
   brew:
