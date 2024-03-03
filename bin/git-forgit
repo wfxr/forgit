@@ -115,16 +115,22 @@ _forgit_log_preview() {
     echo "$sha" | xargs -I% git show --color=always -U"$_forgit_preview_context" % -- "$@" | $_forgit_show_pager
 }
 
+_forgit_log_enter() {
+    local sha
+    sha=$(echo "$1" | _forgit_extract_sha)
+    shift
+    echo "$sha" | xargs -I% "${FORGIT}" diff %^! "$@"
+}
+
 # git commit viewer
 _forgit_log() {
     _forgit_inside_work_tree || return 1
-    local opts graph files log_format enter_cmd
+    local opts graph files log_format
     files=$(sed -nE 's/.*-- (.*)/\1/p' <<< "$*") # extract files parameters for `git show` command
-    enter_cmd="echo {} | $_forgit_extract_sha | xargs -I% ${FORGIT} diff %^! $files"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"enter:execute($enter_cmd)\"
+        --bind=\"enter:execute($FORGIT log_enter {} $files)\"
         --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
         --preview=\"$FORGIT log_preview {} $files\"
         $FORGIT_LOG_FZF_OPTS
@@ -178,10 +184,16 @@ _forgit_diff_view() {
         "$FORGIT" exec_diff "${commits[@]}" -U"$diff_context" -- | $_forgit_diff_pager
 }
 
+_forgit_diff_enter() {
+    file=$1
+    commits=("${@:2}")
+    _forgit_diff_view "$file" "$_forgit_fullscreen_context" "${commits[@]}"
+}
+
 # git diff viewer
 _forgit_diff() {
     _forgit_inside_work_tree || return 1
-    local files opts commits repo get_files enter_cmd escaped_commits
+    local files opts commits escaped_commits
     [[ $# -ne 0 ]] && {
         if git rev-parse "$1" -- &>/dev/null ; then
             if [[ $# -gt 1 ]] && git rev-parse "$2" -- &>/dev/null; then
@@ -193,19 +205,6 @@ _forgit_diff() {
             files=("$@")
         fi
     }
-    repo="$(git rev-parse --show-toplevel)"
-    # Construct a null-terminated list of the filenames
-    # The input looks like one of these lines:
-    #   [R100]  file  ->  another file
-    #   [A]     file with spaces
-    #   [D]     oldfile
-    # And we transform it to this representation for further usage with "xargs -0":
-    #   file\0another file\0
-    #   file with spaces\0
-    #   oldfile\0
-    # We have to do a two-step sed -> tr pipe because OSX's sed implementation does
-    # not support the null-character directly.
-    get_files="echo {} | sed 's/.*] *//' | sed 's/  ->  /\\\n/' | tr '\\\n' '\\\0'"
     # Similar to the line above, but only gets a single file from a single line
     # Gets the new name of renamed files
     get_file="echo {} | sed 's/.*] *//' | sed 's/.*->  //'"
@@ -213,14 +212,12 @@ _forgit_diff() {
     # In order to support passing stashes as arguments to _forgit_diff, we have to
     # prevent fzf from interpreting this substring by escaping the opening bracket.
     # The string is evaluated a few subsequent times, so we need multiple escapes.
-    git_diff="git diff --color=always ${_forgit_diff_git_opts[*]} $escaped_commits"
-    enter_cmd="cd '$repo' && $get_files | xargs -0 $git_diff -U$_forgit_fullscreen_context -- | $_forgit_diff_pager"
     for commit in "${commits[@]}"; do
         escaped_commits+="'${commit//\{/\\\\\{}' "
     done
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($enter_cmd | $_forgit_enter_pager)\"
+        +m -0 --bind=\"enter:execute($FORGIT diff_enter {} $escaped_commits | $_forgit_enter_pager)\"
         --preview=\"$FORGIT diff_view {} $_forgit_preview_context $escaped_commits\"
         --bind=\"alt-e:execute-silent($EDITOR \\\"\$\($get_file)\\\" >/dev/tty </dev/tty)+refresh-preview\"
         $FORGIT_DIFF_FZF_OPTS
@@ -900,6 +897,7 @@ private_commands=(
     "checkout_file_preview"
     "cherry_pick_from_branch_preview"
     "cherry_pick_preview"
+    "diff_enter"
     "file_preview"
     "ignore_preview"
     "revert_preview"
@@ -907,6 +905,7 @@ private_commands=(
     "stash_push_preview"
     "stash_show_preview"
     "log_preview"
+    "log_enter"
     "exec_diff"
     "diff_view"
 )
