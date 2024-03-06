@@ -164,6 +164,12 @@ _forgit_get_files_from_diff_line() {
     sed 's/^[[:space:]]*\[[A-Z0-9]*\][[:space:]]*//' | sed 's/  ->  /\n/' | tr '\n' '\0'
 }
 
+_forgit_get_single_file_from_diff_line() {
+    # Similar to the function above, but only gets a single file from a single line
+    # Gets the new name of renamed files
+    sed 's/^[[:space:]]*\[[A-Z0-9]*\][[:space:]]*//' | sed 's/.*->  //'
+}
+
 _forgit_exec_diff() {
     _forgit_diff_git_opts=()
     _forgit_parse_array _forgit_diff_git_opts "$FORGIT_DIFF_GIT_OPTS"
@@ -182,6 +188,12 @@ _forgit_diff_view() {
     fi
     echo "$input_line" | _forgit_get_files_from_diff_line | xargs -0 \
         "$FORGIT" exec_diff "${commits[@]}" -U"$diff_context" -- | $_forgit_diff_pager
+}
+
+_forgit_edit_diffed_file() {
+    local input_line=$1
+    filename=$(echo "$input_line" | _forgit_get_single_file_from_diff_line)
+    $EDITOR "$filename" >/dev/tty </dev/tty
 }
 
 _forgit_diff_enter() {
@@ -205,9 +217,6 @@ _forgit_diff() {
             files=("$@")
         fi
     }
-    # Similar to the line above, but only gets a single file from a single line
-    # Gets the new name of renamed files
-    get_file="echo {} | sed -e 's/^[[:space:]]*\\\\[[A-Z0-9]*\\\\][[:space:]]*//' | sed 's/.*->  //'"
     # Git stashes are named "stash@{x}", which contains the fzf placeholder "{x}".
     # In order to support passing stashes as arguments to _forgit_diff, we have to
     # prevent fzf from interpreting this substring by escaping the opening bracket.
@@ -219,7 +228,7 @@ _forgit_diff() {
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($FORGIT diff_enter {} $escaped_commits | $_forgit_enter_pager)\"
         --preview=\"$FORGIT diff_view {} $_forgit_preview_context $escaped_commits\"
-        --bind=\"alt-e:execute-silent($EDITOR \\\"\$\($get_file)\\\" >/dev/tty </dev/tty)+refresh-preview\"
+        --bind=\"alt-e:execute-silent($FORGIT edit_diffed_file {})+refresh-preview\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"${commits[*]} > \"
     "
@@ -258,6 +267,12 @@ _forgit_get_single_file_from_add_line() {
     sed -e 's/^\"//' -e 's/\"$//'
 }
 
+_forgit_edit_add_file() {
+    local input_line=$1
+    filename=$(echo "$input_line" | _forgit_get_single_file_from_add_line)
+    $EDITOR "$filename" >/dev/tty </dev/tty
+}
+
 # git add selector
 _forgit_add() {
     _forgit_inside_work_tree || return 1
@@ -278,7 +293,7 @@ _forgit_add() {
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
         --preview=\"$FORGIT add_preview {}\"
-        --bind=\"alt-e:execute-silent($EDITOR \\\"\$\(echo {} | $extract\)\\\" >/dev/tty </dev/tty)+refresh-preview\"
+        --bind=\"alt-e:execute-silent($FORGIT edit_add_file {})+refresh-preview\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=$(git -c color.status=always -c status.relativePaths=true status -su |
@@ -908,6 +923,8 @@ private_commands=(
     "log_enter"
     "exec_diff"
     "diff_view"
+    "edit_diffed_file"
+    "edit_add_file"
 )
 
 cmd="$1"
