@@ -222,7 +222,7 @@ _forgit_diff_view() {
     if [ $# -gt 2 ]; then
         IFS=" " read -r -a commits <<< "${*:3}"
     fi
-    echo "$input_line" | _forgit_get_files_from_diff_line | xargs -0 \
+    echo "$input_line" | _forgit_get_files_from_diff_line | xargs -0 | \
         "$FORGIT" exec_diff "${commits[@]}" -U"$diff_context" -- | $_forgit_diff_pager
 }
 
