@@ -80,6 +80,20 @@ _forgit_extract_sha() {
     grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'
 }
 
+# extract the first git sha and copy it to the clipboard
+_forgit_yank_sha() {
+    echo "$1" | _forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy}
+}
+
+# extract the first stash name in the input
+_forgit_extract_stash_name() {
+    cut -d: -f1 | tr -d '[:space:]'
+}
+
+# extract the first stash name and copy it to the clipboard
+_forgit_yank_stash_name() {
+    echo "$1" | _forgit_extract_stash_name | ${FORGIT_COPY_CMD:-pbcopy}
+}
 
 # parse a space separated string into an array
 # arrays parsed with this function are global
@@ -131,7 +145,7 @@ _forgit_log() {
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --bind=\"enter:execute($FORGIT log_enter {} $files)\"
-        --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
         --preview=\"$FORGIT log_preview {} $files\"
         $FORGIT_LOG_FZF_OPTS
     "
@@ -362,7 +376,7 @@ _forgit_stash_show() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m -0 --tiebreak=index --bind=\"enter:execute($FORGIT stash_show_preview {} | $_forgit_enter_pager)\"
-        --bind=\"ctrl-y:execute-silent(echo {} | cut -d: -f1 | tr -d '[:space:]' | ${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_stash_name {})\"
         --preview=\"$FORGIT stash_show_preview {}\"
         $FORGIT_STASH_FZF_OPTS
     "
@@ -534,7 +548,7 @@ _forgit_rebase() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
         --preview=\"$FORGIT file_preview {} $files\"
         $FORGIT_REBASE_FZF_OPTS
     "
@@ -568,7 +582,7 @@ _forgit_fixup() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
         --preview=\"$FORGIT file_preview {} $files\"
         $FORGIT_FIXUP_FZF_OPTS
     "
@@ -697,7 +711,7 @@ _forgit_checkout_commit() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --bind=\"ctrl-y:execute-silent(echo {} | $_forgit_extract_sha | ${FORGIT_COPY_CMD:-pbcopy})\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
         --preview=\"$FORGIT checkout_commit_preview {}\"
         $FORGIT_CHECKOUT_COMMIT_FZF_OPTS
     "
@@ -919,6 +933,8 @@ private_commands=(
     "reset_head_preview"
     "stash_push_preview"
     "stash_show_preview"
+    "yank_sha"
+    "yank_stash_name"
     "log_preview"
     "log_enter"
     "exec_diff"
