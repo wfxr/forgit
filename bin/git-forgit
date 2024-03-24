@@ -263,7 +263,7 @@ _forgit_diff() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($FORGIT diff_enter {} $escaped_commits | $_forgit_enter_pager)\"
-        --preview=\"$FORGIT diff_view {} $_forgit_preview_context $escaped_commits\"
+        --preview=\"$FORGIT diff_view {} \"$_forgit_preview_context\" $escaped_commits\"
         --bind=\"alt-e:execute-silent($FORGIT edit_diffed_file {})+refresh-preview\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"${commits[*]} > \"
