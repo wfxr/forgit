@@ -326,11 +326,14 @@ _forgit_add() {
         --bind=\"alt-e:execute-silent($FORGIT edit_add_file {})+refresh-preview\"
         $FORGIT_ADD_FZF_OPTS
     "
-    read -r -a files <<< "$(git -c color.status=always -c status.relativePaths=true status -su |
+    files=()
+    while IFS='' read -r file; do
+        files+=("$file")
+    done < <(git -c color.status=always -c status.relativePaths=true status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
-        _forgit_get_single_file_from_add_line)"
+        _forgit_get_single_file_from_add_line)
     [[ "${#files[@]}" -gt 0 ]] && _forgit_git_add "${files[@]}" && git status -su && return
     echo 'Nothing to add.'
 }
@@ -442,7 +445,11 @@ _forgit_stash_push() {
         $FORGIT_STASH_PUSH_FZF_OPTS
     "
     # Show both modified and untracked files
-    read -r -a files <<< "$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$FORGIT stash_push_preview {}")"
+    files=()
+    while IFS='' read -r file; do
+        files+=("$file")
+    done < <(git ls-files --exclude-standard --modified --others |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$FORGIT stash_push_preview {}")
     [[ "${#files[@]}" -eq 0 ]] && return 1
     _forgit_git_stash_push ${msg:+-m "$msg"} -u "${files[@]}"
 }
@@ -636,7 +643,11 @@ _forgit_checkout_file() {
         --preview=\"$FORGIT checkout_file_preview {}\"
         $FORGIT_CHECKOUT_FILE_FZF_OPTS
     "
-    read -r -a files <<< "$(git ls-files --modified "$(git rev-parse --show-toplevel)"| FZF_DEFAULT_OPTS="$opts" fzf)"
+    files=()
+    while IFS='' read -r file; do
+        files+=("$file")
+    done < <(git ls-files --modified "$(git rev-parse --show-toplevel)" |
+        FZF_DEFAULT_OPTS="$opts" fzf)
     [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "${files[@]}"
 }
 
