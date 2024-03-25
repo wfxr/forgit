@@ -242,6 +242,8 @@ _forgit_diff_enter() {
 _forgit_diff() {
     _forgit_inside_work_tree || return 1
     local files opts commits escaped_commits
+    commits=()
+    files=()
     [[ $# -ne 0 ]] && {
         if git rev-parse "$1" -- &>/dev/null ; then
             if [[ $# -gt 1 ]] && git rev-parse "$2" -- &>/dev/null; then
