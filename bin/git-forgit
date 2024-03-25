@@ -740,7 +740,9 @@ _forgit_checkout_commit() {
 }
 
 _forgit_branch_preview() {
-    git log "$1" "${_forgit_log_preview_options[@]}"
+    # the trailing '--' ensures that this works for branches that have a name
+    # that is identical to a file
+    git log "$1" "${_forgit_log_preview_options[@]}" --
 }
 
 _forgit_git_branch_delete() {
