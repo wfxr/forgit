@@ -423,6 +423,11 @@ _forgit_git_stash_push() {
 _forgit_stash_push() {
     _forgit_inside_work_tree || return 1
     local msg args
+    modified=()
+    while IFS='' read -r file; do
+        modified+=("$file")
+    done < <(git ls-files --exclude-standard --modified --others)
+    [ "${#modified[@]}" -eq 0 ] && echo "Nothing to stash" && return 1
     args=( "$@" )
     while (( "$#" )); do
         case "$1" in
@@ -444,7 +449,7 @@ _forgit_stash_push() {
         $FORGIT_STASH_PUSH_FZF_OPTS
     "
     # Show both modified and untracked files
-    files=$(git ls-files --exclude-standard --modified --others | FZF_DEFAULT_OPTS="$opts" fzf --preview="$FORGIT stash_push_preview {}")
+    files=$(printf '%s\n' "${modified[@]}" | FZF_DEFAULT_OPTS="$opts" fzf --preview="$FORGIT stash_push_preview {}")
     [[ -z "$files" ]] && return 1
     echo "${files[@]}" | tr '\n' '\0' | _forgit_git_stash_push ${msg:+-m "$msg"} -u --pathspec-file-nul --pathspec-from-file -
 }
