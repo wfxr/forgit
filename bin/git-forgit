@@ -467,8 +467,8 @@ _forgit_stash_push() {
     while IFS='' read -r file; do
         files+=("$file")
     done < <(git ls-files --exclude-standard --modified --others |
-        FZF_DEFAULT_OPTS="$opts" fzf)
-    [[ "${#files[@]}" -eq 0 ]] && return 1
+        FZF_DEFAULT_OPTS="$opts" fzf --exit-0)
+    [[ "${#files[@]}" -eq 0 ]] && echo "Nothing to stash" && return 1
     _forgit_git_stash_push ${msg:+-m "$msg"} -u "${files[@]}"
 }
 
