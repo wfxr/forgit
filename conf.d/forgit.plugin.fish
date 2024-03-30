@@ -28,7 +28,7 @@ set | awk -F ' ' '{ print $1 }' | grep FORGIT_ | while read var
 end
 
 # alias `git-forgit` to the full-path of the command
-alias git-forgit "$FORGIT_INSTALL_DIR/bin/git-forgit"
+alias git-forgit "$FORGIT"
 
 # register abbreviations
 if test -z "$FORGIT_NO_ALIASES"
