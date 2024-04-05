@@ -499,11 +499,10 @@ _forgit_cherry_pick() {
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
     [[ -z "$fzf_selection" ]] && return $fzf_exitval
 
-    ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
-    IFS=$'\n'
-    # shellcheck disable=2207
-    commits=($(echo "$fzf_selection" | sort -n -k 1 | cut -f2 | cut -d' ' -f1 | _forgit_reverse_lines))
-    ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
+    commits=()
+    while IFS='' read -r commit; do
+        commits+=("$commit")
+    done < <(echo "$fzf_selection" | sort -n -k 1 | cut -f2 | cut -d' ' -f1 | _forgit_reverse_lines)
     [ ${#commits[@]} -eq 0 ] && return 1
     
     _forgit_cherry_pick_git_opts=()
@@ -806,18 +805,17 @@ _forgit_revert_commit() {
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
 
-    ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
-    IFS=$'\n'
-    # shellcheck disable=2207
-    commits=($(
+    commits=()
+    while IFS='' read -r commit; do
+        commits+=("$commit")
+    done < <(
         git log --graph --color=always --format="$_forgit_log_format" |
         _forgit_emojify |
         nl |
         FZF_DEFAULT_OPTS="$opts" fzf --preview="$FORGIT revert_preview {}" -m |
         sort -n -k 1 | 
         cut -f2- |
-        sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'))
-    ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
+        sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/')
 
     [ ${#commits[@]} -eq 0 ] && return 1
 
@@ -849,11 +847,10 @@ _forgit_blame() {
         $FORGIT_FZF_DEFAULT_OPTS
         $FORGIT_BLAME_FZF_OPTS
     "
-    ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
-    IFS=$'\n'
-    #shellcheck disable=2207
-    flags=($(git rev-parse --flags "$@"))
-    ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
+    flags=()
+    while IFS='' read -r flag; do
+        flags+=("$flag")
+    done < <(git rev-parse --flags "$@")
     # flags is not quoted here, which is fine given that they are retrieved
     # with git rev-parse and can only contain flags
     file=$(FZF_DEFAULT_OPTS="$opts" fzf --preview="$FORGIT blame_preview {} ${flags[*]}")
@@ -879,12 +876,15 @@ _forgit_ignore() {
         --preview=\"$FORGIT ignore_preview {2}\"
         $FORGIT_IGNORE_FZF_OPTS
     "
-    ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
-    IFS=$'\n'
-    # shellcheck disable=SC2206,2207
-    args=($@) && [[ $# -eq 0 ]] && args=($(_forgit_ignore_list | nl -w4 -s'  ' |
-        FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}'))
-    ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
+    # shellcheck disable=SC2206
+    args=($@)
+    if [[ $# -eq 0 ]]; then
+        args=()
+        while IFS='' read -r arg; do
+            args+=("$arg")
+        done < <(_forgit_ignore_list | nl -w4 -s'  ' |
+            FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}')
+    fi
     [ ${#args[@]} -eq 0 ] && return 1
     # shellcheck disable=SC2068
     _forgit_ignore_get ${args[@]}
