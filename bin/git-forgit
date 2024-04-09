@@ -127,18 +127,32 @@ _forgit_quote_files() {
     echo "${files[*]}"
 }
 
-_forgit_pager=${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}
-_forgit_show_pager=${FORGIT_SHOW_PAGER:-$(git config pager.show || echo "$_forgit_pager")}
-_forgit_diff_pager=${FORGIT_DIFF_PAGER:-$(git config pager.diff || echo "$_forgit_pager")}
-_forgit_ignore_pager=${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}
-_forgit_blame_pager=${FORGIT_BLAME_PAGER:-$(git config pager.blame || echo "$_forgit_pager")}
-_forgit_enter_pager=${FORGIT_ENTER_PAGER:-"LESS='-r' less"}
-
 _forgit_log_graph_enable=${FORGIT_LOG_GRAPH_ENABLE:-"true"}
 _forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset}
 _forgit_log_preview_options=("--graph" "--pretty=format:$_forgit_log_format" "--color=always" "--abbrev-commit" "--date=relative")
 _forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
 _forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
+
+_forgit_pager() {
+    local pager
+    pager=$(_forgit_get_pager "$1")
+    [[ -z "${pager}" ]] && exit 1
+    eval "${pager} ${*:2}"
+}
+
+_forgit_get_pager() {
+    local pager
+    pager=${1:-core}
+    case "$pager" in
+        core) echo -n "${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}" ;;
+        show) echo -n "${FORGIT_SHOW_PAGER:-$(git config pager.show || _forgit_get_pager)}" ;;
+        diff) echo -n "${FORGIT_DIFF_PAGER:-$(git config pager.diff || _forgit_get_pager)}" ;;
+        ignore) echo -n "${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}" ;;
+        blame) echo -n "${FORGIT_BLAME_PAGER:-$(git config pager.blame || _forgit_get_pager)}" ;;
+        enter) echo -n "${FORGIT_ENTER_PAGER:-"LESS='-r' less"}" ;;
+        *) echo "pager not found: $1" >&2 ;;
+    esac
+}
 
 _forgit_is_file_tracked() {
     git ls-files "$1" --error-unmatch &> /dev/null
@@ -148,7 +162,7 @@ _forgit_log_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% git show --color=always -U"$_forgit_preview_context" % -- "$@" | $_forgit_show_pager
+    echo "$sha" | xargs -I% git show --color=always -U"$_forgit_preview_context" % -- "$@" | _forgit_pager show
 }
 
 _forgit_log_enter() {
@@ -223,7 +237,7 @@ _forgit_diff_view() {
         IFS=" " read -r -a commits <<< "${*:3}"
     fi
     echo "$input_line" | _forgit_get_files_from_diff_line | xargs -0 \
-        "$FORGIT" exec_diff "${commits[@]}" -U"$diff_context" -- | $_forgit_diff_pager
+        "$FORGIT" exec_diff "${commits[@]}" -U"$diff_context" -- | _forgit_pager diff
 }
 
 _forgit_edit_diffed_file() {
@@ -264,7 +278,7 @@ _forgit_diff() {
     done
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +m -0 --bind=\"enter:execute($FORGIT diff_enter {} $escaped_commits | $_forgit_enter_pager)\"
+        +m -0 --bind=\"enter:execute($FORGIT diff_enter {} $escaped_commits | $FORGIT pager enter)\"
         --preview=\"$FORGIT diff_view {} '$_forgit_preview_context' $escaped_commits\"
         --bind=\"alt-e:execute-silent($FORGIT edit_diffed_file {})+refresh-preview\"
         $FORGIT_DIFF_FZF_OPTS
@@ -285,9 +299,9 @@ _forgit_diff() {
 _forgit_add_preview() {
     file=$(echo "$1" | _forgit_get_single_file_from_add_line)
     if (git status -s -- "$file" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
-        git diff --color=always --no-index -- /dev/null "$file" | $_forgit_diff_pager | sed '2 s/added:/untracked:/'
+        git diff --color=always --no-index -- /dev/null "$file" | _forgit_pager diff | sed '2 s/added:/untracked:/'
     else
-        git diff --color=always -- "$file" | $_forgit_diff_pager
+        git diff --color=always -- "$file" | _forgit_pager diff
     fi
 }
 
@@ -339,7 +353,7 @@ _forgit_add() {
 
 _forgit_reset_head_preview() {
     file=$1
-    git diff --staged --color=always -- "$file" | $_forgit_diff_pager
+    git diff --staged --color=always -- "$file" | _forgit_pager diff
 }
 
 _forgit_git_reset_head() {
@@ -377,7 +391,7 @@ _forgit_reset_head() {
 _forgit_stash_show_preview() {
     local stash
     stash=$(echo "$1" | cut -d: -f1)
-    _forgit_git_stash_show "$stash" | $_forgit_diff_pager
+    _forgit_git_stash_show "$stash" | _forgit_pager diff
 }
 
 _forgit_git_stash_show() {
@@ -393,7 +407,7 @@ _forgit_stash_show() {
     _forgit_parse_array _forgit_stash_show_git_opts "$FORGIT_STASH_SHOW_GIT_OPTS"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($FORGIT stash_show_preview {} | $_forgit_enter_pager)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($FORGIT stash_show_preview {} | $FORGIT pager enter)\"
         --bind=\"ctrl-y:execute-silent($FORGIT yank_stash_name {})\"
         --preview=\"$FORGIT stash_show_preview {}\"
         $FORGIT_STASH_FZF_OPTS
@@ -407,9 +421,9 @@ _forgit_stash_show() {
 
 _forgit_stash_push_preview() {
     if _forgit_is_file_tracked "$1"; then
-        git diff --color=always -- "$1" | $_forgit_diff_pager
+        git diff --color=always -- "$1" | _forgit_pager diff
     else
-        git diff --color=always /dev/null "$1" | $_forgit_diff_pager
+        git diff --color=always /dev/null "$1" | _forgit_pager diff
     fi
 }
 
@@ -468,7 +482,7 @@ _forgit_clean() {
 }
 
 _forgit_cherry_pick_preview() {
-    echo "$1" | cut -f2- | _forgit_extract_sha | xargs -I% git show --color=always % | $_forgit_show_pager
+    echo "$1" | cut -f2- | _forgit_extract_sha | xargs -I% git show --color=always % | _forgit_pager show
 }
 
 _forgit_cherry_pick() {
@@ -584,7 +598,7 @@ _forgit_file_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% git show --color=always % -- "$@" | $_forgit_show_pager
+    echo "$sha" | xargs -I% git show --color=always % -- "$@" | _forgit_pager show
 }
 
 _forgit_fixup() {
@@ -617,7 +631,7 @@ _forgit_fixup() {
 }
 
 _forgit_checkout_file_preview() {
-    git diff --color=always -- "$1" | $_forgit_diff_pager
+    git diff --color=always -- "$1" | _forgit_pager diff
 }
 
 _forgit_git_checkout_file() {
@@ -711,7 +725,7 @@ _forgit_checkout_tag() {
 }
 
 _forgit_checkout_commit_preview() {
-    echo "$1" | _forgit_extract_sha | xargs -I% git show --color=always % | $_forgit_show_pager
+    echo "$1" | _forgit_extract_sha | xargs -I% git show --color=always % | _forgit_pager show
 }
 
 _forgit_git_checkout_commit() {
@@ -778,7 +792,7 @@ _forgit_revert_preview() {
     cut -f2- |
     _forgit_extract_sha |
     xargs -I% git show --color=always % |
-    $_forgit_show_pager
+    _forgit_pager show
 }
 
 _forgit_git_revert() {
@@ -826,7 +840,7 @@ _forgit_blame_preview() {
     if _forgit_is_file_tracked "$1"; then
         _forgit_blame_git_opts=()
         _forgit_parse_array _forgit_blame_git_opts "$FORGIT_BLAME_GIT_OPTS"
-        git blame "$@" "${_forgit_blame_git_opts[@]}" --date=short | $_forgit_blame_pager
+        git blame "$@" "${_forgit_blame_git_opts[@]}" --date=short | _forgit_pager blame
     else
         echo "File not tracked"
     fi
@@ -864,7 +878,11 @@ export FORGIT_GI_REPO_LOCAL="${FORGIT_GI_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME/.ca
 export FORGIT_GI_TEMPLATES=${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/templates}
 
 _forgit_ignore_preview() {
-    $_forgit_ignore_pager "$FORGIT_GI_TEMPLATES/$1"{,.gitignore} 2>/dev/null
+    quoted_files=()
+    for file in "$FORGIT_GI_TEMPLATES/$1"{,.gitignore}; do
+        quoted_files+=("'$file'")
+    done
+    _forgit_pager ignore "${quoted_files[@]}" 2>/dev/null
 }
 
 _forgit_ignore() {
@@ -961,6 +979,7 @@ private_commands=(
     "diff_view"
     "edit_diffed_file"
     "edit_add_file"
+    "pager"
 )
 
 cmd="$1"
