@@ -470,6 +470,12 @@ _forgit_stash_push() {
     _forgit_git_stash_push ${msg:+-m "$msg"} -u "${files[@]}"
 }
 
+_forgit_clean_preview() {
+    local file
+    file=$1
+    git diff --color=always /dev/null "$file" | _forgit_pager diff
+}
+
 # git clean selector
 _forgit_clean() {
     _forgit_inside_work_tree || return 1
@@ -479,6 +485,7 @@ _forgit_clean() {
     _forgit_parse_array _forgit_clean_git_opts "$FORGIT_CLEAN_GIT_OPTS"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
+        --preview=\"$FORGIT clean_preview {}\"
         -m -0
         $FORGIT_CLEAN_FZF_OPTS
     "
@@ -975,6 +982,7 @@ private_commands=(
     "checkout_file_preview"
     "cherry_pick_from_branch_preview"
     "cherry_pick_preview"
+    "clean_preview"
     "diff_enter"
     "file_preview"
     "ignore_preview"
