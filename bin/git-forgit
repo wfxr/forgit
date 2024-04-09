@@ -141,7 +141,9 @@ _forgit_pager() {
 }
 
 _forgit_get_pager() {
-    case "${1:-core}" in
+    local pager
+    pager=${1:-core}
+    case "$pager" in
         core) echo -n "${FORGIT_PAGER:-$(git config core.pager || echo 'cat')}" ;;
         show) echo -n "${FORGIT_SHOW_PAGER:-$(git config pager.show || _forgit_get_pager)}" ;;
         diff) echo -n "${FORGIT_DIFF_PAGER:-$(git config pager.diff || _forgit_get_pager)}" ;;
