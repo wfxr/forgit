@@ -471,9 +471,17 @@ _forgit_stash_push() {
 }
 
 _forgit_clean_preview() {
-    local file
-    file=$1
-    git diff --color=always /dev/null "$file" | _forgit_pager diff
+    local path
+    path=$1
+    if [[ -d "$path" ]]; then
+        if hash tree &> /dev/null; then
+            tree "$path"
+        else
+            find "$path"
+        fi
+    else
+        git diff --color=always /dev/null "$path" | _forgit_pager diff
+    fi
 }
 
 # git clean selector
