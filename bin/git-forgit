@@ -132,6 +132,7 @@ _forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Cre
 _forgit_log_preview_options=("--graph" "--pretty=format:$_forgit_log_format" "--color=always" "--abbrev-commit" "--date=relative")
 _forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
 _forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
+_forgit_dir_view=${FORGIT_DIR_VIEW:-$(hash tree &> /dev/null && echo 'tree' || echo 'find')}
 
 _forgit_pager() {
     local pager
@@ -474,11 +475,7 @@ _forgit_clean_preview() {
     local path
     path=$1
     if [[ -d "$path" ]]; then
-        if hash tree &> /dev/null; then
-            tree "$path"
-        else
-            find "$path"
-        fi
+        eval "$_forgit_dir_view \"$path\""
     else
         git diff --color=always /dev/null "$path" | _forgit_pager diff
     fi
