@@ -905,8 +905,7 @@ _forgit_ignore() {
         --preview=\"$FORGIT ignore_preview {2}\"
         $FORGIT_IGNORE_FZF_OPTS
     "
-    # shellcheck disable=SC2206
-    args=($@)
+    args=("$@")
     if [[ $# -eq 0 ]]; then
         args=()
         while IFS='' read -r arg; do
@@ -915,8 +914,7 @@ _forgit_ignore() {
             FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}')
     fi
     [ ${#args[@]} -eq 0 ] && return 1
-    # shellcheck disable=SC2068
-    _forgit_ignore_get ${args[@]}
+    _forgit_ignore_get "${args[@]}"
 }
 _forgit_ignore_update() {
     if [[ -d "$FORGIT_GI_REPO_LOCAL" ]]; then
