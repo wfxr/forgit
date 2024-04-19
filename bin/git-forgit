@@ -455,18 +455,19 @@ _forgit_stash_push() {
             *) _forgit_git_stash_push "${args[@]}"; return $?
         esac
     done
-    local opts files
+    local opts files rootdir
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m
         --preview=\"$FORGIT stash_push_preview {}\"
         $FORGIT_STASH_PUSH_FZF_OPTS
     "
+    rootdir=$(git rev-parse --show-toplevel)
     # Show both modified and untracked files
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git ls-files --exclude-standard --modified --others |
+    done < <(git ls-files "$rootdir" --exclude-standard --modified --others |
         FZF_DEFAULT_OPTS="$opts" fzf --exit-0)
     [[ "${#files[@]}" -eq 0 ]] && echo "Nothing to stash" && return 1
     _forgit_git_stash_push ${msg:+-m "$msg"} -u "${files[@]}"
