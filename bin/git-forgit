@@ -132,6 +132,7 @@ _forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Cre
 _forgit_log_preview_options=("--graph" "--pretty=format:$_forgit_log_format" "--color=always" "--abbrev-commit" "--date=relative")
 _forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
 _forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
+_forgit_dir_view=${FORGIT_DIR_VIEW:-$(hash tree &> /dev/null && echo 'tree' || echo 'find')}
 
 _forgit_pager() {
     local pager
@@ -471,6 +472,16 @@ _forgit_stash_push() {
     _forgit_git_stash_push ${msg:+-m "$msg"} -u "${files[@]}"
 }
 
+_forgit_clean_preview() {
+    local path
+    path=$1
+    if [[ -d "$path" ]]; then
+        eval "$_forgit_dir_view \"$path\""
+    else
+        git diff --color=always /dev/null "$path" | _forgit_pager diff
+    fi
+}
+
 # git clean selector
 _forgit_clean() {
     _forgit_inside_work_tree || return 1
@@ -480,6 +491,7 @@ _forgit_clean() {
     _forgit_parse_array _forgit_clean_git_opts "$FORGIT_CLEAN_GIT_OPTS"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
+        --preview=\"$FORGIT clean_preview {}\"
         -m -0
         $FORGIT_CLEAN_FZF_OPTS
     "
@@ -976,6 +988,7 @@ private_commands=(
     "checkout_file_preview"
     "cherry_pick_from_branch_preview"
     "cherry_pick_preview"
+    "clean_preview"
     "diff_enter"
     "file_preview"
     "ignore_preview"
