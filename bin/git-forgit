@@ -851,7 +851,7 @@ _forgit_blame_preview() {
     if _forgit_is_file_tracked "$1"; then
         _forgit_blame_git_opts=()
         _forgit_parse_array _forgit_blame_git_opts "$FORGIT_BLAME_GIT_OPTS"
-        git blame "$@" "${_forgit_blame_git_opts[@]}" --date=short | _forgit_pager blame
+        git blame --date=short "${_forgit_blame_git_opts[@]}" "$@" | _forgit_pager blame
     else
         echo "File not tracked"
     fi
