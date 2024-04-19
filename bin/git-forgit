@@ -838,6 +838,8 @@ _forgit_revert_commit() {
         --preview=\"$FORGIT revert_preview {}\"
         $FORGIT_REVERT_COMMIT_FZF_OPTS
     "
+    graph=()
+    [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
 
     # in this function, we do something interesting to maintain proper ordering as it's assumed 
     # you generally want to revert newest->oldest when you multiselect
@@ -848,7 +850,7 @@ _forgit_revert_commit() {
     while IFS='' read -r commit; do
         commits+=("$commit")
     done < <(
-        git log --graph --color=always --format="$_forgit_log_format" |
+        git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
         _forgit_emojify |
         nl |
         FZF_DEFAULT_OPTS="$opts" fzf |
