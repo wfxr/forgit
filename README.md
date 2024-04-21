@@ -163,10 +163,18 @@ For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 Options can be set via environment variables. They have to be **exported** in
 order to be recognized by `forgit`.
 
-For instance, if you want to order branches in `gcb` by the last committed date you could:
+For instance:
+
+- if you want to order branches in `gcb` by the last committed date, you could:
 
 ```shell
 export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
+```
+
+- if you want to see a preview of the stashed items in `gss` preview, you could:
+
+```shell
+export FORGIT_STASH_SHOW_PREVIEW_GIT_OPTS="--patch-with-stat --stat-count=10"
 ```
 
 ## shell aliases
@@ -243,7 +251,7 @@ These are passed to the according `git` calls.
 | `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS`                                              |
 | `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS`                                           |
 | `grc`    | `FORGIT_REVERT_COMMIT_GIT_OPTS`                                             |
-| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS`                                                |
+| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS`, `FORGIT_STASH_SHOW_PREVIEW_GIT_OPTS`          |
 | `gsp`    | `FORGIT_STASH_PUSH_GIT_OPTS`                                                |
 | `gclean` | `FORGIT_CLEAN_GIT_OPTS`                                                     |
 | `grb`    | `FORGIT_REBASE_GIT_OPTS`                                                    |

@@ -395,7 +395,9 @@ _forgit_reset_head() {
 _forgit_stash_show_preview() {
     local stash
     stash=$(echo "$1" | cut -d: -f1)
-    _forgit_git_stash_show "$stash" | _forgit_pager diff
+    _forgit_stash_show_preview_git_opts=()
+    _forgit_parse_array _forgit_stash_show_preview_git_opts "$FORGIT_STASH_SHOW_PREVIEW_GIT_OPTS"
+    _forgit_git_stash_show "${_forgit_stash_show_preview_git_opts[@]}" -- "$stash" | _forgit_pager diff
 }
 
 _forgit_git_stash_show() {
