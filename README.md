@@ -352,11 +352,11 @@ export FORGIT_LOG_FZF_OPTS='
 - Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) in
   `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
 - Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) explicitly to have
-  bash tab completion for forgit shell functions and aliases (e.g. `gcb <tab>` completes branches).
+  bash tab completion for forgit shell functions and aliases (e.g., `gcb <tab>` completes branches).
 
 ## Zsh
 
-- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g. `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`
+- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`
 
 If you're having issues after updating, and commands such as `forgit::add` or aliases `ga` aren't working, remove your completions cache and restart your shell.
 
@@ -367,9 +367,9 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 # 💡 Tips
 
-- Most of the commands accept optional arguments (eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
-- `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
-- Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
+- Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
+- `gd` supports specifying revision(e.g., `gd HEAD~`, `gd v1.0 README.md`).
+- Call `gi` with arguments to get the wanted `.gitignore` contents directly(e.g., `gi cmake c++`).
 
 # 📃 License
 
