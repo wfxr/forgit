@@ -137,7 +137,7 @@ Install `forgit` in just one click.
 
 - **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
 
-# ⌨  Keybindings
+# ⌨ Keybindings
 
 | Key                                           | Action                                      |
 | :-------------------------------------------: | ------------------------------------------- |
@@ -158,7 +158,7 @@ Install `forgit` in just one click.
 \* Available when the selection contains a commit hash or a stash ID.
 For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
-# ⚙  Options
+# ⚙ Options
 
 Options can be set via environment variables. They have to be **exported** in
 order to be recognized by `forgit`.
