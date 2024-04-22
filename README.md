@@ -137,7 +137,7 @@ Install `forgit` in just one click.
 
 - **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
 
-# ⌨  Keybinds
+# ⌨  Keybindings
 
 | Key                                           | Action                                      |
 | :-------------------------------------------: | ------------------------------------------- |
@@ -156,7 +156,7 @@ Install `forgit` in just one click.
 | <kbd>Alt</kbd> - <kbd>E</kbd>                 | Open file in default editor (when possible) |
 
 \* Available when the selection contains a commit hash or a stash ID.
-For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
+For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
 # ⚙  Options
 
@@ -197,7 +197,7 @@ forgit_fixup=gfu
 
 ## git integration
 
-You can use forgit as a subcommand of git by making `git-forgit` available in `$PATH`:
+You can use forgit as a sub-command of git by making `git-forgit` available in `$PATH`:
 
 ```sh
 # after `forgit` was loaded
@@ -206,7 +206,7 @@ PATH="$PATH:$FORGIT_INSTALL_DIR/bin"
 
 *Some plugin managers can help do this.*
 
-Then any forgit command will be a subcommand of git:
+Then, any forgit command will be a sub-command of git:
 
 ```cmd
 git forgit log
@@ -268,7 +268,7 @@ variables:
 
 ## fzf options
 
-You can add default fzf options for `forgit`, including keybinds, layout, etc.
+You can add default fzf options for `forgit`, including keybindings, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
 
 ``` bash
@@ -330,16 +330,16 @@ export FORGIT_LOG_FZF_OPTS='
 
 ## other options
 
-| Option                      | Description                              | Default                                       |
-|-----------------------------|------------------------------------------|-----------------------------------------------|
-| `FORGIT_LOG_FORMAT`         | git log format                           | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
-| `FORGIT_PREVIEW_CONTEXT`    | lines of diff context in preview mode    | 3                                             |
-| `FORGIT_FULLSCREEN_CONTEXT` | lines of diff context in fullscreen mode | 10                                            |
-| `FORGIT_DIR_VIEW`           | command used to preview directories      | `tree` if available, otherwise `find`         |
+| Option                      | Description                               | Default                                       |
+|-----------------------------|-------------------------------------------|-----------------------------------------------|
+| `FORGIT_LOG_FORMAT`         | git log format                            | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
+| `FORGIT_PREVIEW_CONTEXT`    | lines of diff context in preview mode     | 3                                             |
+| `FORGIT_FULLSCREEN_CONTEXT` | lines of diff context in full-screen mode | 10                                            |
+| `FORGIT_DIR_VIEW`           | command used to preview directories       | `tree` if available, otherwise `find`         |
 
 # 📦 Optional dependencies
 
-- [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human readable diffs.
+- [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human-readable diffs.
 
 - [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore`.
 
