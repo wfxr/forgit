@@ -137,7 +137,7 @@ Install `forgit` in just one click.
 
 - **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
 
-# ⌨  Keybinds
+# ⌨ Keybindings
 
 | Key                                           | Action                                      |
 | :-------------------------------------------: | ------------------------------------------- |
@@ -156,9 +156,9 @@ Install `forgit` in just one click.
 | <kbd>Alt</kbd> - <kbd>E</kbd>                 | Open file in default editor (when possible) |
 
 \* Available when the selection contains a commit hash or a stash ID.
-For linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
+For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
-# ⚙  Options
+# ⚙ Options
 
 Options can be set via environment variables. They have to be **exported** in
 order to be recognized by `forgit`.
@@ -197,7 +197,7 @@ forgit_fixup=gfu
 
 ## git integration
 
-You can use forgit as a subcommand of git by making `git-forgit` available in `$PATH`:
+You can use forgit as a sub-command of git by making `git-forgit` available in `$PATH`:
 
 ```sh
 # after `forgit` was loaded
@@ -206,7 +206,7 @@ PATH="$PATH:$FORGIT_INSTALL_DIR/bin"
 
 *Some plugin managers can help do this.*
 
-Then any forgit command will be a subcommand of git:
+Then, any forgit command will be a sub-command of git:
 
 ```cmd
 git forgit log
@@ -268,7 +268,7 @@ variables:
 
 ## fzf options
 
-You can add default fzf options for `forgit`, including keybinds, layout, etc.
+You can add default fzf options for `forgit`, including keybindings, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
 
 ``` bash
@@ -330,16 +330,16 @@ export FORGIT_LOG_FZF_OPTS='
 
 ## other options
 
-| Option                      | Description                              | Default                                       |
-|-----------------------------|------------------------------------------|-----------------------------------------------|
-| `FORGIT_LOG_FORMAT`         | git log format                           | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
-| `FORGIT_PREVIEW_CONTEXT`    | lines of diff context in preview mode    | 3                                             |
-| `FORGIT_FULLSCREEN_CONTEXT` | lines of diff context in fullscreen mode | 10                                            |
-| `FORGIT_DIR_VIEW`           | command used to preview directories      | `tree` if available, otherwise `find`         |
+| Option                      | Description                               | Default                                       |
+|-----------------------------|-------------------------------------------|-----------------------------------------------|
+| `FORGIT_LOG_FORMAT`         | git log format                            | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
+| `FORGIT_PREVIEW_CONTEXT`    | lines of diff context in preview mode     | 3                                             |
+| `FORGIT_FULLSCREEN_CONTEXT` | lines of diff context in full-screen mode | 10                                            |
+| `FORGIT_DIR_VIEW`           | command used to preview directories       | `tree` if available, otherwise `find`         |
 
 # 📦 Optional dependencies
 
-- [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human readable diffs.
+- [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human-readable diffs.
 
 - [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore`.
 
@@ -352,11 +352,11 @@ export FORGIT_LOG_FZF_OPTS='
 - Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) in
   `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
 - Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) explicitly to have
-  bash tab completion for forgit shell functions and aliases (e.g. `gcb <tab>` completes branches).
+  bash tab completion for forgit shell functions and aliases (e.g., `gcb <tab>` completes branches).
 
 ## Zsh
 
-- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g. `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`
+- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`
 
 If you're having issues after updating, and commands such as `forgit::add` or aliases `ga` aren't working, remove your completions cache and restart your shell.
 
@@ -367,9 +367,9 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 # 💡 Tips
 
-- Most of the commands accept optional arguments (eg, `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
-- `gd` supports specifying revision(eg, `gd HEAD~`, `gd v1.0 README.md`).
-- Call `gi` with arguments to get the wanted `.gitignore` contents directly(eg, `gi cmake c++`).
+- Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
+- `gd` supports specifying revision(e.g., `gd HEAD~`, `gd v1.0 README.md`).
+- Call `gi` with arguments to get the wanted `.gitignore` contents directly(e.g., `gi cmake c++`).
 
 # 📃 License
 
