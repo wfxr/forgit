@@ -171,7 +171,7 @@ _forgit_list_files() {
     # merge conflict.
     # With the -z flag, git also uses \0 line termination, so we 
     # have to replace the terminators.
-    git ls-files -z "$@" "$rootdir" | uniq | tr '\0' '\n'
+    git ls-files -z "$@" "$rootdir" | tr '\0' '\n' | uniq
 }
 
 _forgit_log_preview() {
