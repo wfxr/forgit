@@ -242,9 +242,11 @@ _forgit_diff_view() {
 }
 
 _forgit_edit_diffed_file() {
-    local input_line=$1
+    local input_line rootdir
+    input_line=$1
+    rootdir=$(git rev-parse --show-toplevel)
     filename=$(echo "$input_line" | _forgit_get_single_file_from_diff_line)
-    $EDITOR "$filename" >/dev/tty </dev/tty
+    $EDITOR "$rootdir/$filename" >/dev/tty </dev/tty
 }
 
 _forgit_diff_enter() {
