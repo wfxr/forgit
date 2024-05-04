@@ -23,7 +23,7 @@ jobs:
         run: .github/scripts/changelog.sh > CHANGELOG.md
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           body_path: CHANGELOG.md
           files: forgit-${{github.ref_name}}.tar.gz
