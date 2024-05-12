@@ -159,6 +159,21 @@ _forgit_is_file_tracked() {
     git ls-files "$1" --error-unmatch &> /dev/null
 }
 
+_forgit_list_files() {
+    local rootdir
+    rootdir=$(git rev-parse --show-toplevel)
+    # git escapes special characters in it's output when core.quotePath is
+    # true or unset. Git always expects unquoted file paths as input. This
+    # leads to issues when we consume output from git and use it to build
+    # input for other git commands. Use the -z flag to ensure file paths are
+    # unquoted.
+    # uniq is necessary because unmerged files are printed once for each
+    # merge conflict.
+    # With the -z flag, git also uses \0 line termination, so we 
+    # have to replace the terminators.
+    git ls-files -z "$@" "$rootdir" | tr '\0' '\n' | uniq
+}
+
 _forgit_log_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
@@ -348,7 +363,7 @@ _forgit_add() {
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git -c color.status=always -c status.relativePaths=true status -su |
+    done < <(git -c color.status=always -c status.relativePaths=true -c core.quotePath=false status -su |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
@@ -383,7 +398,7 @@ _forgit_reset_head() {
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git diff --staged --name-only | FZF_DEFAULT_OPTS="$opts" fzf)
+    done < <(git diff -z --staged --name-only | tr '\0' '\n' | FZF_DEFAULT_OPTS="$opts" fzf)
     if [[ ${#files} -eq 0 ]]; then
         echo 'Nothing to unstage.'
         return 1
@@ -457,19 +472,18 @@ _forgit_stash_push() {
             *) _forgit_git_stash_push "${args[@]}"; return $?
         esac
     done
-    local opts files rootdir
+    local opts files
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m
         --preview=\"$FORGIT stash_push_preview {}\"
         $FORGIT_STASH_PUSH_FZF_OPTS
     "
-    rootdir=$(git rev-parse --show-toplevel)
     # Show both modified and untracked files
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git ls-files "$rootdir" --exclude-standard --modified --others |
+    done < <(_forgit_list_files --exclude-standard --modified --others |
         FZF_DEFAULT_OPTS="$opts" fzf --exit-0)
     [[ "${#files[@]}" -eq 0 ]] && echo "Nothing to stash" && return 1
     _forgit_git_stash_push ${msg:+-m "$msg"} -u "${files[@]}"
@@ -499,7 +513,7 @@ _forgit_clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    files=$(git -c core.quotePath=false clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean "${_forgit_clean_git_opts[@]}" -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
 }
@@ -677,7 +691,7 @@ _forgit_checkout_file() {
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git ls-files --modified "$(git rev-parse --show-toplevel)" |
+    done < <(_forgit_list_files --modified |
         FZF_DEFAULT_OPTS="$opts" fzf)
     [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "${files[@]}"
 }
