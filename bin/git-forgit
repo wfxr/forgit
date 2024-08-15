@@ -348,7 +348,7 @@ _forgit_add() {
     _forgit_inside_work_tree || return 1
     local changed unmerged untracked files opts
     # Add files if passed as arguments
-    [[ $# -ne 0 ]] && { _forgit_git_add "$@" && git status -su; return $?; }
+    [[ $# -ne 0 ]] && { _forgit_git_add "$@" && git status -s; return $?; }
 
     changed=$(git config --get-color color.status.changed red)
     unmerged=$(git config --get-color color.status.unmerged red)
@@ -368,7 +368,7 @@ _forgit_add() {
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
         _forgit_get_single_file_from_add_line)
-    [[ "${#files[@]}" -gt 0 ]] && _forgit_git_add "${files[@]}" && git status -su && return
+    [[ "${#files[@]}" -gt 0 ]] && _forgit_git_add "${files[@]}" && git status -s && return
     echo 'Nothing to add.'
 }
 
