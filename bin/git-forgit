@@ -169,7 +169,7 @@ _forgit_list_files() {
     # unquoted.
     # uniq is necessary because unmerged files are printed once for each
     # merge conflict.
-    # With the -z flag, git also uses \0 line termination, so we 
+    # With the -z flag, git also uses \0 line termination, so we
     # have to replace the terminators.
     git ls-files -z "$@" "$rootdir" | tr '\0' '\n' | uniq
 }
@@ -178,7 +178,9 @@ _forgit_log_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% git show --color=always -U"$_forgit_preview_context" % -- "$@" | _forgit_pager show
+    _forgit_log_preview_git_opts=()
+    _forgit_parse_array _forgit_log_preview_git_opts "$FORGIT_LOG_PREVIEW_GIT_OPTS"
+    echo "$sha" | xargs -I% git show --color=always "${_forgit_log_preview_git_opts[@]}" -U"$_forgit_preview_context" % -- "$@" | _forgit_pager show
 }
 
 _forgit_log_enter() {
@@ -315,11 +317,13 @@ _forgit_diff() {
 }
 
 _forgit_add_preview() {
+    _forgit_add_preview_git_opts=()
+    _forgit_parse_array _forgit_add_preview_git_opts "$FORGIT_ADD_PREVIEW_GIT_OPTS"
     file=$(echo "$1" | _forgit_get_single_file_from_add_line)
     if (git status -s -- "$file" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
-        git diff --color=always --no-index -- /dev/null "$file" | _forgit_pager diff | sed '2 s/added:/untracked:/'
+        git diff --color=always "${_forgit_add_preview_git_opts[@]}" --no-index -- /dev/null "$file" | _forgit_pager diff | sed '2 s/added:/untracked:/'
     else
-        git diff --color=always -- "$file" | _forgit_pager diff
+        git diff --color=always "${_forgit_add_preview_git_opts[@]}" -- "$file" | _forgit_pager diff
     fi
 }
 
@@ -374,7 +378,9 @@ _forgit_add() {
 
 _forgit_reset_head_preview() {
     file=$1
-    git diff --staged --color=always -- "$file" | _forgit_pager diff
+    _forgit_reset_head_preview_git_opts=()
+    _forgit_parse_array _forgit_reset_head_preview_git_opts "$FORGIT_RESET_HEAD_PREVIEW_GIT_OPTS"
+    git diff --staged --color=always "${_forgit_reset_head_preview_git_opts[@]}" -- "$file" | _forgit_pager diff
 }
 
 _forgit_git_reset_head() {
@@ -412,7 +418,9 @@ _forgit_reset_head() {
 _forgit_stash_show_preview() {
     local stash
     stash=$(echo "$1" | cut -d: -f1)
-    _forgit_git_stash_show "$stash" | _forgit_pager diff
+    _forgit_stash_show_preview_git_opts=()
+    _forgit_parse_array _forgit_stash_show_preview_git_opts "$FORGIT_STASH_SHOW_PREVIEW_GIT_OPTS"
+    _forgit_git_stash_show "${_forgit_stash_show_preview_git_opts[@]}" -- "$stash" | _forgit_pager diff
 }
 
 _forgit_git_stash_show() {
@@ -441,10 +449,12 @@ _forgit_stash_show() {
 }
 
 _forgit_stash_push_preview() {
+    _forgit_stash_push_preview_git_opts=()
+    _forgit_parse_array _forgit_stash_push_preview_git_opts "$FORGIT_STASH_PUSH_PREVIEW_GIT_OPTS"
     if _forgit_is_file_tracked "$1"; then
-        git diff --color=always -- "$1" | _forgit_pager diff
+        git diff --color=always "${_forgit_stash_push_preview_git_opts[@]}" -- "$1" | _forgit_pager diff
     else
-        git diff --color=always /dev/null "$1" | _forgit_pager diff
+        git diff --color=always "${_forgit_stash_push_preview_git_opts[@]}" -- /dev/null "$1" | _forgit_pager diff
     fi
 }
 
@@ -492,10 +502,12 @@ _forgit_stash_push() {
 _forgit_clean_preview() {
     local path
     path=$1
+    _forgit_clean_preview_git_opts=()
+    _forgit_parse_array _forgit_clean_preview_git_opts "$FORGIT_CLEAN_PREVIEW_GIT_OPTS"
     if [[ -d "$path" ]]; then
         eval "$_forgit_dir_view \"$path\""
     else
-        git diff --color=always /dev/null "$path" | _forgit_pager diff
+        git diff --color=always "${_forgit_clean_preview_git_opts[@]}" -- /dev/null "$path" | _forgit_pager diff
     fi
 }
 
@@ -519,7 +531,9 @@ _forgit_clean() {
 }
 
 _forgit_cherry_pick_preview() {
-    echo "$1" | cut -f2- | _forgit_extract_sha | xargs -I% git show --color=always % | _forgit_pager show
+    _forgit_cherry_pick_preview_git_opts=()
+    _forgit_parse_array _forgit_cherry_pick_preview_git_opts "$FORGIT_CHERRY_PICK_PREVIEW_GIT_OPTS"
+    echo "$1" | cut -f2- | _forgit_extract_sha | xargs -I% git show --color=always "${_forgit_cherry_pick_preview_git_opts[@]}" % | _forgit_pager show
 }
 
 _forgit_cherry_pick() {
@@ -531,7 +545,7 @@ _forgit_cherry_pick() {
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
 
-    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed
     # you generally want to cherry pick oldest->newest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
@@ -555,14 +569,16 @@ _forgit_cherry_pick() {
         commits+=("$commit")
     done < <(echo "$fzf_selection" | sort -n -k 1 | cut -f2 | cut -d' ' -f1 | _forgit_reverse_lines)
     [ ${#commits[@]} -eq 0 ] && return 1
-    
+
     _forgit_cherry_pick_git_opts=()
     _forgit_parse_array _forgit_cherry_pick_git_opts "$FORGIT_CHERRY_PICK_GIT_OPTS"
     git cherry-pick "${_forgit_cherry_pick_git_opts[@]}" "${commits[@]}"
 }
 
 _forgit_cherry_pick_from_branch_preview() {
-    git log --right-only --color=always --cherry-pick --oneline "$1"..."$2"
+    _forgit_cherry_pick_from_branch_preview_git_opts=()
+    _forgit_parse_array _forgit_cherry_pick_from_branch_preview_git_opts "$FORGIT_CHERRY_PICK_FROM_BRANCH_PREVIEW_GIT_OPTS"
+    git log --right-only --color=always --cherry-pick --oneline "${_forgit_cherry_pick_from_branch_preview_git_opts[@]}" "$1"..."$2"
 }
 
 _forgit_cherry_pick_from_branch() {
@@ -635,7 +651,9 @@ _forgit_file_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% git show --color=always % -- "$@" | _forgit_pager show
+    _forgit_file_preview_git_opts=()
+    _forgit_parse_array _forgit_file_preview_git_opts "$FORGIT_FILE_PREVIEW_GIT_OPTS"
+    echo "$sha" | xargs -I% git show --color=always "${_forgit_file_preview_git_opts[@]}" % -- "$@" | _forgit_pager show
 }
 
 _forgit_fixup() {
@@ -668,7 +686,9 @@ _forgit_fixup() {
 }
 
 _forgit_checkout_file_preview() {
-    git diff --color=always -- "$1" | _forgit_pager diff
+    _forgit_checkout_file_preview_git_opts=()
+    _forgit_parse_array _forgit_checkout_file_preview_git_opts "$FORGIT_CHECKOUT_FILE_PREVIEW_GIT_OPTS"
+    git diff --color=always "${_forgit_checkout_file_preview_git_opts[@]}" -- "$1" | _forgit_pager diff
 }
 
 _forgit_git_checkout_file() {
@@ -766,7 +786,9 @@ _forgit_checkout_tag() {
 }
 
 _forgit_checkout_commit_preview() {
-    echo "$1" | _forgit_extract_sha | xargs -I% git show --color=always % | _forgit_pager show
+    _forgit_checkout_commit_preview_git_opts=()
+    _forgit_parse_array _forgit_checkout_commit_preview_git_opts "$FORGIT_CHECKOUT_COMMIT_PREVIEW_GIT_OPTS"
+    echo "$1" | _forgit_extract_sha | xargs -I% git show --color=always "${_forgit_checkout_commit_preview_git_opts[@]}" -- % | _forgit_pager show
 }
 
 _forgit_git_checkout_commit() {
@@ -829,10 +851,12 @@ _forgit_branch_delete() {
 }
 
 _forgit_revert_preview() {
+    _forgit_revert_preview_git_opts=()
+    _forgit_parse_array _forgit_revert_preview_git_opts "$FORGIT_REVERT_PREVIEW_GIT_OPTS"
     echo "$1" |
     cut -f2- |
     _forgit_extract_sha |
-    xargs -I% git show --color=always % |
+    xargs -I% git show --color=always "${_forgit_revert_preview_git_opts[@]}" % |
     _forgit_pager show
 }
 
@@ -858,7 +882,7 @@ _forgit_revert_commit() {
     graph=()
     [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
 
-    # in this function, we do something interesting to maintain proper ordering as it's assumed 
+    # in this function, we do something interesting to maintain proper ordering as it's assumed
     # you generally want to revert newest->oldest when you multiselect
     # The instances of "cut", "nl" and "sort" all serve this purpose
     # Please see https://github.com/wfxr/forgit/issues/253 for more details
@@ -871,7 +895,7 @@ _forgit_revert_commit() {
         _forgit_emojify |
         nl |
         FZF_DEFAULT_OPTS="$opts" fzf |
-        sort -n -k 1 | 
+        sort -n -k 1 |
         cut -f2- |
         sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/')
 
