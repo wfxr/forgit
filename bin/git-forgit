@@ -215,6 +215,31 @@ _forgit_log() {
     return $fzf_exit_code
 }
 
+# git reflog viewer
+_forgit_reflog() {
+    _forgit_inside_work_tree || return 1
+    _forgit_contains_non_flags "$@" && { git reflog "$@"; return $?; }
+    local opts reflog_format
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"enter:execute($FORGIT log_enter {})\"
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
+        --preview=\"$FORGIT log_preview {}\"
+        $FORGIT_REFLOG_FZF_OPTS
+    "
+    reflog_format=${FORGIT_GRL_FORMAT:-$_forgit_log_format}
+    _forgit_reflog_git_opts=()
+    _forgit_parse_array _forgit_reflog_git_opts "$FORGIT_REFLOG_GIT_OPTS"
+    git reflog show --color=always --format="$reflog_format" "${_forgit_reflog_git_opts[@]}" "$@" |
+        _forgit_emojify |
+        FZF_DEFAULT_OPTS="$opts" fzf
+    fzf_exit_code=$?
+    # exit successfully on 130 (ctrl-c/esc)
+    [[ $fzf_exit_code == 130 ]] && return 0
+    return $fzf_exit_code
+}
+
 _forgit_get_files_from_diff_line() {
     # Construct a null-terminated list of the filenames
     # The input looks like one of these lines:
@@ -992,6 +1017,7 @@ public_commands=(
     "fixup"
     "ignore"
     "log"
+    "reflog"
     "rebase"
     "reset_head"
     "revert_commit"
