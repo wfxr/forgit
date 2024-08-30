@@ -35,6 +35,7 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_add; or string collect "ga") git-forgit add
     abbr -a -- (string collect $forgit_reset_head; or string collect "grh") git-forgit reset_head
     abbr -a -- (string collect $forgit_log; or string collect "glo") git-forgit log
+    abbr -a -- (string collect $forgit_reflog; or string collect "grl") git-forgit reflog
     abbr -a -- (string collect $forgit_diff; or string collect "gd") git-forgit diff
     abbr -a -- (string collect $forgit_ignore; or string collect "gi") git-forgit ignore
     abbr -a -- (string collect $forgit_checkout_file; or string collect "gcf") git-forgit checkout_file
