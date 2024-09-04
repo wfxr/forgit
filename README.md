@@ -133,6 +133,8 @@ Install `forgit` in just one click.
 
 - **Interactive `git rebase -i` selector** (`grb`)
 
+- **Interactive `git reflog` viewer** (`grl`)
+
 - **Interactive `git blame` selector** (`gbl`)
 
 - **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
@@ -176,6 +178,7 @@ You can change the default aliases by defining these variables below.
 
 ``` bash
 forgit_log=glo
+forgit_reflog=grl
 forgit_diff=gd
 forgit_add=ga
 forgit_reset_head=grh
@@ -235,6 +238,7 @@ These are passed to the according `git` calls.
 | -------- | --------------------------------------------------------------------------- |
 | `ga`     | `FORGIT_ADD_GIT_OPTS`                                                       |
 | `glo`    | `FORGIT_LOG_GIT_OPTS`                                                       |
+| `grl`    | `FORGIT_REFLOG_GIT_OPTS`                                                    |
 | `gd`     | `FORGIT_DIFF_GIT_OPTS`                                                      |
 | `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS`                                                |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS`                                             |
@@ -287,6 +291,7 @@ Customizing fzf options for each command individually is also supported:
 |----------|-----------------------------------|
 | `ga`     | `FORGIT_ADD_FZF_OPTS`             |
 | `glo`    | `FORGIT_LOG_FZF_OPTS`             |
+| `grl`    | `FORGIT_REFLOG_FZF_OPTS`          |
 | `gi`     | `FORGIT_IGNORE_FZF_OPTS`          |
 | `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
 | `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |

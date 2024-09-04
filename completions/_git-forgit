@@ -35,6 +35,12 @@ _git-staged() {
 	_alternative "files:filename:($(git diff --name-only --staged))"
 }
 
+_git-forgit-reflog() {
+	declare -a cmds
+	cmds=('expire:prune old reflog entries' 'delete:delete entries from reflog' 'show:show log of ref' 'exists:check whether a ref has a reflog') 
+	_alternative 'cmds:: _describe -t cmds cmd cmds' 'refs:: __git_references'
+}
+
 _git-forgit() {
 	local subcommand cmd
 	subcommand="${words[1]}"
@@ -65,6 +71,7 @@ _git-forgit() {
 			'fixup:git fixup'
 			'ignore:git ignore generator'
 			'log:git commit viewer'
+			'reflog:git reflog viewer'
 			'rebase:git rebase'
 			'reset_head:git reset HEAD (unstage) selector'
 			'revert_commit:git revert commit selector'
@@ -85,6 +92,7 @@ _git-forgit() {
 	diff) _git-forgit-diff ;;
 	fixup) __git_branch_names ;;
 	log) _git-log ;;
+	reflog) _git-forgit-reflog ;;
 	rebase) _git-rebase ;;
 	reset_head) _git-staged ;;
 	revert_commit) __git_recent_commits ;;
@@ -109,6 +117,7 @@ compdef _git-clean forgit::clean
 compdef _git-forgit-diff forgit::diff
 compdef __git_branch_names forgit::fixup
 compdef _git-log forgit::log
+compdef _git-reflog forgit::reflog
 compdef _git-rebase forgit::rebase
 compdef _git-staged forgit::reset::head
 compdef __git_recent_commits forgit::revert::commit

@@ -71,6 +71,7 @@ _git_forgit()
 		fixup
 		ignore
 		log
+		reflog
 		rebase
 		reset_head
 		revert_commit
@@ -96,6 +97,7 @@ _git_forgit()
 				diff) _git_diff ;;
 				fixup) _git_branch ;;
 				log) _git_log ;;
+				reflog) _git_reflog ;;
 				rebase) _git_rebase ;;
 				reset_head) _git_reset ;;
 				revert_commit) _git_revert ;;
@@ -129,6 +131,7 @@ then
 	__git_complete forgit::diff _git_diff
 	__git_complete forgit::fixup _git_branch
 	__git_complete forgit::log _git_log
+	__git_complete forgit::reflog _git_reflog
 	__git_complete forgit::rebase _git_rebase
 	__git_complete forgit::reset::head _git_reset
 	__git_complete forgit::revert::commit _git_revert
@@ -147,6 +150,7 @@ then
 		__git_complete "${forgit_diff}" _git_diff
 		__git_complete "${forgit_fixup}" _git_branch
 		__git_complete "${forgit_log}" _git_log
+		__git_complete "${forgit_reflog}" _git_reflog
 		__git_complete "${forgit_rebase}" _git_rebase
 		__git_complete "${forgit_reset_head}" _git_reset
 		__git_complete "${forgit_revert_commit}" _git_revert

@@ -45,6 +45,10 @@ forgit::log() {
     "$FORGIT" log "$@"
 }
 
+forgit::reflog() {
+    "$FORGIT" reflog "$@"
+}
+
 forgit::diff() {
     "$FORGIT" diff "$@"
 }
@@ -140,6 +144,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     export forgit_add="${forgit_add:-ga}"
     export forgit_reset_head="${forgit_reset_head:-grh}"
     export forgit_log="${forgit_log:-glo}"
+    export forgit_reflog="${forgit_reflog:-grl}"
     export forgit_diff="${forgit_diff:-gd}"
     export forgit_ignore="${forgit_ignore:-gi}"
     export forgit_checkout_file="${forgit_checkout_file:-gcf}"
@@ -159,6 +164,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_add}"='forgit::add'
     alias "${forgit_reset_head}"='forgit::reset::head'
     alias "${forgit_log}"='forgit::log'
+    alias "${forgit_reflog}"='forgit::reflog'
     alias "${forgit_diff}"='forgit::diff'
     alias "${forgit_ignore}"='forgit::ignore'
     alias "${forgit_checkout_file}"='forgit::checkout::file'
