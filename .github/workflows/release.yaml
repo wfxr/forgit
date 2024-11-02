@@ -20,10 +20,13 @@ jobs:
         run: tar -czf forgit-${{github.ref_name}}.tar.gz --exclude LICENSE --exclude README.md *
 
       - name: Generate Changelog
+        id: changelog
         run: .github/scripts/changelog.sh > CHANGELOG.md
+        continue-on-error: true
 
       - name: Release
         uses: softprops/action-gh-release@v2
+        if: steps.changelog.outcome == 'success'
         with:
           body_path: CHANGELOG.md
           files: forgit-${{github.ref_name}}.tar.gz

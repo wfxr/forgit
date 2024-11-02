@@ -1,5 +1,7 @@
 #!/bin/bash
 
+release_has_public_changes=false
+
 url=$(git remote get-url origin | sed -r 's/(.*)\.git/\1/')
 
 previous_tag=$(git describe --tags --abbrev=0 HEAD~)
@@ -23,5 +25,12 @@ do
             # Escape markdown formatting symbols _ * `
             echo "  $line" | sed 's/_/\\_/g' | sed 's/`/\\`/g' | sed 's/\*/\\\*/g'
         done
+        release_has_public_changes=true
     fi
 done
+
+if ! $release_has_public_changes
+then
+    echo "No public changes since $previous_tag." >&2
+    exit 1
+fi
