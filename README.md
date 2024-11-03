@@ -176,6 +176,14 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 - **Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector** (`grw`)
 
+- **Interactive `git worktree list` selector** (`gwj`)
+
+- **Interactive `git worktree lock <worktree>` selector** (`gwl`)
+
+- **Interactive `git worktree remove <worktree>` selector** (`gwr`)
+
+- **Interactive `git worktree unlock <worktree>` selector** (`gwu`)
+
 # ⌨ Keybindings
 
 | Key                                           | Action                                      |
@@ -237,6 +245,10 @@ forgit_blame=gbl
 forgit_fixup=gfu
 forgit_squash=gsq
 forgit_reword=grw
+forgit_worktree_jump=gwj
+forgit_worktree_lock=gwl
+forgit_worktree_remove=gwr
+forgit_worktree_unlock=gwu
 ```
 
 ## git integration
@@ -298,6 +310,10 @@ These are passed to the according `git` calls.
 | `gsq`    | `FORGIT_SQUASH_GIT_OPTS`                                                    |
 | `grw`    | `FORGIT_REWORD_GIT_OPTS`                                                    |
 | `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
+| `gwj`    | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
+| `gwl`    | `FORGIT_WORKTREE_LOCK_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`         |
+| `gwr`    | `FORGIT_WORKTREE_REMOVE_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`       |
+| `gwu`    | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
 
 ## pagers
 
@@ -357,6 +373,10 @@ Customizing fzf options for each command individually is also supported:
 | `gsq`    | `FORGIT_SQUASH_FZF_OPTS`          |
 | `grw`    | `FORGIT_REWORD_FZF_OPTS`          |
 | `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
+| `gwj`    | `FORGIT_WORKTREE_JUMP_FZF_OPTS`   |
+| `gwl`    | `FORGIT_WORKTREE_LOCK_FZF_OPTS`   |
+| `gwr`    | `FORGIT_WORKTREE_REMOVE_FZF_OPTS` |
+| `gwu`    | `FORGIT_WORKTREE_UNLOCK_FZF_OPTS` |
 
 Complete loading order of fzf options is:
 
