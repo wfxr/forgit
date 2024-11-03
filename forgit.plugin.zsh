@@ -137,6 +137,22 @@ forgit::ignore::clean() {
     "$FORGIT" ignore_clean "$@"
 }
 
+forgit::worktree::jump() {
+    cd "$("$FORGIT" worktree_jump "$@")" || exit
+}
+
+forgit::worktree::lock() {
+    "$FORGIT" worktree_lock "$@"
+}
+
+forgit::worktree::remove() {
+    "$FORGIT" worktree_remove "$@"
+}
+
+forgit::worktree::unlock() {
+    "$FORGIT" worktree_unlock "$@"
+}
+
 # register aliases
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -160,6 +176,10 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     export forgit_rebase="${forgit_rebase:-grb}"
     export forgit_fixup="${forgit_fixup:-gfu}"
     export forgit_blame="${forgit_blame:-gbl}"
+    export forgit_worktree_jump="${forgit_worktree_jump:-gwj}"
+    export forgit_worktree_lock="${forgit_worktree_lock:-gwl}"
+    export forgit_worktree_remove="${forgit_worktree_remove:-gwr}"
+    export forgit_worktree_unlock="${forgit_worktree_unlock:-gwu}"
 
     alias "${forgit_add}"='forgit::add'
     alias "${forgit_reset_head}"='forgit::reset::head'
@@ -180,5 +200,9 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_rebase}"='forgit::rebase'
     alias "${forgit_fixup}"='forgit::fixup'
     alias "${forgit_blame}"='forgit::blame'
+    alias "${forgit_worktree_jump}"='forgit::worktree::jump'
+    alias "${forgit_worktree_lock}"='forgit::worktree::lock'
+    alias "${forgit_worktree_remove}"='forgit::worktree::remove'
+    alias "${forgit_worktree_unlock}"='forgit::worktree::unlock'
 
 fi
