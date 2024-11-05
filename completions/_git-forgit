@@ -7,15 +7,15 @@
 # tab completions for forgit.
 
 _git-branches() {
-	_alternative "branches:branchname:($(git branch -a --format '%(refname:short)'))"
+    _alternative "branches:branchname:($(git branch -a --format '%(refname:short)'))"
 }
 
 _git-checkout-file() {
-	_alternative "files:filename:($(git ls-files --modified))"
+    _alternative "files:filename:($(git ls-files --modified))"
 }
 
 _git-stash-show() {
-	_alternative "files:filename:($(git stash list | sed -n -e 's/:.*//p'))"
+    _alternative "files:filename:($(git stash list | sed -n -e 's/:.*//p'))"
 }
 
 # The completions for git already define a _git-diff completion function, but
@@ -24,80 +24,80 @@ _git-stash-show() {
 # $CURRENT), so we use a simplified version here which always provides the same
 # results independent of the context.
 _git-forgit-diff() {
-	_alternative \
-		'commit-ranges::__git_commit_ranges' \
-		'blobs-and-trees-in-treeish::__git_blobs_and_trees_in_treeish' \
-		'files::__git_changed-in-working-tree_files' \
-		'blobs::__git_blobs '
+    _alternative \
+        'commit-ranges::__git_commit_ranges' \
+        'blobs-and-trees-in-treeish::__git_blobs_and_trees_in_treeish' \
+        'files::__git_changed-in-working-tree_files' \
+        'blobs::__git_blobs '
 }
 
 _git-staged() {
-	_alternative "files:filename:($(git diff --name-only --staged))"
+    _alternative "files:filename:($(git diff --name-only --staged))"
 }
 
 _git-forgit-reflog() {
-	declare -a cmds
-	cmds=('expire:prune old reflog entries' 'delete:delete entries from reflog' 'show:show log of ref' 'exists:check whether a ref has a reflog') 
-	_alternative 'cmds:: _describe -t cmds cmd cmds' 'refs:: __git_references'
+    declare -a cmds
+    cmds=('expire:prune old reflog entries' 'delete:delete entries from reflog' 'show:show log of ref' 'exists:check whether a ref has a reflog')
+    _alternative 'cmds:: _describe -t cmds cmd cmds' 'refs:: __git_references'
 }
 
 _git-forgit() {
-	local subcommand cmd
-	subcommand="${words[1]}"
-	if [[ "$subcommand" != "forgit"* ]]; then
-		# Forgit is obviously called via a git alias. Get the original
-		# aliased subcommand and proceed as if it was the previous word.
-		cmd=$(git config --get "alias.$subcommand" | cut -d ' ' -f 2)
-	else
-		# The last word is the relevant command
-		cmd=${words[(( ${#words} - 1 ))]}
-	fi
-	
-	case ${cmd} in
-	forgit)
-		local -a subcommands
-		subcommands=(
-			'add:git add selector'
-			'blame:git blame viewer'
-			'branch_delete:git branch deletion selector'
-			'checkout_branch:git checkout branch selector'
-			'checkout_commit:git checkout commit selector'
-			'checkout_file:git checkout-file selector'
-			'checkout_tag:git checkout tag selector'
-			'cherry_pick:git cherry-picking'
-			'cherry_pick_from_branch:git cherry-picking with interactive branch selection'
-			'clean:git clean selector'
-			'diff:git diff viewer'
-			'fixup:git fixup'
-			'ignore:git ignore generator'
-			'log:git commit viewer'
-			'reflog:git reflog viewer'
-			'rebase:git rebase'
-			'reset_head:git reset HEAD (unstage) selector'
-			'revert_commit:git revert commit selector'
-			'stash_show:git stash viewer'
-			'stash_push:git stash push selector'
-		)
-		_describe -t commands 'git forgit' subcommands
-		;;
-	add) _git-add ;;
-	branch_delete) _git-branches ;;
-	checkout_branch) _git-branches ;;
-	checkout_commit) __git_recent_commits ;;
-	checkout_file) _git-checkout-file ;;
-	checkout_tag) __git_tags ;;
-	cherry_pick) _git-cherry-pick ;;
-	cherry_pick_from_branch) _git-branches ;;
-	clean) _git-clean ;;
-	diff) _git-forgit-diff ;;
-	fixup) __git_branch_names ;;
-	log) _git-log ;;
-	reflog) _git-forgit-reflog ;;
-	rebase) _git-rebase ;;
-	reset_head) _git-staged ;;
-	revert_commit) __git_recent_commits ;;
-	stash_show) _git-stash-show ;;
-	esac
+    local subcommand cmd
+    subcommand="${words[1]}"
+    if [[ "$subcommand" != "forgit"* ]]; then
+        # Forgit is obviously called via a git alias. Get the original
+        # aliased subcommand and proceed as if it was the previous word.
+        cmd=$(git config --get "alias.$subcommand" | cut -d ' ' -f 2)
+    else
+        # The last word is the relevant command
+        cmd=${words[(( ${#words} - 1 ))]}
+    fi
+
+    case ${cmd} in
+    forgit)
+        local -a subcommands
+        subcommands=(
+            'add:git add selector'
+            'blame:git blame viewer'
+            'branch_delete:git branch deletion selector'
+            'checkout_branch:git checkout branch selector'
+            'checkout_commit:git checkout commit selector'
+            'checkout_file:git checkout-file selector'
+            'checkout_tag:git checkout tag selector'
+            'cherry_pick:git cherry-picking'
+            'cherry_pick_from_branch:git cherry-picking with interactive branch selection'
+            'clean:git clean selector'
+            'diff:git diff viewer'
+            'fixup:git fixup'
+            'ignore:git ignore generator'
+            'log:git commit viewer'
+            'reflog:git reflog viewer'
+            'rebase:git rebase'
+            'reset_head:git reset HEAD (unstage) selector'
+            'revert_commit:git revert commit selector'
+            'stash_show:git stash viewer'
+            'stash_push:git stash push selector'
+        )
+        _describe -t commands 'git forgit' subcommands
+        ;;
+    add) _git-add ;;
+    branch_delete) _git-branches ;;
+    checkout_branch) _git-branches ;;
+    checkout_commit) __git_recent_commits ;;
+    checkout_file) _git-checkout-file ;;
+    checkout_tag) __git_tags ;;
+    cherry_pick) _git-cherry-pick ;;
+    cherry_pick_from_branch) _git-branches ;;
+    clean) _git-clean ;;
+    diff) _git-forgit-diff ;;
+    fixup) __git_branch_names ;;
+    log) _git-log ;;
+    reflog) _git-forgit-reflog ;;
+    rebase) _git-rebase ;;
+    reset_head) _git-staged ;;
+    revert_commit) __git_recent_commits ;;
+    stash_show) _git-stash-show ;;
+    esac
 }
 
 # We're reusing existing completion functions, so load those first
@@ -124,7 +124,7 @@ compdef __git_recent_commits forgit::revert::commit
 compdef _git-stash-show forgit::stash::show
 
 # this is the case of calling the command and pressing tab
-# the very first time of a shell session, we have to manually 
+# the very first time of a shell session, we have to manually
 # call the dispatch function
 if [[ $funcstack[1] == "_git-forgit" ]]; then
   _git-forgit "$@"
