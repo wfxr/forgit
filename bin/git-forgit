@@ -1074,7 +1074,6 @@ public_commands=(
 
 private_commands=(
     "add_preview"
-    "attributes_preview"
     "blame_preview"
     "branch_preview"
     "checkout_commit_preview"
