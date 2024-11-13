@@ -51,7 +51,7 @@ $FORGIT_FZF_DEFAULT_OPTS
 
 _forgit_warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 _forgit_info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
-_forgit_inside_git_dir() { git rev-parse --is_inside-git-dir >/dev/null; }
+_forgit_inside_git_dir() { git rev-parse --is-inside-git-dir >/dev/null; }
 _forgit_inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
 _forgit_reverse_lines() { tac 2> /dev/null || tail -r; }
@@ -1179,7 +1179,7 @@ _forgit_paths_list() {
 
 _forgit_worktree_preview() {
     local sha
-    # trailing space in  grep to avoid matching worktrees with a common path
+    # trailing space in grep to avoid matching worktrees with a common path
     sha=$(git worktree list | grep "$1 " | awk '{print $2}')
     # bare git-dir has no history
     [[ "$sha" == "(bare)" ]] && return
