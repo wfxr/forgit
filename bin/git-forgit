@@ -1196,7 +1196,7 @@ _forgit_worktree_preview() {
     git log "$sha" "${_forgit_log_preview_options[@]}" --
 }
 
-_forgit_worktree_jump() {
+_forgit_worktree_select() {
     _forgit_inside_work_tree || _forgit_inside_git_dir || return 1
     local worktree_list count tree opts
     worktree_list=$(git worktree list | grep -vE "prunable$" | awk '{print $1}' | _forgit_filter_existing_paths)
@@ -1208,7 +1208,7 @@ _forgit_worktree_jump() {
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --preview=\"$FORGIT worktree_preview {1}\"
-        $FORGIT_WORKTREE_JUMP_FZF_OPTS
+        $FORGIT_WORKTREE_SELECT_FZF_OPTS
     "
 
     tree=$(echo "$worktree_list" | FZF_DEFAULT_OPTS="$opts" fzf)
@@ -1324,7 +1324,7 @@ public_commands=(
     "show"
     "stash_show"
     "stash_push"
-    "worktree_jump"
+    "worktree_select"
     "worktree_lock"
     "worktree_remove"
     "worktree_unlock"

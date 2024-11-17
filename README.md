@@ -245,7 +245,7 @@ forgit_blame=gbl
 forgit_fixup=gfu
 forgit_squash=gsq
 forgit_reword=grw
-forgit_worktree_jump=gwj
+forgit_worktree_select=gws
 forgit_worktree_lock=gwl
 forgit_worktree_remove=gwr
 forgit_worktree_unlock=gwu
@@ -373,7 +373,7 @@ Customizing fzf options for each command individually is also supported:
 | `gsq`    | `FORGIT_SQUASH_FZF_OPTS`          |
 | `grw`    | `FORGIT_REWORD_FZF_OPTS`          |
 | `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
-| `gwj`    | `FORGIT_WORKTREE_JUMP_FZF_OPTS`   |
+| `gws`    | `FORGIT_WORKTREE_SELECT_FZF_OPTS`   |
 | `gwl`    | `FORGIT_WORKTREE_LOCK_FZF_OPTS`   |
 | `gwr`    | `FORGIT_WORKTREE_REMOVE_FZF_OPTS` |
 | `gwu`    | `FORGIT_WORKTREE_UNLOCK_FZF_OPTS` |
