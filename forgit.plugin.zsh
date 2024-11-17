@@ -137,8 +137,12 @@ forgit::ignore::clean() {
     "$FORGIT" ignore_clean "$@"
 }
 
+forgit::worktree::select() {
+    "$FORGIT" worktree_select "$@"
+}
+
 forgit::worktree::jump() {
-    cd "$("$FORGIT" worktree_jump "$@")" || exit
+    cd "$(forgit::worktree::select "$@")" || exit
 }
 
 forgit::worktree::lock() {
@@ -176,6 +180,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     export forgit_rebase="${forgit_rebase:-grb}"
     export forgit_fixup="${forgit_fixup:-gfu}"
     export forgit_blame="${forgit_blame:-gbl}"
+    export forgit_worktree_select="${forgit_worktree_select:-gws}"
     export forgit_worktree_jump="${forgit_worktree_jump:-gwj}"
     export forgit_worktree_lock="${forgit_worktree_lock:-gwl}"
     export forgit_worktree_remove="${forgit_worktree_remove:-gwr}"
@@ -200,6 +205,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_rebase}"='forgit::rebase'
     alias "${forgit_fixup}"='forgit::fixup'
     alias "${forgit_blame}"='forgit::blame'
+    alias "${forgit_worktree_select}"='forgit::worktree::select'
     alias "${forgit_worktree_jump}"='forgit::worktree::jump'
     alias "${forgit_worktree_lock}"='forgit::worktree::lock'
     alias "${forgit_worktree_remove}"='forgit::worktree::remove'
