@@ -4,7 +4,7 @@
 
 ## Check list
 
-- [ ] I have read through the [README](https://github.com/wfxr/forgit/blob/master/README.md)
+- [ ] I have read through the [README](https://github.com/wfxr/forgit/blob/main/README.md)
 - [ ] I have the latest version of forgit
 - [ ] I have searched through the existing issues
 

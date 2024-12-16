@@ -81,7 +81,7 @@ Then add the following to your shell's config file:
 
 ## Arch User Repository
 
-[AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit, are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or [forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the master branch of this repository.
+[AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit, are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or [forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the default branch of this repository.
 
 # 📝 Features
 
@@ -346,9 +346,9 @@ export FORGIT_LOG_FZF_OPTS='
 
 ## Bash
 
-- Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) in
+- Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) in
   `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
-- Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/master/completions/git-forgit.bash) explicitly to have
+- Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) explicitly to have
   bash tab completion for forgit shell functions and aliases (e.g., `gcb <tab>` completes branches).
 
 ## Zsh
@@ -364,7 +364,7 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 # 💡 Tips
 
-- Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco master`).
+- Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco main`).
 - `gd` supports specifying revision(e.g., `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` with arguments to get the wanted `.gitignore` contents directly(e.g., `gi cmake c++`).
 

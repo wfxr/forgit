@@ -8,7 +8,7 @@ git log --color=always --format="%C(auto)%h %s%d" | head
 
 if [[ ${head_tag} =~ [\d{2}\.\d{2}\.\d+] ]]
 then
-    echo "Current master already has version tag ${head_tag}"
+    echo "Version tag ${head_tag} already exists."
 else
     git config --local user.email "github-actions@users.noreply.github.com"
     git config --local user.name "github-actions"
