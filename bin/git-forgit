@@ -1267,12 +1267,30 @@ _forgit_git_worktree_remove() {
 
 _forgit_worktree_remove() {
     _forgit_inside_work_tree || _forgit_inside_git_dir || return 1
-    if [[ $# -ne 0 ]]; then
-        git worktree remove "$@"
+    local worktree_list tree opts force_flags
+
+    force_flags=()
+
+    while (("$#")); do
+        case "$1" in
+        -f | --force)
+            force_flags+=("$1")
+            shift
+            ;;
+        -*) shift ;;
+        *)
+            tree="$1"
+            shift
+            ;;
+        esac
+    done
+
+    if [[ -n "$tree" ]]; then
+        _forgit_git_worktree_remove "${force_flags[@]}" "$tree"
         worktree_remove_status=$?
         return $worktree_remove_status
     fi
-    local worktree_list tree opts
+
     worktree_list=$(git worktree list | grep -v "(bare)")
 
     count=$(echo "$worktree_list" | wc -l)
@@ -1287,7 +1305,7 @@ _forgit_worktree_remove() {
 
     tree=$(echo "$worktree_list" | awk '{print $1}' | FZF_DEFAULT_OPTS="$opts" fzf)
     [[ -z "$tree" ]] && return 1
-    _forgit_git_worktree_remove "$tree"
+    _forgit_git_worktree_remove "${force_flags[@]}" "$tree"
 }
 
 _forgit_worktree_unlock() {
