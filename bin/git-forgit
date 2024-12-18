@@ -1224,12 +1224,23 @@ _forgit_git_worktree_lock() {
 
 _forgit_worktree_lock() {
     _forgit_inside_work_tree || _forgit_inside_git_dir || return 1
+
+    local tree opts reason
     if [[ $# -ne 0 ]]; then
-        git worktree lock "$@"
-        worktree_lock_status=$?
-        return $worktree_lock_status
+        if [[ "$1" == "--reason" ]]; then
+            if [[ -z "$2" ]]; then
+                _forgit_warn "Option \`--reason' requires a value"
+                return 1
+            fi
+            reason="$2"
+            shift 2
+        fi
+
+        if [[ $# -eq 0 ]] || _forgit_contains_non_flags "$@"; then
+            git worktree lock "$@" --reason "$reason"
+            return $?
+        fi
     fi
-    local tree opts
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1240,7 +1251,12 @@ _forgit_worktree_lock() {
 
     tree=$(git worktree list | grep -vE "\(bare\)|locked" | awk '{print $1}' | FZF_DEFAULT_OPTS="$opts" fzf)
     [[ -z "$tree" ]] && return 1
-    _forgit_git_worktree_lock "$tree"
+
+    if [[ -z "$reason" ]]; then
+        _forgit_git_worktree_lock "$tree"
+    else
+        _forgit_git_worktree_lock "$tree" --reason "$reason"
+    fi
 }
 
 _forgit_git_worktree_remove() {
