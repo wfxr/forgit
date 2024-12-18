@@ -131,6 +131,14 @@ Then add the following to your shell's config file:
 
 - **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
 
+- **Interactive `git worktree list` selector** (`gwj`)
+
+- **Interactive `git worktree lock <worktree>` selector** (`gwl`)
+
+- **Interactive `git worktree remove <worktree>` selector** (`gwr`)
+
+- **Interactive `git worktree unlock <worktree>` selector** (`gwu`)
+
 # ⌨ Keybindings
 
 | Key                                           | Action                                      |
@@ -188,6 +196,10 @@ forgit_cherry_pick=gcp
 forgit_rebase=grb
 forgit_blame=gbl
 forgit_fixup=gfu
+forgit_worktree_select=gws
+forgit_worktree_lock=gwl
+forgit_worktree_remove=gwr
+forgit_worktree_unlock=gwu
 ```
 
 ## git integration
@@ -246,6 +258,10 @@ These are passed to the according `git` calls.
 | `gbl`    | `FORGIT_BLAME_GIT_OPTS`                                                     |
 | `gfu`    | `FORGIT_FIXUP_GIT_OPTS`                                                     |
 | `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
+| `gwj`    | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
+| `gwl`    | `FORGIT_WORKTREE_LOCK_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`         |
+| `gwr`    | `FORGIT_WORKTREE_REMOVE_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`       |
+| `gwu`    | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
 
 ## pagers
 
@@ -300,6 +316,10 @@ Customizing fzf options for each command individually is also supported:
 | `gbl`    | `FORGIT_BLAME_FZF_OPTS`           |
 | `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
 | `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
+| `gws`    | `FORGIT_WORKTREE_SELECT_FZF_OPTS`   |
+| `gwl`    | `FORGIT_WORKTREE_LOCK_FZF_OPTS`   |
+| `gwr`    | `FORGIT_WORKTREE_REMOVE_FZF_OPTS` |
+| `gwu`    | `FORGIT_WORKTREE_UNLOCK_FZF_OPTS` |
 
 Complete loading order of fzf options is:
 

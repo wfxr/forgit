@@ -40,6 +40,7 @@ $FORGIT_FZF_DEFAULT_OPTS
 
 _forgit_warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 _forgit_info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
+_forgit_inside_git_dir() { git rev-parse --is-inside-git-dir >/dev/null; }
 _forgit_inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
 # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
 _forgit_reverse_lines() { tac 2> /dev/null || tail -r; }
@@ -1002,6 +1003,162 @@ _forgit_ignore_clean() {
     [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
 }
 
+_forgit_filter_existing_paths() {
+    while read -r path; do
+        [[ -d "$path" ]] && echo "$path"
+    done
+}
+
+_forgit_worktree_preview() {
+    local sha
+    # trailing space in grep to avoid matching worktrees with a common path
+    sha=$(git worktree list | grep "$1 " | awk '{print $2}')
+    if [[ "$sha" == "(bare)" ]]; then
+        printf "%b(bare)%b %s\n" '\e[0;33m' '\e[0m' 'No history for git dir'
+        return
+    fi
+    # the trailing '--' ensures that this works for branches that have a name
+    # that is identical to a file
+    git log "$sha" "${_forgit_log_preview_options[@]}" --
+}
+
+_forgit_worktree_select() {
+    _forgit_inside_work_tree || _forgit_inside_git_dir || return 1
+    local worktree_list count tree opts
+    worktree_list=$(git worktree list | grep -vE "prunable$" | awk '{print $1}' | _forgit_filter_existing_paths)
+
+    count=$(echo "$worktree_list" | wc -l)
+    [[ $count -eq 1 ]] && return 1
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --preview=\"$FORGIT worktree_preview {1}\"
+        $FORGIT_WORKTREE_SELECT_FZF_OPTS
+    "
+
+    tree=$(echo "$worktree_list" | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ -z "$tree" ]] && return 1
+    echo "$tree"
+}
+
+_forgit_git_worktree_lock() {
+    _forgit_worktree_lock_git_opts=()
+    _forgit_parse_array _forgit_worktree_lock_git_opts "$FORGIT_WORKTREE_LOCK_GIT_OPTS"
+    git worktree lock "${_forgit_worktree_lock_git_opts[@]}" "$@"
+}
+
+_forgit_worktree_lock() {
+    _forgit_inside_work_tree || _forgit_inside_git_dir || return 1
+
+    local tree opts reason
+    if [[ $# -ne 0 ]]; then
+        if [[ "$1" == "--reason" ]]; then
+            if [[ -z "$2" ]]; then
+                _forgit_warn "Option \`--reason' requires a value"
+                return 1
+            fi
+            reason="$2"
+            shift 2
+        fi
+
+        if [[ $# -eq 0 ]] || _forgit_contains_non_flags "$@"; then
+            git worktree lock "$@" --reason "$reason"
+            return $?
+        fi
+    fi
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --preview=\"$FORGIT worktree_preview {1}\"
+        $FORGIT_WORKTREE_LOCK_FZF_OPTS
+    "
+
+    tree=$(git worktree list | grep -vE "\(bare\)|locked" | awk '{print $1}' | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ -z "$tree" ]] && return 1
+
+    if [[ -z "$reason" ]]; then
+        _forgit_git_worktree_lock "$tree"
+    else
+        _forgit_git_worktree_lock "$tree" --reason "$reason"
+    fi
+}
+
+_forgit_git_worktree_remove() {
+    _forgit_worktree_remove_git_opts=()
+    _forgit_parse_array _forgit_worktree_remove_git_opts "$FORGIT_WORKTREE_REMOVE_GIT_OPTS"
+    git worktree remove "${_forgit_worktree_remove_git_opts[@]}" "$@"
+}
+
+_forgit_worktree_remove() {
+    _forgit_inside_work_tree || _forgit_inside_git_dir || return 1
+    local worktree_list tree opts force_flags
+
+    force_flags=()
+
+    while (("$#")); do
+        case "$1" in
+        -f | --force)
+            force_flags+=("$1")
+            shift
+            ;;
+        -*) shift ;;
+        *)
+            tree="$1"
+            shift
+            ;;
+        esac
+    done
+
+    if [[ -n "$tree" ]]; then
+        _forgit_git_worktree_remove "${force_flags[@]}" "$tree"
+        worktree_remove_status=$?
+        return $worktree_remove_status
+    fi
+
+    worktree_list=$(git worktree list | grep -v "(bare)")
+
+    count=$(echo "$worktree_list" | wc -l)
+    [[ $count -eq 1 ]] && return 1
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --preview=\"$FORGIT worktree_preview {1}\"
+        $FORGIT_WORKTREE_REMOVE_FZF_OPTS
+    "
+
+    tree=$(echo "$worktree_list" | awk '{print $1}' | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ -z "$tree" ]] && return 1
+    _forgit_git_worktree_remove "${force_flags[@]}" "$tree"
+}
+
+_forgit_worktree_unlock() {
+    _forgit_inside_work_tree || _forgit_inside_git_dir || return 1
+    if [[ $# -ne 0 ]]; then
+        git worktree unlock "$@"
+        worktree_unlock_status=$?
+        return $worktree_unlock_status
+    fi
+    local worktree_list tree opts
+
+    worktree_list=$(git worktree list | grep -v "(bare)" | grep -E "locked$")
+    count=$(echo "$worktree_list" | wc -l)
+    [[ $count -eq 0 ]] && return 1
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --preview=\"$FORGIT worktree_preview {1}\"
+        $FORGIT_WORKTREE_UNLOCK_FZF_OPTS
+    "
+
+    tree=$(echo "$worktree_list" | awk '{print $1}' | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ -z "$tree" ]] && return 1
+    git worktree unlock "$tree"
+}
+
 public_commands=(
     "add"
     "blame"
@@ -1023,12 +1180,17 @@ public_commands=(
     "revert_commit"
     "stash_show"
     "stash_push"
+    "worktree_select"
+    "worktree_lock"
+    "worktree_remove"
+    "worktree_unlock"
 )
 
 private_commands=(
     "add_preview"
     "blame_preview"
     "branch_preview"
+    "worktree_preview"
     "checkout_commit_preview"
     "checkout_file_preview"
     "cherry_pick_from_branch_preview"
