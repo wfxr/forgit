@@ -323,7 +323,7 @@ _forgit_diff() {
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($FORGIT diff_enter {} $escaped_commits | $FORGIT pager enter)\"
         --preview=\"$FORGIT diff_view {} '$_forgit_preview_context' $escaped_commits\"
-        --bind=\"alt-e:execute-silent($FORGIT edit_diffed_file {})+refresh-preview\"
+        --bind=\"alt-e:execute($FORGIT edit_diffed_file {})+refresh-preview\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"${commits[*]} > \"
     "
@@ -382,7 +382,7 @@ _forgit_add() {
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
         --preview=\"$FORGIT add_preview {}\"
-        --bind=\"alt-e:execute-silent($FORGIT edit_add_file {})+refresh-preview\"
+        --bind=\"alt-e:execute($FORGIT edit_add_file {})+refresh-preview\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=()
