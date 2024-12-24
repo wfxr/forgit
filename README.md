@@ -176,7 +176,13 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 - **Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector** (`grw`)
 
-- **Interactive `git worktree list` selector** (`gwj`)
+- **Interactive `git commit --squash && git rebase -i --autosquash` selector** (`gsq`)
+
+- **Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector** (`grw`)
+
+- **Interactive `git worktree list` selector** (`gws`/`gwj`)
+
+  + `gwj` jumps to the worktree using `cd` and can only be used via the alias, no equivalent behavior using forgit as a git subcommand
 
 - **Interactive `git worktree lock <worktree>` selector** (`gwl`)
 
@@ -245,7 +251,7 @@ forgit_blame=gbl
 forgit_fixup=gfu
 forgit_squash=gsq
 forgit_reword=grw
-forgit_worktree_select=gws
+forgit_worktree_select=gws/gwj
 forgit_worktree_lock=gwl
 forgit_worktree_remove=gwr
 forgit_worktree_unlock=gwu
@@ -287,33 +293,33 @@ git cf
 If you want to customize `git`'s behavior within forgit there is a dedicated variable for each forgit command.
 These are passed to the according `git` calls.
 
-| Command  | Option                                                                      |
-| -------- | --------------------------------------------------------------------------- |
-| `ga`     | `FORGIT_ADD_GIT_OPTS`                                                       |
-| `glo`    | `FORGIT_LOG_GIT_OPTS`                                                       |
-| `grl`    | `FORGIT_REFLOG_GIT_OPTS`                                                    |
-| `gd`     | `FORGIT_DIFF_GIT_OPTS`                                                      |
-| `gso`     | `FORGIT_SHOW_GIT_OPTS`                                                      |
-| `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS`                                                |
-| `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS`                                             |
-| `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`, `FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` |
-| `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS`                                             |
-| `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS`                                              |
-| `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS`                                           |
-| `grc`    | `FORGIT_REVERT_COMMIT_GIT_OPTS`                                             |
-| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS`                                                |
-| `gsp`    | `FORGIT_STASH_PUSH_GIT_OPTS`                                                |
-| `gclean` | `FORGIT_CLEAN_GIT_OPTS`                                                     |
-| `grb`    | `FORGIT_REBASE_GIT_OPTS`                                                    |
-| `gbl`    | `FORGIT_BLAME_GIT_OPTS`                                                     |
-| `gfu`    | `FORGIT_FIXUP_GIT_OPTS`                                                     |
-| `gsq`    | `FORGIT_SQUASH_GIT_OPTS`                                                    |
-| `grw`    | `FORGIT_REWORD_GIT_OPTS`                                                    |
-| `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
-| `gwj`    | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
-| `gwl`    | `FORGIT_WORKTREE_LOCK_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`         |
-| `gwr`    | `FORGIT_WORKTREE_REMOVE_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`       |
-| `gwu`    | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
+| Command     | Option                                                                      |
+| ----------- | --------------------------------------------------------------------------- |
+| `ga`        | `FORGIT_ADD_GIT_OPTS`                                                       |
+| `glo`       | `FORGIT_LOG_GIT_OPTS`                                                       |
+| `grl`       | `FORGIT_REFLOG_GIT_OPTS`                                                    |
+| `gd`        | `FORGIT_DIFF_GIT_OPTS`                                                      |
+| `gso`       | `FORGIT_SHOW_GIT_OPTS`                                                      |
+| `grh`       | `FORGIT_RESET_HEAD_GIT_OPTS`                                                |
+| `gcf`       | `FORGIT_CHECKOUT_FILE_GIT_OPTS`                                             |
+| `gcb`       | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`, `FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` |
+| `gbd`       | `FORGIT_BRANCH_DELETE_GIT_OPTS`                                             |
+| `gct`       | `FORGIT_CHECKOUT_TAG_GIT_OPTS`                                              |
+| `gco`       | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS`                                           |
+| `grc`       | `FORGIT_REVERT_COMMIT_GIT_OPTS`                                             |
+| `gss`       | `FORGIT_STASH_SHOW_GIT_OPTS`                                                |
+| `gsp`       | `FORGIT_STASH_PUSH_GIT_OPTS`                                                |
+| `gclean`    | `FORGIT_CLEAN_GIT_OPTS`                                                     |
+| `grb`       | `FORGIT_REBASE_GIT_OPTS`                                                    |
+| `gbl`       | `FORGIT_BLAME_GIT_OPTS`                                                     |
+| `gfu`       | `FORGIT_FIXUP_GIT_OPTS`                                                     |
+| `gsq`       | `FORGIT_SQUASH_GIT_OPTS`                                                    |
+| `grw`       | `FORGIT_REWORD_GIT_OPTS`                                                    |
+| `gcp`       | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
+| `gws`/`gwj` | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
+| `gwl`       | `FORGIT_WORKTREE_LOCK_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`         |
+| `gwr`       | `FORGIT_WORKTREE_REMOVE_GIT_OPTS`, `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`       |
+| `gwu`       | `FORGIT_WORKTREE_PREVIEW_GIT_OPTS`                                          |
 
 ## pagers
 
@@ -348,35 +354,35 @@ export FORGIT_FZF_DEFAULT_OPTS="
 
 Customizing fzf options for each command individually is also supported:
 
-| Command  | Option                            |
-|----------|-----------------------------------|
-| `ga`     | `FORGIT_ADD_FZF_OPTS`             |
-| `glo`    | `FORGIT_LOG_FZF_OPTS`             |
-| `grl`    | `FORGIT_REFLOG_FZF_OPTS`          |
-| `gi`     | `FORGIT_IGNORE_FZF_OPTS`          |
-| `gat`    | `FORGIT_ATTRIBUTES_FZF_OPTS`      |
-| `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
-| `gso`    | `FORGIT_SHOW_FZF_OPTS`            |
-| `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
-| `gcf`    | `FORGIT_CHECKOUT_FILE_FZF_OPTS`   |
-| `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
-| `gbd`    | `FORGIT_BRANCH_DELETE_FZF_OPTS`   |
-| `gct`    | `FORGIT_CHECKOUT_TAG_FZF_OPTS`    |
-| `gco`    | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
-| `grc`    | `FORGIT_REVERT_COMMIT_FZF_OPTS`   |
-| `gss`    | `FORGIT_STASH_FZF_OPTS`           |
-| `gsp`    | `FORGIT_STASH_PUSH_FZF_OPTS`      |
-| `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
-| `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
-| `gbl`    | `FORGIT_BLAME_FZF_OPTS`           |
-| `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
-| `gsq`    | `FORGIT_SQUASH_FZF_OPTS`          |
-| `grw`    | `FORGIT_REWORD_FZF_OPTS`          |
-| `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
-| `gws`    | `FORGIT_WORKTREE_SELECT_FZF_OPTS`   |
-| `gwl`    | `FORGIT_WORKTREE_LOCK_FZF_OPTS`   |
-| `gwr`    | `FORGIT_WORKTREE_REMOVE_FZF_OPTS` |
-| `gwu`    | `FORGIT_WORKTREE_UNLOCK_FZF_OPTS` |
+| Command     | Option                            |
+|-------------|-----------------------------------|
+| `ga`        | `FORGIT_ADD_FZF_OPTS`             |
+| `glo`       | `FORGIT_LOG_FZF_OPTS`             |
+| `grl`       | `FORGIT_REFLOG_FZF_OPTS`          |
+| `gi`        | `FORGIT_IGNORE_FZF_OPTS`          |
+| `gat`       | `FORGIT_ATTRIBUTES_FZF_OPTS`      |
+| `gd`        | `FORGIT_DIFF_FZF_OPTS`            |
+| `gso`       | `FORGIT_SHOW_FZF_OPTS`            |
+| `grh`       | `FORGIT_RESET_HEAD_FZF_OPTS`      |
+| `gcf`       | `FORGIT_CHECKOUT_FILE_FZF_OPTS`   |
+| `gcb`       | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
+| `gbd`       | `FORGIT_BRANCH_DELETE_FZF_OPTS`   |
+| `gct`       | `FORGIT_CHECKOUT_TAG_FZF_OPTS`    |
+| `gco`       | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
+| `grc`       | `FORGIT_REVERT_COMMIT_FZF_OPTS`   |
+| `gss`       | `FORGIT_STASH_FZF_OPTS`           |
+| `gsp`       | `FORGIT_STASH_PUSH_FZF_OPTS`      |
+| `gclean`    | `FORGIT_CLEAN_FZF_OPTS`           |
+| `grb`       | `FORGIT_REBASE_FZF_OPTS`          |
+| `gbl`       | `FORGIT_BLAME_FZF_OPTS`           |
+| `gfu`       | `FORGIT_FIXUP_FZF_OPTS`           |
+| `gsq`       | `FORGIT_SQUASH_FZF_OPTS`          |
+| `grw`       | `FORGIT_REWORD_FZF_OPTS`          |
+| `gcp`       | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
+| `gws`/`gwj` | `FORGIT_WORKTREE_SELECT_FZF_OPTS` |
+| `gwl`       | `FORGIT_WORKTREE_LOCK_FZF_OPTS`   |
+| `gwr`       | `FORGIT_WORKTREE_REMOVE_FZF_OPTS` |
+| `gwu`       | `FORGIT_WORKTREE_UNLOCK_FZF_OPTS` |
 
 Complete loading order of fzf options is:
 
