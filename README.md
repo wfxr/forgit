@@ -101,6 +101,8 @@ Then add the following to your shell's config file:
 
 - **Interactive `git diff` viewer** (`gd`)
 
+- **Interactive `git show` viewer** (`gso`)
+
 - **Interactive `git reset HEAD <file>` selector** (`grh`)
 
 - **Interactive `git checkout <file>` selector** (`gcf`)
@@ -172,6 +174,7 @@ You can change the default aliases by defining these variables below.
 forgit_log=glo
 forgit_reflog=grl
 forgit_diff=gd
+forgit_show=gso
 forgit_add=ga
 forgit_reset_head=grh
 forgit_ignore=gi
@@ -232,6 +235,7 @@ These are passed to the according `git` calls.
 | `glo`    | `FORGIT_LOG_GIT_OPTS`                                                       |
 | `grl`    | `FORGIT_REFLOG_GIT_OPTS`                                                    |
 | `gd`     | `FORGIT_DIFF_GIT_OPTS`                                                      |
+| `gso`     | `FORGIT_SHOW_GIT_OPTS`                                                      |
 | `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS`                                                |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS`                                             |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`, `FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` |
@@ -286,6 +290,7 @@ Customizing fzf options for each command individually is also supported:
 | `grl`    | `FORGIT_REFLOG_FZF_OPTS`          |
 | `gi`     | `FORGIT_IGNORE_FZF_OPTS`          |
 | `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
+| `gso`    | `FORGIT_SHOW_FZF_OPTS`            |
 | `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_FZF_OPTS`   |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |

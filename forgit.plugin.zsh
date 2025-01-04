@@ -53,6 +53,10 @@ forgit::diff() {
     "$FORGIT" diff "$@"
 }
 
+forgit::show() {
+    "$FORGIT" show "$@"
+}
+
 forgit::add() {
     "$FORGIT" add "$@"
 }
@@ -146,6 +150,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     export forgit_log="${forgit_log:-glo}"
     export forgit_reflog="${forgit_reflog:-grl}"
     export forgit_diff="${forgit_diff:-gd}"
+    export forgit_show="${forgit_show:-gso}"
     export forgit_ignore="${forgit_ignore:-gi}"
     export forgit_checkout_file="${forgit_checkout_file:-gcf}"
     export forgit_checkout_branch="${forgit_checkout_branch:-gcb}"
@@ -166,6 +171,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_log}"='forgit::log'
     alias "${forgit_reflog}"='forgit::reflog'
     alias "${forgit_diff}"='forgit::diff'
+    alias "${forgit_show}"='forgit::show'
     alias "${forgit_ignore}"='forgit::ignore'
     alias "${forgit_checkout_file}"='forgit::checkout::file'
     alias "${forgit_checkout_branch}"='forgit::checkout::branch'
