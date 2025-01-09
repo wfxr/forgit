@@ -353,7 +353,18 @@ _forgit_show_view() {
     repo=$(git rev-parse --show-toplevel)
     cd "$repo" || return 1
     echo "$input_line" | _forgit_get_files_from_diff_line | xargs -0 \
-        "$FORGIT" exec_show "${commit}" -U"$diff_context" -- | _forgit_pager diff
+        "$FORGIT" exec_show "${commit}^{commit}" -U"$diff_context" -- | _forgit_pager diff
+}
+
+_forgit_show_preview() {
+    local input_line=$1
+    local diff_context=$2
+    local commit=$3
+    if [[ "$FZF_PREVIEW_LABEL" =~ "Diff" ]]; then
+        _forgit_show_view "${input_line}" "${diff_context}" "${commit}"
+    else
+        git show --quiet --color=always "${FZF_PROMPT%% *}"
+    fi
 }
 
 _forgit_show_enter() {
@@ -381,8 +392,12 @@ _forgit_show() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +m -0 --bind=\"enter:execute($FORGIT show_enter {} $escaped_commit | $FORGIT pager enter)\"
-        --preview=\"$FORGIT show_view {} '$_forgit_preview_context' $escaped_commit\"
+        --preview=\"$FORGIT show_preview {} '$_forgit_preview_context' $escaped_commit\"
+        --preview-label=\" Diff \"
         --bind=\"alt-e:execute($FORGIT edit_diffed_file {})+refresh-preview\"
+        --bind=\"alt-t:transform:[[ ! \\\"\$FZF_PREVIEW_LABEL\\\" =~ 'Diff' ]] &&
+                echo 'change-preview-label( Diff )+refresh-preview' ||
+                echo 'change-preview-label( Commit Message )+refresh-preview'\"
         $FORGIT_DIFF_FZF_OPTS
         --prompt=\"${commit} > \"
     "
@@ -1104,7 +1119,7 @@ private_commands=(
     "revert_preview"
     "reset_head_preview"
     "show_enter"
-    "show_view"
+    "show_preview"
     "stash_push_preview"
     "stash_show_preview"
     "yank_sha"
