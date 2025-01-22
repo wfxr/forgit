@@ -342,6 +342,8 @@ export FORGIT_LOG_FZF_OPTS='
 
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
+- [`tree`](https://gitlab.com/OldManProgrammer/unix-tree): Directory tree view for `gclean`.
+
 # Completions
 
 ## Bash
