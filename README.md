@@ -29,7 +29,13 @@ It's **lightweight** and **easy to use**.
 
 # 📥 Installation
 
-*Make sure you have [`fzf`](https://github.com/junegunn/fzf) installed.*
+## Requirements
+
+- [`fzf`](https://github.com/junegunn/fzf) version `0.49.0` or higher
+
+  If your OS package manager bundles an older version of `fzf`, you might install it using [`fzf`'s own install script'](https://github.com/junegunn/fzf?tab=readme-ov-file#using-git).
+
+## Shell package managers
 
 ``` zsh
 # for zplug

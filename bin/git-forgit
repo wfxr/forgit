@@ -12,6 +12,21 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
+# Check if fzf is installed
+installed_fzf_version=$(fzf --version 2>/dev/null | awk '{print $1}')
+if [[ -z "$installed_fzf_version" ]]; then
+    echo "fzf is not installed. Please install fzf first."
+    exit 1
+fi
+
+# Check fzf version
+required_fzf_version="0.49.0"
+higher_fzf_version=$(printf '%s\n' "$required_fzf_version" "$installed_fzf_version" | sort -V | tail -n1)
+if [[ "$higher_fzf_version" != "$installed_fzf_version" ]]; then
+    echo "fzf version $required_fzf_version or higher is required. You have $installed_fzf_version."
+    exit 1
+fi
+
 # Set shell for fzf preview commands
 # Disable shellcheck for "which", because it suggests "command -v xxx" instead,
 # which is not a working replacement.
