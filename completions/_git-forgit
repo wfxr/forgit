@@ -97,6 +97,7 @@ _git-forgit() {
     reset_head) _git-staged ;;
     revert_commit) __git_recent_commits ;;
     stash_show) _git-stash-show ;;
+    show) _git-show ;;
     esac
 }
 
@@ -122,6 +123,7 @@ compdef _git-rebase forgit::rebase
 compdef _git-staged forgit::reset::head
 compdef __git_recent_commits forgit::revert::commit
 compdef _git-stash-show forgit::stash::show
+compdef _git-show forgit::show
 
 # this is the case of calling the command and pressing tab
 # the very first time of a shell session, we have to manually

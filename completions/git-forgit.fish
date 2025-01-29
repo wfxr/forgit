@@ -40,6 +40,7 @@ complete -c git-forgit -n __fish_forgit_needs_subcommand -a reflog -d 'git reflo
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a rebase -d 'git rebase'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a reset_head -d 'git reset HEAD (unstage) selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a revert_commit -d 'git revert commit selector'
+complete -c git-forgit -n __fish_forgit_needs_subcommand -a show -d 'git show viewer'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a stash_show -d 'git stash viewer'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a stash_push -d 'git stash push selector'
 

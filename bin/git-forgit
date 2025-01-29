@@ -12,6 +12,21 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
+# Check if fzf is installed
+installed_fzf_version=$(fzf --version 2>/dev/null | awk '{print $1}')
+if [[ -z "$installed_fzf_version" ]]; then
+    echo "fzf is not installed. Please install fzf first."
+    exit 1
+fi
+
+# Check fzf version
+required_fzf_version="0.49.0"
+higher_fzf_version=$(printf '%s\n' "$required_fzf_version" "$installed_fzf_version" | sort -V | tail -n1)
+if [[ "$higher_fzf_version" != "$installed_fzf_version" ]]; then
+    echo "fzf version $required_fzf_version or higher is required. You have $installed_fzf_version."
+    exit 1
+fi
+
 # Set shell for fzf preview commands
 # Disable shellcheck for "which", because it suggests "command -v xxx" instead,
 # which is not a working replacement.
@@ -185,7 +200,7 @@ _forgit_log_enter() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% "${FORGIT}" diff %^! "$@"
+    echo "$sha" | xargs -I% "${FORGIT}" show % "$@"
 }
 
 # git commit viewer
@@ -330,6 +345,83 @@ _forgit_diff() {
     _forgit_diff_git_opts=()
     _forgit_parse_array _forgit_diff_git_opts "$FORGIT_DIFF_GIT_OPTS"
     git diff --name-status "${_forgit_diff_git_opts[@]}" "${commits[@]}" -- "${files[@]}" |
+        sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]	\2/' |
+        sed 's/	/  ->  /2' | expand -t 8 |
+        FZF_DEFAULT_OPTS="$opts" fzf
+    fzf_exit_code=$?
+    # exit successfully on 130 (ctrl-c/esc)
+    [[ $fzf_exit_code == 130 ]] && return 0
+    return $fzf_exit_code
+}
+
+_forgit_exec_show() {
+    _forgit_show_git_opts=()
+    _forgit_parse_array _forgit_show_git_opts "$FORGIT_SHOW_GIT_OPTS"
+    git show --pretty="" --diff-merges=first-parent --color=always "${_forgit_show_git_opts[@]}" "$@"
+}
+
+_forgit_show_view() {
+    local input_line=$1
+    local diff_context=$2
+    local commit=$3
+    local repo
+    repo=$(git rev-parse --show-toplevel)
+    cd "$repo" || return 1
+    echo "$input_line" | _forgit_get_files_from_diff_line | xargs -0 \
+        "$FORGIT" exec_show "${commit}^{commit}" -U"$diff_context" -- | _forgit_pager diff
+}
+
+_forgit_show_preview() {
+    local input_line=$1
+    local diff_context=$2
+    local commit=$3
+    if [[ "$FZF_PREVIEW_LABEL" =~ "Diff" ]]; then
+        _forgit_show_view "${input_line}" "${diff_context}" "${commit}"
+    else
+        git show --quiet --color=always "${FZF_PROMPT%% *}"
+    fi
+}
+
+_forgit_show_enter() {
+    file=$1
+    commit=$2
+    _forgit_show_view "$file" "$_forgit_fullscreen_context" "${commit}"
+}
+
+# git show viewer
+_forgit_show() {
+    _forgit_inside_work_tree || return 1
+    local files opts commit escaped_commit
+    files=()
+    if [[ $# -ne 0 ]]; then
+        if git rev-parse "$1" -- &>/dev/null ; then
+            commit="$1" && files=("${@:2}")
+        else
+            commit="HEAD" && files=("$@")
+        fi
+    else
+        commit="HEAD"
+    fi
+    # Escape opening brackets to support stashes (see comment in _forgit_diff)
+    escaped_commit=${commit//\{/\\\\\{}
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +m -0 --bind=\"enter:execute($FORGIT show_enter {} $escaped_commit | $FORGIT pager enter)\"
+        --preview=\"$FORGIT show_preview {} '$_forgit_preview_context' $escaped_commit\"
+        --preview-label=\" Diff \"
+        --bind=\"alt-e:execute($FORGIT edit_diffed_file {})+refresh-preview\"
+        --bind=\"alt-t:transform:[[ ! \\\"\$FZF_PREVIEW_LABEL\\\" =~ 'Diff' ]] &&
+                echo 'change-preview-label( Diff )+refresh-preview' ||
+                echo 'change-preview-label( Commit Message )+refresh-preview'\"
+        $FORGIT_DIFF_FZF_OPTS
+        --prompt=\"${commit} > \"
+    "
+    _forgit_show_git_opts=()
+    _forgit_parse_array _forgit_show_git_opts "$FORGIT_SHOW_GIT_OPTS"
+    # Add "^{commit}" suffix after the actual commit. This suppresses the tag information in case it is a tag.
+    # See: https://git-scm.com/docs/git-show#Documentation/git-show.txt-codegitshow-s--formatsv100commitcode
+    git show --pretty="" --name-status --diff-merges=first-parent "${_forgit_show_git_opts[@]}" "${commit}^{commit}" \
+        -- "${files[@]}" |
         sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]	\2/' |
         sed 's/	/  ->  /2' | expand -t 8 |
         FZF_DEFAULT_OPTS="$opts" fzf
@@ -1021,6 +1113,7 @@ public_commands=(
     "rebase"
     "reset_head"
     "revert_commit"
+    "show"
     "stash_show"
     "stash_push"
 )
@@ -1035,10 +1128,13 @@ private_commands=(
     "cherry_pick_preview"
     "clean_preview"
     "diff_enter"
+    "exec_show"
     "file_preview"
     "ignore_preview"
     "revert_preview"
     "reset_head_preview"
+    "show_enter"
+    "show_preview"
     "stash_push_preview"
     "stash_show_preview"
     "yank_sha"
