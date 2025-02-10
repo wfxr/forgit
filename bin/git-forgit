@@ -1089,10 +1089,6 @@ _forgit_ignore_get() {
 _forgit_ignore_list() {
     find "$FORGIT_GI_TEMPLATES" -print |sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
 }
-_forgit_ignore_clean() {
-    setopt localoptions rmstarsilent
-    [[ -d "$FORGIT_GI_REPO_LOCAL" ]] && rm -rf "$FORGIT_GI_REPO_LOCAL"
-}
 
 public_commands=(
     "add"
