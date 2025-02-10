@@ -39,6 +39,7 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_diff; or string collect "gd") git-forgit diff
     abbr -a -- (string collect $forgit_show; or string collect "gso") git-forgit show
     abbr -a -- (string collect $forgit_ignore; or string collect "gi") git-forgit ignore
+    abbr -a -- (string collect $forgit_attributes; or string collect "gi") git-forgit attributes
     abbr -a -- (string collect $forgit_checkout_file; or string collect "gcf") git-forgit checkout_file
     abbr -a -- (string collect $forgit_checkout_branch; or string collect "gcb") git-forgit checkout_branch
     abbr -a -- (string collect $forgit_branch_delete; or string collect "gbd") git-forgit branch_delete
