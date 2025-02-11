@@ -141,6 +141,10 @@ forgit::ignore::clean() {
     "$FORGIT" ignore_clean "$@"
 }
 
+forgit::attributes() {
+    "$FORGIT" attributes "$@"
+}
+
 # register aliases
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -152,6 +156,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     export forgit_diff="${forgit_diff:-gd}"
     export forgit_show="${forgit_show:-gso}"
     export forgit_ignore="${forgit_ignore:-gi}"
+    export forgit_attributes="${forgit_attributes:-gat}"
     export forgit_checkout_file="${forgit_checkout_file:-gcf}"
     export forgit_checkout_branch="${forgit_checkout_branch:-gcb}"
     export forgit_checkout_commit="${forgit_checkout_commit:-gco}"
@@ -173,6 +178,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_diff}"='forgit::diff'
     alias "${forgit_show}"='forgit::show'
     alias "${forgit_ignore}"='forgit::ignore'
+    alias "${forgit_attributes}"='forgit::attributes'
     alias "${forgit_checkout_file}"='forgit::checkout::file'
     alias "${forgit_checkout_branch}"='forgit::checkout::branch'
     alias "${forgit_checkout_commit}"='forgit::checkout::commit'
