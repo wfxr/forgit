@@ -1039,21 +1039,27 @@ export FORGIT_GI_REPO_REMOTE=${FORGIT_GI_REPO_REMOTE:-https://github.com/dvcs/gi
 export FORGIT_GI_REPO_LOCAL="${FORGIT_GI_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME/.cache}/forgit/gi/repos/dvcs/gitignore}"
 export FORGIT_GI_TEMPLATES=${FORGIT_GI_TEMPLATES:-$FORGIT_GI_REPO_LOCAL/templates}
 
-_forgit_ignore_preview() {
+_forgit_path_preview() {
+    local path name ext pager
+    path=$1
+    name=$2
+    ext=$3
+    pager=$4
     quoted_files=()
-    for file in "$FORGIT_GI_TEMPLATES/$1"{,.gitignore}; do
+    while IFS='' read -r file; do
         quoted_files+=("'$file'")
-    done
-    _forgit_pager ignore "${quoted_files[@]}" 2>/dev/null
+    done < <(find -L "$path" -type f -name "$name" -o -name "$name$ext")
+    _forgit_pager "$pager" "${quoted_files[@]}" 2>/dev/null
 }
 
 _forgit_ignore() {
-    [ -d "$FORGIT_GI_REPO_LOCAL" ] || _forgit_ignore_update
+    [ -d "$FORGIT_GI_REPO_LOCAL" ] \
+    || _forgit_repo_update "$FORGIT_GI_REPO_REMOTE" "$FORGIT_GI_REPO_LOCAL"
     local IFS args opts
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m --preview-window='right:70%'
-        --preview=\"$FORGIT ignore_preview {2}\"
+        --preview=\"$FORGIT path_preview $FORGIT_GI_TEMPLATES {2} .gitignore ignore\"
         $FORGIT_IGNORE_FZF_OPTS
     "
     args=("$@")
@@ -1061,33 +1067,46 @@ _forgit_ignore() {
         args=()
         while IFS='' read -r arg; do
             args+=("$arg")
-        done < <(_forgit_ignore_list | nl -w4 -s'  ' |
+        done < <(_forgit_paths_list "$FORGIT_GI_TEMPLATES" .gitignore | 
+            nl -w4 -s'  ' |
             FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}')
     fi
     [ ${#args[@]} -eq 0 ] && return 1
-    _forgit_ignore_get "${args[@]}"
+    _forgit_path_get "$FORGIT_GI_TEMPLATES" .gitignore "${args[@]}"
 }
-_forgit_ignore_update() {
-    if [[ -d "$FORGIT_GI_REPO_LOCAL" ]]; then
-        _forgit_info 'Updating gitignore repo...'
-        (cd "$FORGIT_GI_REPO_LOCAL" && git pull --no-rebase --ff) || return 1
+
+_forgit_repo_update() {
+    local remote path
+    remote=$1
+    path=$2
+    if [[ -d "$path" ]]; then
+        _forgit_info 'Updating repo...'
+        (cd "$path" && git pull --no-rebase --ff) || return 1
     else
-        _forgit_info 'Initializing gitignore repo...'
-        git clone --depth=1 "$FORGIT_GI_REPO_REMOTE" "$FORGIT_GI_REPO_LOCAL"
+        _forgit_info 'Initializing repo...'
+        git clone --depth=1 "$remote" "$path"
     fi
 }
-_forgit_ignore_get() {
-    local item filename header
+
+_forgit_path_get() {
+    local path ext item filename header
+    path=$1
+    ext=$2
+    shift 2
     for item in "$@"; do
-        if filename=$(find -L "$FORGIT_GI_TEMPLATES" -type f \( -iname "${item}.gitignore" -o -iname "${item}" \) -print -quit); then
-            [[ -z "$filename" ]] && _forgit_warn "No gitignore template found for '$item'." && continue
-            header="${filename##*/}" && header="${header%.gitignore}"
+        if filename=$(find -L "$path" -type f \( -iname "${item}$ext" -o -iname "${item}" \) -print -quit); then
+            [[ -z "$filename" ]] && _forgit_warn "No template found for '$item'." && continue
+            header="${filename##*/}" && header="${header%"$ext"}"
             echo "### $header" && cat "$filename" && echo
         fi
     done
 }
-_forgit_ignore_list() {
-    find "$FORGIT_GI_TEMPLATES" -print |sed -e 's#.gitignore$##' -e 's#.*/##' | sort -fu
+
+_forgit_paths_list() {
+    local path ext
+    path=$1
+    ext=$2
+    find "$path" -name "*$ext" -print |sed -e "s#$ext\$##" -e 's#.*/##' -e '/^$/d' | sort -fu
 }
 
 public_commands=(
@@ -1126,7 +1145,7 @@ private_commands=(
     "diff_enter"
     "exec_show"
     "file_preview"
-    "ignore_preview"
+    "path_preview"
     "revert_preview"
     "reset_head_preview"
     "show_enter"
