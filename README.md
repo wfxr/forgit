@@ -184,6 +184,7 @@ forgit_show=gso
 forgit_add=ga
 forgit_reset_head=grh
 forgit_ignore=gi
+forgit_attributes=gat
 forgit_checkout_file=gcf
 forgit_checkout_branch=gcb
 forgit_branch_delete=gbd
@@ -263,14 +264,15 @@ Forgit will use the default configured pager from git (`core.pager`,
 `pager.show`, `pager.diff`) but can be altered with the following environment
 variables:
 
-| Use case             | Option                | Fallbacks to                                  |
-| ------------         | -------------------   | --------------------------------------------- |
-| common pager         | `FORGIT_PAGER`        | `git config core.pager` _or_ `cat`            |
-| pager on `git show`  | `FORGIT_SHOW_PAGER`   | `git config pager.show` _or_ `$FORGIT_PAGER`  |
-| pager on `git diff`  | `FORGIT_DIFF_PAGER`   | `git config pager.diff` _or_ `$FORGIT_PAGER`  |
-| pager on `git blame` | `FORGIT_BLAME_PAGER`  | `git config pager.blame` _or_ `$FORGIT_PAGER` |
-| pager on `gitignore` | `FORGIT_IGNORE_PAGER` | `bat -l gitignore --color always` _or_ `cat`  |
-| git log format       | `FORGIT_GLO_FORMAT`   | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset`  |
+| Use case                 | Option                    | Fallbacks to                                      |
+| ------------------------ | ------------------------- | ------------------------------------------------- |
+| common pager             | `FORGIT_PAGER`            | `git config core.pager` _or_ `cat`                |
+| pager on `git show`      | `FORGIT_SHOW_PAGER`       | `git config pager.show` _or_ `$FORGIT_PAGER`      |
+| pager on `git diff`      | `FORGIT_DIFF_PAGER`       | `git config pager.diff` _or_ `$FORGIT_PAGER`      |
+| pager on `git blame`     | `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`     |
+| pager on `gitignore`     | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`      |
+| pager on `gitatrributes` | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat`  |
+| git log format           | `FORGIT_GLO_FORMAT`       | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset`      |
 
 ## fzf options
 
@@ -295,6 +297,7 @@ Customizing fzf options for each command individually is also supported:
 | `glo`    | `FORGIT_LOG_FZF_OPTS`             |
 | `grl`    | `FORGIT_REFLOG_FZF_OPTS`          |
 | `gi`     | `FORGIT_IGNORE_FZF_OPTS`          |
+| `gat`    | `FORGIT_ATTRIBUTES_FZF_OPTS`      |
 | `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
 | `gso`    | `FORGIT_SHOW_FZF_OPTS`            |
 | `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
@@ -349,7 +352,7 @@ export FORGIT_LOG_FZF_OPTS='
 
 - [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human-readable diffs.
 
-- [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore`.
+- [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore` and `gitattributes`.
 
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
@@ -379,7 +382,7 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 - Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco main`).
 - `gd` supports specifying revision(e.g., `gd HEAD~`, `gd v1.0 README.md`).
-- Call `gi` with arguments to get the wanted `.gitignore` contents directly(e.g., `gi cmake c++`).
+- Call `gi` or `gat` with arguments to get the wanted `.gitignore`/`.gitattributes` contents directly(e.g., `gi cmake c++`).
 
 # 📃 License
 

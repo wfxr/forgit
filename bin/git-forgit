@@ -164,6 +164,7 @@ _forgit_get_pager() {
         show) echo -n "${FORGIT_SHOW_PAGER:-$(git config pager.show || _forgit_get_pager)}" ;;
         diff) echo -n "${FORGIT_DIFF_PAGER:-$(git config pager.diff || _forgit_get_pager)}" ;;
         ignore) echo -n "${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}" ;;
+        attributes) echo -n "${FORGIT_ATTRIBUTES_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitattributes --color=always' || echo 'cat')}" ;;
         blame) echo -n "${FORGIT_BLAME_PAGER:-$(git config pager.blame || _forgit_get_pager)}" ;;
         enter) echo -n "${FORGIT_ENTER_PAGER:-"LESS='-r' less"}" ;;
         *) echo "pager not found: $1" >&2 ;;
@@ -1075,6 +1076,34 @@ _forgit_ignore() {
     _forgit_path_get "$FORGIT_GI_TEMPLATES" .gitignore "${args[@]}"
 }
 
+# git attributes generator
+export FORGIT_ATTR_REPO_REMOTE=${FORGIT_ATTR_REPO_REMOTE:-https://github.com/gitattributes/gitattributes}
+export FORGIT_ATTR_REPO_LOCAL=${FORGIT_ATTR_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME/.cache}/forgit/gat/repos/gitattributes/gitattributes}
+export FORGIT_ATTR_TEMPLATES=${FORGIT_ATTR_TEMPLATES:-$FORGIT_ATTR_REPO_LOCAL}
+
+_forgit_attributes() {
+    [ -d "$FORGIT_ATTR_REPO_LOCAL" ] \
+    || _forgit_repo_update "$FORGIT_ATTR_REPO_REMOTE" "$FORGIT_ATTR_REPO_LOCAL"
+    local IFS args opts
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m --preview-window='right:70%'
+        --preview=\"$FORGIT path_preview $FORGIT_ATTR_TEMPLATES {2} .gitattributes attributes\"
+        $FORGIT_ATTRIBUTES_FZF_OPTS
+    "
+    args=("$@")
+    if [[ $# -eq 0 ]]; then
+        args=()
+        while IFS='' read -r arg; do
+            args+=("$arg")
+        done < <(_forgit_paths_list "$FORGIT_ATTR_TEMPLATES" .gitattributes |
+            nl -w4 -s'  ' |
+            FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}')
+    fi
+    [ ${#args[@]} -eq 0 ] && return 1
+    _forgit_path_get "$FORGIT_ATTR_TEMPLATES" .gitattributes "${args[@]}"
+}
+
 _forgit_repo_update() {
     local remote path
     remote=$1
@@ -1111,6 +1140,7 @@ _forgit_paths_list() {
 
 public_commands=(
     "add"
+    "attributes"
     "blame"
     "branch_delete"
     "checkout_branch"
