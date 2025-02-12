@@ -724,17 +724,16 @@ _forgit_cherry_pick_from_branch() {
 
 _forgit_rebase() {
     _forgit_inside_work_tree || return 1
-    local opts graph quoted_files target_commit prev_commit
+    local opts graph target_commit prev_commit
     graph=()
     [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
     _forgit_rebase_git_opts=()
     _forgit_parse_array _forgit_rebase_git_opts "$FORGIT_REBASE_GIT_OPTS"
-    quoted_files=$(_forgit_quote_files "$@")
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
-        --preview=\"$FORGIT file_preview {} $quoted_files\"
+        --preview=\"$FORGIT file_preview {}\"
         $FORGIT_REBASE_FZF_OPTS
     "
     target_commit=$(
