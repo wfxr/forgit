@@ -725,27 +725,27 @@ _forgit_cherry_pick_from_branch() {
 
 _forgit_rebase() {
     _forgit_inside_work_tree || return 1
-    local opts graph quoted_files target_commit prev_commit
+    _forgit_contains_non_flags "$@" && { git rebase "$@"; return $?; }
+    local opts graph target_commit prev_commit
     graph=()
     [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
     _forgit_rebase_git_opts=()
     _forgit_parse_array _forgit_rebase_git_opts "$FORGIT_REBASE_GIT_OPTS"
-    quoted_files=$(_forgit_quote_files "$@")
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
-        --preview=\"$FORGIT file_preview {} $quoted_files\"
+        --preview=\"$FORGIT file_preview {}\"
         $FORGIT_REBASE_FZF_OPTS
     "
     target_commit=$(
-        git log "${graph[@]}" --color=always --format="$_forgit_log_format" "$@" |
+        git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
         _forgit_emojify |
         FZF_DEFAULT_OPTS="$opts" fzf |
         _forgit_extract_sha)
     if [[ -n "$target_commit" ]]; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
-        git rebase -i "${_forgit_rebase_git_opts[@]}" "$prev_commit"
+        git rebase -i "${_forgit_rebase_git_opts[@]}" "$@" "$prev_commit"
     fi
 }
 
