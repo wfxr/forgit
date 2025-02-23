@@ -59,6 +59,13 @@ zinit load wfxr/forgit
 # for oh-my-zsh
 git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 
+# for sheldon.cli
+[plugins.forgit]
+github = "wfxr/forgit"
+rev = "25.02.0"
+use = ["forgit.plugin.zsh"]
+apply = ["source"]
+
 # manually
 # Clone the repository and source it in your shell's rc file or put bin/git-forgit into your $PATH
 ```
