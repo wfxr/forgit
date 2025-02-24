@@ -180,7 +180,7 @@ export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
 
 ## shell aliases
 
-You can change the default aliases by defining these variables below.
+You can change the default aliases by defining these variables below before sourcing the forgit shell plugin.
 (To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
 
 ``` bash
