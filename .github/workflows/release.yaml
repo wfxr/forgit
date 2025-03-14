@@ -1,32 +1,78 @@
 name: Release
 
 on:
+  schedule:
+    # Run on every first day of the month
+    - cron: '0 0 1 * *'
   push:
     tags:
       - '**'
 
 jobs:
 
-  release:
+  changelog:
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Create Package
-        run: tar -czf forgit-${{github.ref_name}}.tar.gz --exclude LICENSE --exclude README.md *
-
       - name: Generate Changelog
         id: changelog
         run: .github/scripts/changelog.sh > CHANGELOG.md
+        # When the script returns with an error, it indicates that we don't have
+        # any public changes to be released. This is expected behavior, so we
+        # quit the workflow successfully in this case.
         continue-on-error: true
+
+      - name: Upload Changelog
+        uses: actions/upload-artifact@v4
+        if: steps.changelog.outcome == 'success'
+        with:
+          name: changelog
+          path: CHANGELOG.md
+
+      - name: Set version
+        id: set_version
+        if: steps.changelog.outcome == 'success'
+        # Set version depending on whether this is a regular monthly release or
+        # a custom release triggered by a tag push.
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION=${{ github.ref_name }}
+          else
+            VERSION=$(date +'%y.%m.0')
+          fi
+          echo "VERSION=$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+    outputs:
+      changeLogOutcome: ${{ steps.changelog.outcome }}
+      version: ${{ steps.set_version.outputs.VERSION }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: changelog
+    if: needs.changelog.outputs.changeLogOutcome == 'success'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Changelog
+        uses: actions/download-artifact@v4
+        with:
+          name: changelog
+
+      - name: Create Package
+        run: tar -czf forgit-${{ needs.changelog.outputs.version }}.tar.gz --exclude LICENSE --exclude README.md *
 
       - name: Release
         uses: softprops/action-gh-release@v2
-        if: steps.changelog.outcome == 'success'
         with:
+          # The release action implicitly creates the tag if it does not exist.
+          tag_name: ${{ needs.changelog.outputs.version }}
           body_path: CHANGELOG.md
-          files: forgit-${{github.ref_name}}.tar.gz
+          files: forgit-${{ needs.changelog.outputs.version }}.tar.gz
