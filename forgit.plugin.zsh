@@ -61,6 +61,10 @@ forgit::add() {
     "$FORGIT" add "$@"
 }
 
+forgit::unstage() {
+    "$FORGIT" unstage "$@"
+}
+
 forgit::reset::head() {
     "$FORGIT" reset_head "$@"
 }
@@ -150,6 +154,7 @@ forgit::attributes() {
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
 
     export forgit_add="${forgit_add:-ga}"
+    export forgit_unstage="${forgit_unstage:-gu}"
     export forgit_reset_head="${forgit_reset_head:-grh}"
     export forgit_log="${forgit_log:-glo}"
     export forgit_reflog="${forgit_reflog:-grl}"
@@ -172,6 +177,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     export forgit_blame="${forgit_blame:-gbl}"
 
     alias "${forgit_add}"='forgit::add'
+    alias "${forgit_unstage}"='forgit::unstage'
     alias "${forgit_reset_head}"='forgit::reset::head'
     alias "${forgit_log}"='forgit::log'
     alias "${forgit_reflog}"='forgit::reflog'
