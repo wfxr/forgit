@@ -58,6 +58,7 @@ _git_forgit()
 
     cmds="
         add
+        unstage
         blame
         branch_delete
         checkout_branch
@@ -86,6 +87,7 @@ _git_forgit()
         3)
             case ${prev} in
                 add) _git_add ;;
+                _git_unstage ;;
                 branch_delete) _git_branch_delete ;;
                 checkout_branch) _git_checkout_branch ;;
                 checkout_commit) _git_checkout ;;
@@ -120,6 +122,7 @@ then
 
     # Completion for forgit plugin shell functions
     __git_complete forgit::add _git_add
+    __git_complete forgit::unstage _git_unstage
     __git_complete forgit::branch::delete _git_branch_delete
     __git_complete forgit::checkout::branch _git_checkout_branch
     __git_complete forgit::checkout::commit _git_checkout
@@ -140,6 +143,7 @@ then
     # Completion for forgit plugin shell aliases
     if [[ -z "$FORGIT_NO_ALIASES" ]]; then
         __git_complete "${forgit_add}" _git_add
+        __git_complete "${forgit_unstage}" _git_unstage
         __git_complete "${forgit_branch_delete}" _git_branch_delete
         __git_complete "${forgit_checkout_branch}" _git_checkout_branch
         __git_complete "${forgit_checkout_commit}" _git_checkout
