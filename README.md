@@ -102,6 +102,10 @@ Then add the following to your shell's config file:
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-ga.png)
 
+- **Interactive `git reset` selector, aliased as "unstage"** (`gu`)
+
+// TODO
+
 - **Interactive `git log` viewer** (`glo`)
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-glo.png)
@@ -189,6 +193,7 @@ forgit_reflog=grl
 forgit_diff=gd
 forgit_show=gso
 forgit_add=ga
+forgit_unstage=gu
 forgit_reset_head=grh
 forgit_ignore=gi
 forgit_attributes=gat
@@ -246,6 +251,7 @@ These are passed to the according `git` calls.
 | Command  | Option                                                                      |
 | -------- | --------------------------------------------------------------------------- |
 | `ga`     | `FORGIT_ADD_GIT_OPTS`                                                       |
+| `ga`     | `FORGIT_UNSTAGE_GIT_OPTS`                                                       |
 | `glo`    | `FORGIT_LOG_GIT_OPTS`                                                       |
 | `grl`    | `FORGIT_REFLOG_GIT_OPTS`                                                    |
 | `gd`     | `FORGIT_DIFF_GIT_OPTS`                                                      |
@@ -301,6 +307,7 @@ Customizing fzf options for each command individually is also supported:
 | Command  | Option                            |
 |----------|-----------------------------------|
 | `ga`     | `FORGIT_ADD_FZF_OPTS`             |
+| `ga`     | `FORGIT_UNSTAGE_FZF_OPTS`         |
 | `glo`    | `FORGIT_LOG_FZF_OPTS`             |
 | `grl`    | `FORGIT_REFLOG_FZF_OPTS`          |
 | `gi`     | `FORGIT_IGNORE_FZF_OPTS`          |
