@@ -6,7 +6,7 @@
 # sourced when git-forgit command or forgit subcommand of git is invoked.
 
 function __fish_forgit_needs_subcommand
-    for subcmd in add blame branch_delete checkout_branch checkout_commit checkout_file checkout_tag \
+    for subcmd in add unstage blame branch_delete checkout_branch checkout_commit checkout_file checkout_tag \
         cherry_pick cherry_pick_from_branch clean diff fixup ignore log reflog rebase reset_head \
         revert_commit stash_show stash_push
         if contains -- $subcmd (commandline -opc)
@@ -23,6 +23,7 @@ not functions -q __fish_git && source $__fish_data_dir/completions/git.fish
 complete -c git-forgit -x
 
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a add -d 'git add selector'
+complete -c git-forgit -n __fish_forgit_needs_subcommand -a unstage -d 'git unstage selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a blame -d 'git blame viewer'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a branch_delete -d 'git branch deletion selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a checkout_branch -d 'git checkout branch selector'
@@ -45,6 +46,7 @@ complete -c git-forgit -n __fish_forgit_needs_subcommand -a stash_show -d 'git s
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a stash_push -d 'git stash push selector'
 
 complete -c git-forgit -n '__fish_seen_subcommand_from add' -a "(complete -C 'git add ')"
+complete -c git-forgit -n '__fish_seen_subcommand_from unstage' -a "(complete -C 'git unstage ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from branch_delete' -a "(__fish_git_local_branches)"
 complete -c git-forgit -n '__fish_seen_subcommand_from checkout_branch' -a "(complete -C 'git switch ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from checkout_commit' -a "(__fish_git_commits)"

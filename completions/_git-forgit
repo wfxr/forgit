@@ -58,6 +58,7 @@ _git-forgit() {
         local -a subcommands
         subcommands=(
             'add:git add selector'
+            'unstage:git unstage selector'
             'blame:git blame viewer'
             'branch_delete:git branch deletion selector'
             'checkout_branch:git checkout branch selector'
@@ -81,6 +82,7 @@ _git-forgit() {
         _describe -t commands 'git forgit' subcommands
         ;;
     add) _git-add ;;
+    unstage) _git-unstage ;;
     branch_delete) _git-branches ;;
     checkout_branch) _git-branches ;;
     checkout_commit) __git_recent_commits ;;
@@ -107,6 +109,7 @@ _git-forgit() {
 (( $+functions[_git-add] )) || return 1
 # Completions for forgit plugin shell functions (also works for aliases)
 compdef _git-add forgit::add
+compdef _git-unstage forgit::unstage
 compdef _git-branches forgit::branch::delete
 compdef _git-branches forgit::checkout::branch
 compdef __git_recent_commits forgit::checkout::commit
