@@ -457,7 +457,7 @@ _forgit_git_add() {
 
 _forgit_git_unstage() {
     _forgit_add_git_opts=()
-    _forgit_parse_array _forgit_add_git_opts "$FORGIT_ADD_GIT_OPTS"
+    _forgit_parse_array _forgit_add_git_opts "$FORGIT_UNSTAGE_GIT_OPTS"
     git reset "${_forgit_add_git_opts[@]}" -q HEAD -- "$@"
 }
 
@@ -520,7 +520,7 @@ _forgit_unstage() {
         -0 -m --nth 2..,..
         --preview=\"$FORGIT add_preview {}\"
         --bind=\"alt-e:execute($FORGIT edit_add_file {})+refresh-preview\"
-        $FORGIT_ADD_FZF_OPTS
+        $FORGIT_UNSTAGE_FZF_OPTS
     "
 
     files=()
@@ -1113,7 +1113,7 @@ _forgit_ignore() {
         args=()
         while IFS='' read -r arg; do
             args+=("$arg")
-        done < <(_forgit_paths_list "$FORGIT_GI_TEMPLATES" .gitignore | 
+        done < <(_forgit_paths_list "$FORGIT_GI_TEMPLATES" .gitignore |
             nl -w4 -s'  ' |
             FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}')
     fi
