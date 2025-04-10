@@ -456,9 +456,9 @@ _forgit_git_add() {
 }
 
 _forgit_git_unstage() {
-    _forgit_add_git_opts=()
-    _forgit_parse_array _forgit_add_git_opts "$FORGIT_UNSTAGE_GIT_OPTS"
-    git reset "${_forgit_add_git_opts[@]}" -q HEAD -- "$@"
+    _forgit_unstage_git_opts=()
+    _forgit_parse_array _forgit_unstage_git_opts "$FORGIT_UNSTAGE_GIT_OPTS"
+    git reset "${_forgit_unstage_git_opts[@]}" -q HEAD -- "$@"
 }
 
 _forgit_get_single_file_from_add_line() {
