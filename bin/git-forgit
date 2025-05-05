@@ -414,7 +414,7 @@ _forgit_show() {
         --bind=\"alt-t:transform:[[ ! \\\"\$FZF_PREVIEW_LABEL\\\" =~ 'Diff' ]] &&
                 echo 'change-preview-label( Diff )+refresh-preview' ||
                 echo 'change-preview-label( Commit Message )+refresh-preview'\"
-        $FORGIT_DIFF_FZF_OPTS
+        $FORGIT_SHOW_FZF_OPTS
         --prompt=\"${commit} > \"
     "
     _forgit_show_git_opts=()
