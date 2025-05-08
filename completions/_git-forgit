@@ -75,6 +75,7 @@ _git-forgit() {
             'rebase:git rebase'
             'reset_head:git reset HEAD (unstage) selector'
             'revert_commit:git revert commit selector'
+            'squash:git squash'
             'stash_show:git stash viewer'
             'stash_push:git stash push selector'
         )
@@ -96,6 +97,7 @@ _git-forgit() {
     rebase) _git-rebase ;;
     reset_head) _git-staged ;;
     revert_commit) __git_recent_commits ;;
+    squash) __git_branch_names ;;
     stash_show) _git-stash-show ;;
     show) _git-show ;;
     esac
@@ -122,6 +124,7 @@ compdef _git-reflog forgit::reflog
 compdef _git-rebase forgit::rebase
 compdef _git-staged forgit::reset::head
 compdef __git_recent_commits forgit::revert::commit
+compdef __git_branch_names forgit::squash
 compdef _git-stash-show forgit::stash::show
 compdef _git-show forgit::show
 

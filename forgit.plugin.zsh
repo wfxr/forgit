@@ -93,6 +93,10 @@ forgit::fixup() {
     "$FORGIT" fixup "$@"
 }
 
+forgit::squash() {
+    "$FORGIT" squash "$@"
+}
+
 forgit::checkout::file() {
     "$FORGIT" checkout_file "$@"
 }
@@ -169,6 +173,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     export forgit_cherry_pick="${forgit_cherry_pick:-gcp}"
     export forgit_rebase="${forgit_rebase:-grb}"
     export forgit_fixup="${forgit_fixup:-gfu}"
+    export forgit_squash="${forgit_squash:-gsq}"
     export forgit_blame="${forgit_blame:-gbl}"
 
     alias "${forgit_add}"='forgit::add'
@@ -191,6 +196,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     alias "${forgit_cherry_pick}"='forgit::cherry::pick::from::branch'
     alias "${forgit_rebase}"='forgit::rebase'
     alias "${forgit_fixup}"='forgit::fixup'
+    alias "${forgit_squash}"='forgit::squash'
     alias "${forgit_blame}"='forgit::blame'
 
 fi
