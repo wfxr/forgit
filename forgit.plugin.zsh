@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # MIT (c) Wenxuan Zhang
 
-forgit::error() { printf "%b[Error]%b %s\n" '\e[0;31m' '\e[0m' "$@" >&2; return 1; }
-forgit::warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
+# all commands are prefixed with command and all built-ins with builtin.
+# These shell built-ins prevent the wrong commands getting executed in case a
+# user added a shell alias with the same name.
+
+forgit::error() { command printf "%b[Error]%b %s\n" '\e[0;31m' '\e[0m' "$@" >&2; builtin return 1; }
+forgit::warn() { command printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 
 # determine installation path
 if [[ -n "$ZSH_VERSION" ]]; then
@@ -12,33 +16,32 @@ if [[ -n "$ZSH_VERSION" ]]; then
     0="${${(M)0:#/*}:-$PWD/$0}"
     FORGIT_INSTALL_DIR="${0:h}"
 elif [[ -n "$BASH_VERSION" ]]; then
-    FORGIT_INSTALL_DIR="$(dirname -- "${BASH_SOURCE[0]}")"
+    FORGIT_INSTALL_DIR="$(command dirname -- "${BASH_SOURCE[0]}")"
 else
     forgit::error "Only zsh and bash are supported"
 fi
 
-export FORGIT_INSTALL_DIR
+builtin export FORGIT_INSTALL_DIR
 FORGIT="$FORGIT_INSTALL_DIR/bin/git-forgit"
 
 # backwards compatibility:
 # export all user-defined FORGIT variables to make them available in git-forgit
 unexported_vars=0
 # Set posix mode in bash to only get variables, see #256.
-[[ -n "$BASH_VERSION" ]] && set -o posix
-set | awk -F '=' '{ print $1 }' | grep FORGIT_ | while read -r var; do
-    if ! export | grep -q "\(^$var=\|^export $var=\)"; then
-        if [[ $unexported_vars == 0 ]]; then
+[[ -n "$BASH_VERSION" ]] && builtin set -o posix
+builtin set | command awk -F '=' '{ print $1 }' | command grep FORGIT_ | while builtin read -r var; do
+    if ! builtin export | command grep -q "\(^$var=\|^export $var=\)"; then        if [[ $unexported_vars == 0 ]]; then
             forgit::warn "Config options have to be exported in future versions of forgit."
             forgit::warn "Please update your config accordingly:"
         fi
         forgit::warn "  export $var"
         unexported_vars=$((unexported_vars + 1))
         # shellcheck disable=SC2163
-        export "$var"
+        builtin export "$var"
     fi
 done
-unset unexported_vars
-[[ -n "$BASH_VERSION" ]] && set +o posix
+builtin unset unexported_vars
+[[ -n "$BASH_VERSION" ]] && builtin set +o posix
 
 # register shell functions
 forgit::log() {
@@ -149,48 +152,48 @@ forgit::attributes() {
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
 
-    export forgit_add="${forgit_add:-ga}"
-    export forgit_reset_head="${forgit_reset_head:-grh}"
-    export forgit_log="${forgit_log:-glo}"
-    export forgit_reflog="${forgit_reflog:-grl}"
-    export forgit_diff="${forgit_diff:-gd}"
-    export forgit_show="${forgit_show:-gso}"
-    export forgit_ignore="${forgit_ignore:-gi}"
-    export forgit_attributes="${forgit_attributes:-gat}"
-    export forgit_checkout_file="${forgit_checkout_file:-gcf}"
-    export forgit_checkout_branch="${forgit_checkout_branch:-gcb}"
-    export forgit_checkout_commit="${forgit_checkout_commit:-gco}"
-    export forgit_checkout_tag="${forgit_checkout_tag:-gct}"
-    export forgit_branch_delete="${forgit_branch_delete:-gbd}"
-    export forgit_revert_commit="${forgit_revert_commit:-grc}"
-    export forgit_clean="${forgit_clean:-gclean}"
-    export forgit_stash_show="${forgit_stash_show:-gss}"
-    export forgit_stash_push="${forgit_stash_push:-gsp}"
-    export forgit_cherry_pick="${forgit_cherry_pick:-gcp}"
-    export forgit_rebase="${forgit_rebase:-grb}"
-    export forgit_fixup="${forgit_fixup:-gfu}"
-    export forgit_blame="${forgit_blame:-gbl}"
+    builtin export forgit_add="${forgit_add:-ga}"
+    builtin export forgit_reset_head="${forgit_reset_head:-grh}"
+    builtin export forgit_log="${forgit_log:-glo}"
+    builtin export forgit_reflog="${forgit_reflog:-grl}"
+    builtin export forgit_diff="${forgit_diff:-gd}"
+    builtin export forgit_show="${forgit_show:-gso}"
+    builtin export forgit_ignore="${forgit_ignore:-gi}"
+    builtin export forgit_attributes="${forgit_attributes:-gat}"
+    builtin export forgit_checkout_file="${forgit_checkout_file:-gcf}"
+    builtin export forgit_checkout_branch="${forgit_checkout_branch:-gcb}"
+    builtin export forgit_checkout_commit="${forgit_checkout_commit:-gco}"
+    builtin export forgit_checkout_tag="${forgit_checkout_tag:-gct}"
+    builtin export forgit_branch_delete="${forgit_branch_delete:-gbd}"
+    builtin export forgit_revert_commit="${forgit_revert_commit:-grc}"
+    builtin export forgit_clean="${forgit_clean:-gclean}"
+    builtin export forgit_stash_show="${forgit_stash_show:-gss}"
+    builtin export forgit_stash_push="${forgit_stash_push:-gsp}"
+    builtin export forgit_cherry_pick="${forgit_cherry_pick:-gcp}"
+    builtin export forgit_rebase="${forgit_rebase:-grb}"
+    builtin export forgit_fixup="${forgit_fixup:-gfu}"
+    builtin export forgit_blame="${forgit_blame:-gbl}"
 
-    alias "${forgit_add}"='forgit::add'
-    alias "${forgit_reset_head}"='forgit::reset::head'
-    alias "${forgit_log}"='forgit::log'
-    alias "${forgit_reflog}"='forgit::reflog'
-    alias "${forgit_diff}"='forgit::diff'
-    alias "${forgit_show}"='forgit::show'
-    alias "${forgit_ignore}"='forgit::ignore'
-    alias "${forgit_attributes}"='forgit::attributes'
-    alias "${forgit_checkout_file}"='forgit::checkout::file'
-    alias "${forgit_checkout_branch}"='forgit::checkout::branch'
-    alias "${forgit_checkout_commit}"='forgit::checkout::commit'
-    alias "${forgit_checkout_tag}"='forgit::checkout::tag'
-    alias "${forgit_branch_delete}"='forgit::branch::delete'
-    alias "${forgit_revert_commit}"='forgit::revert::commit'
-    alias "${forgit_clean}"='forgit::clean'
-    alias "${forgit_stash_show}"='forgit::stash::show'
-    alias "${forgit_stash_push}"='forgit::stash::push'
-    alias "${forgit_cherry_pick}"='forgit::cherry::pick::from::branch'
-    alias "${forgit_rebase}"='forgit::rebase'
-    alias "${forgit_fixup}"='forgit::fixup'
-    alias "${forgit_blame}"='forgit::blame'
+    builtin alias "${forgit_add}"='forgit::add'
+    builtin alias "${forgit_reset_head}"='forgit::reset::head'
+    builtin alias "${forgit_log}"='forgit::log'
+    builtin alias "${forgit_reflog}"='forgit::reflog'
+    builtin alias "${forgit_diff}"='forgit::diff'
+    builtin alias "${forgit_show}"='forgit::show'
+    builtin alias "${forgit_ignore}"='forgit::ignore'
+    builtin alias "${forgit_attributes}"='forgit::attributes'
+    builtin alias "${forgit_checkout_file}"='forgit::checkout::file'
+    builtin alias "${forgit_checkout_branch}"='forgit::checkout::branch'
+    builtin alias "${forgit_checkout_commit}"='forgit::checkout::commit'
+    builtin alias "${forgit_checkout_tag}"='forgit::checkout::tag'
+    builtin alias "${forgit_branch_delete}"='forgit::branch::delete'
+    builtin alias "${forgit_revert_commit}"='forgit::revert::commit'
+    builtin alias "${forgit_clean}"='forgit::clean'
+    builtin alias "${forgit_stash_show}"='forgit::stash::show'
+    builtin alias "${forgit_stash_push}"='forgit::stash::push'
+    builtin alias "${forgit_cherry_pick}"='forgit::cherry::pick::from::branch'
+    builtin alias "${forgit_rebase}"='forgit::rebase'
+    builtin alias "${forgit_fixup}"='forgit::fixup'
+    builtin alias "${forgit_blame}"='forgit::blame'
 
 fi
