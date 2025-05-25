@@ -49,6 +49,7 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_cherry_pick; or string collect "gcp") git-forgit cherry_pick_from_branch
     abbr -a -- (string collect $forgit_rebase; or string collect "grb") git-forgit rebase
     abbr -a -- (string collect $forgit_fixup; or string collect "gfu") git-forgit fixup
+    abbr -a -- (string collect $forgit_squash; or string collect "gsq") git-forgit squash
     abbr -a -- (string collect $forgit_checkout_commit; or string collect "gco") git-forgit checkout_commit
     abbr -a -- (string collect $forgit_revert_commit; or string collect "grc") git-forgit revert_commit
     abbr -a -- (string collect $forgit_blame; or string collect "gbl") git-forgit blame
