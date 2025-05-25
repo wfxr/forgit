@@ -148,6 +148,8 @@ Then add the following to your shell's config file:
 
 - **Interactive `git commit --squash && git rebase -i --autosquash` selector** (`gsq`)
 
+- **Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector** (`grw`)
+
 # ⌨ Keybindings
 
 | Key                                           | Action                                      |
@@ -208,6 +210,7 @@ forgit_rebase=grb
 forgit_blame=gbl
 forgit_fixup=gfu
 forgit_squash=gsq
+forgit_reword=grw
 ```
 
 ## git integration
@@ -267,6 +270,7 @@ These are passed to the according `git` calls.
 | `gbl`    | `FORGIT_BLAME_GIT_OPTS`                                                     |
 | `gfu`    | `FORGIT_FIXUP_GIT_OPTS`                                                     |
 | `gsq`    | `FORGIT_SQUASH_GIT_OPTS`                                                    |
+| `grw`    | `FORGIT_REWORD_GIT_OPTS`                                                    |
 | `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
 
 ## pagers
@@ -325,6 +329,7 @@ Customizing fzf options for each command individually is also supported:
 | `gbl`    | `FORGIT_BLAME_FZF_OPTS`           |
 | `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
 | `gsq`    | `FORGIT_SQUASH_FZF_OPTS`          |
+| `grw`    | `FORGIT_REWORD_FZF_OPTS`          |
 | `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
 
 Complete loading order of fzf options is:
