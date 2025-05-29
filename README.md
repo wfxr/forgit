@@ -96,6 +96,32 @@ Then add the following to your shell's config file:
 
 [AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit, are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or [forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the default branch of this repository.
 
+# Completions
+
+Forgit offers completions for all supported shells. Completions are automatically configured when installing forgit through Homebrew or the AUR. All other installation methods mentioned above require manual setup for completions. The necessary steps depend on the shell you use.
+
+## Bash
+
+- Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) in
+  `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
+- Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) explicitly to have
+  bash tab completion for forgit shell functions and aliases (e.g., `gcb <tab>` completes branches).
+
+## Fish
+
+- Put [`completions/git-forgit.fish`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.fish) in `~/.config/fish/completions/` to have fish tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `ga`.
+
+## Zsh
+
+- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`.
+
+If you're having issues after updating, and commands such as `forgit::add` or aliases `ga` aren't working, remove your completions cache and restart your shell.
+
+```zsh
+> rm ~/.zcompdump
+> zsh
+```
+
 # 📝 Features
 
 - **Interactive `git add` selector** (`ga`)
@@ -374,26 +400,6 @@ export FORGIT_LOG_FZF_OPTS='
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
 - [`tree`](https://gitlab.com/OldManProgrammer/unix-tree): Directory tree view for `gclean`.
-
-# Completions
-
-## Bash
-
-- Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) in
-  `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
-- Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) explicitly to have
-  bash tab completion for forgit shell functions and aliases (e.g., `gcb <tab>` completes branches).
-
-## Zsh
-
-- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`
-
-If you're having issues after updating, and commands such as `forgit::add` or aliases `ga` aren't working, remove your completions cache and restart your shell.
-
-```zsh
-> rm ~/.zcompdump
-> zsh
-```
 
 # 💡 Tips
 
