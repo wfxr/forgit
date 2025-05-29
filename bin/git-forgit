@@ -797,6 +797,33 @@ _forgit_edit_commit() {
     fi
 }
 
+_forgit_reword() {
+    _forgit_inside_work_tree || return 1
+    local opts graph quoted_files target_commit prev_commit
+    graph=()
+    [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
+    git_opts=()
+    _forgit_parse_array _forgit_reword_git_opts "$FORGIT_REWORD_GIT_OPTS"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
+        --preview=\"$FORGIT file_preview {}\"
+        $FORGIT_REWORD_FZF_OPTS
+    "
+    target_commit=$(
+        git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
+        _forgit_emojify |
+        FZF_DEFAULT_OPTS="$opts" fzf |
+        _forgit_extract_sha)
+    if [[ -n "$target_commit" ]] && git commit "${git_opts[@]}" --fixup=reword:"$target_commit"; then
+        prev_commit=$(_forgit_previous_commit "$target_commit")
+        # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
+        # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
+        GIT_SEQUENCE_EDITOR=: git rebase --autostash -i --autosquash "$prev_commit"
+    fi
+}
+
 _forgit_checkout_file_preview() {
     git diff --color=always -- "$1" | _forgit_pager diff
 }
@@ -1165,6 +1192,7 @@ public_commands=(
     "diff"
     "fixup"
     "squash"
+    "reword"
     "ignore"
     "log"
     "reflog"
