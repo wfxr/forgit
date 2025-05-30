@@ -28,10 +28,6 @@ if [[ "$higher_fzf_version" != "$installed_fzf_version" ]]; then
 fi
 
 # Set shell for fzf preview commands
-# Disable shellcheck for "which", because it suggests "command -v xxx" instead,
-# which is not a working replacement.
-# See https://github.com/koalaman/shellcheck/issues/1162
-# shellcheck disable=2230
 SHELL="$(which bash)"
 export SHELL
 
