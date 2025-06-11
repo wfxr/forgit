@@ -755,32 +755,34 @@ _forgit_file_preview() {
 _forgit_fixup() {
     _forgit_inside_work_tree || return 1
     git diff --cached --quiet && echo 'Nothing to fixup: there are no staged changes.' && return 1
-    _forgit_edit_commit --fixup "$FORGIT_FIXUP_FZF_OPTS" "$FORGIT_FIXUP_GIT_OPTS"
+    _forgit_edit_commit --fixup "$FORGIT_FIXUP_FZF_OPTS" "$FORGIT_FIXUP_GIT_OPTS" "$@"
 }
 
 _forgit_squash() {
     _forgit_inside_work_tree || return 1
     git diff --cached --quiet && echo 'Nothing to squash: there are no staged changes.' && return 1
-    _forgit_edit_commit --squash "$FORGIT_SQUASH_FZF_OPTS" "$FORGIT_SQUASH_GIT_OPTS"
+    _forgit_edit_commit --squash "$FORGIT_SQUASH_FZF_OPTS" "$FORGIT_SQUASH_GIT_OPTS" "$@"
 }
 
 _forgit_edit_commit() {
-    local action fzf_opts opts graph target_commit prev_commit
+    local action fzf_opts opts graph quoted_files target_commit prev_commit
     action=$1
     fzf_opts=$2
     graph=()
     [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
     git_opts=()
     _forgit_parse_array git_opts "$3"
+    shift 3
+    quoted_files=$(_forgit_quote_files "$@")
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
-        --preview=\"$FORGIT file_preview {}\"
+        --preview=\"$FORGIT file_preview {} $quoted_files\"
         $fzf_opts
     "
     target_commit=$(
-        git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
+        git log "${graph[@]}" --color=always --format="$_forgit_log_format" "$@" |
         _forgit_emojify |
         FZF_DEFAULT_OPTS="$opts" fzf |
         _forgit_extract_sha)
@@ -800,15 +802,16 @@ _forgit_reword() {
     [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
     git_opts=()
     _forgit_parse_array _forgit_reword_git_opts "$FORGIT_REWORD_GIT_OPTS"
+    quoted_files=$(_forgit_quote_files "$@")
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
         --bind=\"ctrl-y:execute-silent($FORGIT yank_sha {})\"
-        --preview=\"$FORGIT file_preview {}\"
+        --preview=\"$FORGIT file_preview {} $quoted_files\"
         $FORGIT_REWORD_FZF_OPTS
     "
     target_commit=$(
-        git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
+        git log "${graph[@]}" --color=always --format="$_forgit_log_format" "$@" |
         _forgit_emojify |
         FZF_DEFAULT_OPTS="$opts" fzf |
         _forgit_extract_sha)
