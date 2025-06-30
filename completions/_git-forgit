@@ -19,6 +19,7 @@ _git-stash-show() {
 }
 
 _git-worktrees() {
+    # --porcelain usually paired with -z but not needed since we use awk
     _alternative "worktrees:worktree:($(git worktree list --porcelain | awk '/worktree/ {print $2}'))"
 }
 

@@ -37,6 +37,7 @@ _git_stash_show()
 
 _git_worktrees()
 {
+    # --porcelain usually paired with -z but not needed since we use awk
     __gitcomp_nl "$(git worktree list --porcelain | awk '/worktree/ {print $2}')"
 }
 
