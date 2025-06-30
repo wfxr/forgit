@@ -37,7 +37,7 @@ _git_stash_show()
 
 _git_worktrees()
 {
-    __gitcomp_nl "$(git worktree list --porcelain | awk '/worktree/ {print $2}')"
+    __gitcomp_nl "$(git worktree list -z --porcelain | awk '/worktree/ {print $2}')"
 }
 
 # Completion for git-forgit
