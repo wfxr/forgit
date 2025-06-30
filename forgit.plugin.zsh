@@ -156,6 +156,26 @@ forgit::attributes() {
     "$FORGIT" attributes "$@"
 }
 
+forgit::worktree::select() {
+    "$FORGIT" worktree_select "$@"
+}
+
+forgit::worktree::jump() {
+    cd "$(forgit::worktree::select "$@")" || exit
+}
+
+forgit::worktree::lock() {
+    "$FORGIT" worktree_lock "$@"
+}
+
+forgit::worktree::remove() {
+    "$FORGIT" worktree_remove "$@"
+}
+
+forgit::worktree::unlock() {
+    "$FORGIT" worktree_unlock "$@"
+}
+
 # register aliases
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -183,6 +203,11 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin export forgit_squash="${forgit_squash:-gsq}"
     builtin export forgit_reword="${forgit_reword:-grw}"
     builtin export forgit_blame="${forgit_blame:-gbl}"
+    builtin export forgit_worktree_select="${forgit_worktree_select:-gws}"
+    builtin export forgit_worktree_jump="${forgit_worktree_jump:-gwj}"
+    builtin export forgit_worktree_lock="${forgit_worktree_lock:-gwl}"
+    builtin export forgit_worktree_remove="${forgit_worktree_remove:-gwr}"
+    builtin export forgit_worktree_unlock="${forgit_worktree_unlock:-gwu}"
 
     builtin alias "${forgit_add}"='forgit::add'
     builtin alias "${forgit_reset_head}"='forgit::reset::head'
@@ -207,5 +232,10 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin alias "${forgit_squash}"='forgit::squash'
     builtin alias "${forgit_reword}"='forgit::reword'
     builtin alias "${forgit_blame}"='forgit::blame'
+    builtin alias "${forgit_worktree_select}"='forgit::worktree::select'
+    builtin alias "${forgit_worktree_jump}"='forgit::worktree::jump'
+    builtin alias "${forgit_worktree_lock}"='forgit::worktree::lock'
+    builtin alias "${forgit_worktree_remove}"='forgit::worktree::remove'
+    builtin alias "${forgit_worktree_unlock}"='forgit::worktree::unlock'
 
 fi
