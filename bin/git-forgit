@@ -1119,7 +1119,7 @@ _forgit_ignore() {
         args=()
         while IFS='' read -r arg; do
             args+=("$arg")
-        done < <(_forgit_paths_list "$FORGIT_GI_TEMPLATES" .gitignore | 
+        done < <(_forgit_paths_list "$FORGIT_GI_TEMPLATES" .gitignore |
             nl -w4 -s'  ' |
             FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}')
     fi
