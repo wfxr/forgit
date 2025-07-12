@@ -190,14 +190,14 @@ _forgit_log_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% git show --color=always -U"$_forgit_preview_context" % -- "$@" | _forgit_pager show
+    git show --color=always -U"$_forgit_preview_context" "${sha}" -- "$@" | _forgit_pager show
 }
 
 _forgit_log_enter() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% "${FORGIT}" show % "$@"
+    "${FORGIT}" show "${sha}" "$@"
 }
 
 # git commit viewer
@@ -526,13 +526,13 @@ _forgit_reset_head() {
 _forgit_stash_show_preview() {
     local stash
     stash=$(echo "$1" | _forgit_extract_stash_name)
-    echo "$stash" | xargs -I% git show --color=always -U"$_forgit_preview_context" % | _forgit_pager show
+    git show --color=always -U"$_forgit_preview_context" "${stash}" | _forgit_pager show
 }
 
 _forgit_stash_show_enter() {
     local stash
     stash=$(echo "$1" | _forgit_extract_stash_name)
-    echo "$stash" | xargs -I% "${FORGIT}" show %
+    "${FORGIT}" show "${stash}"
 }
 
 # git stash viewer
@@ -635,7 +635,9 @@ _forgit_clean() {
 }
 
 _forgit_cherry_pick_preview() {
-    echo "$1" | cut -f2- | _forgit_extract_sha | xargs -I% git show --color=always % | _forgit_pager show
+    local sha
+    sha=$(echo "$1" | cut -f2- | _forgit_extract_sha)
+    git show --color=always "${sha}" | _forgit_pager show
 }
 
 _forgit_cherry_pick() {
@@ -751,7 +753,7 @@ _forgit_file_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    echo "$sha" | xargs -I% git show --color=always % -- "$@" | _forgit_pager show
+    git show --color=always "${sha}" -- "$@" | _forgit_pager show
 }
 
 _forgit_fixup() {
@@ -924,7 +926,9 @@ _forgit_checkout_tag() {
 }
 
 _forgit_checkout_commit_preview() {
-    echo "$1" | _forgit_extract_sha | xargs -I% git show --color=always % | _forgit_pager show
+    local sha
+    sha=$(echo "$1" | _forgit_extract_sha)
+    git show --color=always "${sha}" | _forgit_pager show
 }
 
 _forgit_git_checkout_commit() {
@@ -987,11 +991,9 @@ _forgit_branch_delete() {
 }
 
 _forgit_revert_preview() {
-    echo "$1" |
-    cut -f2- |
-    _forgit_extract_sha |
-    xargs -I% git show --color=always % |
-    _forgit_pager show
+    local sha
+    sha=$(echo "$1" | cut -f2- | _forgit_extract_sha)
+    git show --color=always "${sha}" | _forgit_pager show
 }
 
 _forgit_git_revert() {
