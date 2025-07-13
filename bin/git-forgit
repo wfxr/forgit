@@ -837,7 +837,7 @@ _forgit_git_checkout_file() {
 _forgit_checkout_file() {
     _forgit_inside_work_tree || return 1
     local files opts
-    [[ $# -ne 0 ]] && { _forgit_git_checkout_file -- "$@"; return $?; }
+    _forgit_contains_non_flags "$@" && { _forgit_git_checkout_file -- "$@"; return $?; }
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
@@ -849,7 +849,7 @@ _forgit_checkout_file() {
         files+=("$file")
     done < <(_forgit_list_files --modified |
         FZF_DEFAULT_OPTS="$opts" fzf)
-    [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "${files[@]}"
+    [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "$@" "${files[@]}"
 }
 
 _forgit_git_checkout_branch() {
