@@ -477,7 +477,7 @@ _forgit_add() {
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git -c color.status=always -c status.relativePaths=true -c core.quotePath=false status -su |
+    done < <(git -c color.status=always -c status.relativePaths=true -c core.quotePath=false status -s |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
