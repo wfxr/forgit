@@ -163,7 +163,7 @@ then
         __git_complete "${forgit_rebase}" _git_rebase
         __git_complete "${forgit_reset_head}" _git_reset
         __git_complete "${forgit_revert_commit}" _git_revert
-        __git_complete "${forgit_reword_commit}" _git_branch
+        __git_complete "${forgit_reword}" _git_branch
         __git_complete "${forgit_show}" _git_show
         __git_complete "${forgit_squash}" _git_branch
         __git_complete "${forgit_stash_show}" _git_stash_show
