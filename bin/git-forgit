@@ -525,24 +525,26 @@ _forgit_reset_head() {
 
 _forgit_stash_show_preview() {
     local stash
-    stash=$(echo "$1" | cut -d: -f1)
-    _forgit_git_stash_show "$stash" | _forgit_pager diff
+    stash=$(echo "$1" | _forgit_extract_stash_name)
+    echo "$stash" | xargs -I% git show --color=always -U"$_forgit_preview_context" % | _forgit_pager show
 }
 
-_forgit_git_stash_show() {
-    git stash show --color=always --ext-diff "$@"
+_forgit_stash_show_enter() {
+    local stash
+    stash=$(echo "$1" | _forgit_extract_stash_name)
+    echo "$stash" | xargs -I% "${FORGIT}" show %
 }
 
 # git stash viewer
 _forgit_stash_show() {
     _forgit_inside_work_tree || return 1
     local opts
-    [[ $# -ne 0 ]] && { _forgit_git_stash_show "$@"; return $?; }
+    [[ $# -ne 0 ]] && { "${FORGIT}" show "$@"; return $?; }
     _forgit_stash_show_git_opts=()
     _forgit_parse_array _forgit_stash_show_git_opts "$FORGIT_STASH_SHOW_GIT_OPTS"
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        +s +m -0 --tiebreak=index --bind=\"enter:execute($FORGIT stash_show_preview {} | $FORGIT pager enter)\"
+        +s +m -0 --tiebreak=index --bind=\"enter:execute($FORGIT stash_show_enter {})\"
         --bind=\"ctrl-y:execute-silent($FORGIT yank_stash_name {})\"
         --preview=\"$FORGIT stash_show_preview {}\"
         $FORGIT_STASH_FZF_OPTS
@@ -1106,7 +1108,7 @@ _forgit_ignore() {
         args=()
         while IFS='' read -r arg; do
             args+=("$arg")
-        done < <(_forgit_paths_list "$FORGIT_GI_TEMPLATES" .gitignore | 
+        done < <(_forgit_paths_list "$FORGIT_GI_TEMPLATES" .gitignore |
             nl -w4 -s'  ' |
             FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $2}')
     fi
@@ -1221,6 +1223,7 @@ private_commands=(
     "show_enter"
     "show_preview"
     "stash_push_preview"
+    "stash_show_enter"
     "stash_show_preview"
     "yank_sha"
     "yank_stash_name"
