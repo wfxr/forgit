@@ -92,14 +92,14 @@ _git-forgit() {
     cherry_pick_from_branch) _git-branches ;;
     clean) _git-clean ;;
     diff) _git-forgit-diff ;;
-    fixup) __git_branch_names ;;
+    fixup) _git-log ;;
     log) _git-log ;;
     reflog) _git-forgit-reflog ;;
     rebase) _git-rebase ;;
     reset_head) _git-staged ;;
     revert_commit) __git_recent_commits ;;
-    reword) __git_branch_names ;;
-    squash) __git_branch_names ;;
+    reword) _git-log ;;
+    squash) _git-log ;;
     stash_show) _git-stash-show ;;
     show) _git-show ;;
     esac
@@ -120,14 +120,14 @@ compdef _git-cherry-pick forgit::cherry::pick
 compdef _git-branches forgit::cherry::pick::from::branch
 compdef _git-clean forgit::clean
 compdef _git-forgit-diff forgit::diff
-compdef __git_branch_names forgit::fixup
+compdef _git-log forgit::fixup
 compdef _git-log forgit::log
 compdef _git-reflog forgit::reflog
 compdef _git-rebase forgit::rebase
 compdef _git-staged forgit::reset::head
 compdef __git_recent_commits forgit::revert::commit
-compdef __git_branch_names forgit::reword
-compdef __git_branch_names forgit::squash
+compdef _git-log forgit::reword
+compdef _git-log forgit::squash
 compdef _git-stash-show forgit::stash::show
 compdef _git-show forgit::show
 
