@@ -841,7 +841,7 @@ _forgit_git_checkout_file() {
 _forgit_checkout_file() {
     _forgit_inside_work_tree || return 1
     local files opts
-    _forgit_contains_non_flags "$@" && { _forgit_git_checkout_file -- "$@"; return $?; }
+    _forgit_contains_non_flags "$@" && { _forgit_git_checkout_file "$@"; return $?; }
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
