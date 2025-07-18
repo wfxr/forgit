@@ -430,6 +430,10 @@ _forgit_show() {
 
 _forgit_add_preview() {
     file=$(echo "$1" | _forgit_get_single_file_from_add_line)
+    # $file can be a directory when status.showUntrackedFiles is explicitly set to 'normal'
+    # In this case, show the content of the directory and return
+    [ -d "$file" ] && eval "$_forgit_dir_view \"$file\"" && return 0
+
     if (git status -s -- "$file" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
         git diff --color=always --no-index -- /dev/null "$file" | _forgit_pager diff | sed '2 s/added:/untracked:/'
     else
@@ -460,7 +464,7 @@ _forgit_edit_add_file() {
 # git add selector
 _forgit_add() {
     _forgit_inside_work_tree || return 1
-    local changed unmerged untracked files opts
+    local changed unmerged untracked files opts show_untracked
     # Add files if passed as arguments
     _forgit_contains_non_flags "$@" && { _forgit_git_add "$@" && git status -s; return $?; }
 
@@ -475,9 +479,10 @@ _forgit_add() {
         $FORGIT_ADD_FZF_OPTS
     "
     files=()
+    show_untracked=$(git config status.showUntrackedFiles)
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git -c color.status=always -c status.relativePaths=true -c core.quotePath=false status -s |
+    done < <(git -c color.status=always -c status.relativePaths=true -c core.quotePath=false status -s --untracked="${show_untracked:-all}" |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
