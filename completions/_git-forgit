@@ -18,6 +18,11 @@ _git-stash-show() {
     _alternative "files:filename:($(git stash list | sed -n -e 's/:.*//p'))"
 }
 
+_git-worktrees() {
+    # --porcelain usually paired with -z but not needed since we use awk
+    _alternative "worktrees:worktree:($(git worktree list --porcelain | awk '/worktree/ {print $2}'))"
+}
+
 # The completions for git already define a _git-diff completion function, but
 # it provides the wrong results when called from _git-forgit because it heavily
 # depends on the context it's been called from (usage of $curcontext and
@@ -79,6 +84,10 @@ _git-forgit() {
             'squash:git squash'
             'stash_show:git stash viewer'
             'stash_push:git stash push selector'
+            'worktree_select:git worktree selector'
+            'worktree_lock:git worktree lock selector'
+            'worktree_remove:git worktree remove selector'
+            'worktree_unlock:git worktree unlock selector'
         )
         _describe -t commands 'git forgit' subcommands
         ;;
@@ -102,6 +111,10 @@ _git-forgit() {
     squash) _git-log ;;
     stash_show) _git-stash-show ;;
     show) _git-show ;;
+    worktree_select) _git-worktrees ;;
+    worktree_lock) _git-worktrees ;;
+    worktree_remove) _git-worktrees ;;
+    worktree_unlock) _git-worktrees ;;
     esac
 }
 
@@ -130,6 +143,10 @@ compdef _git-log forgit::reword
 compdef _git-log forgit::squash
 compdef _git-stash-show forgit::stash::show
 compdef _git-show forgit::show
+compdef _git-worktrees forgit::worktree::select
+compdef _git-worktrees forgit::worktree::lock
+compdef _git-worktrees forgit::worktree::remove
+compdef _git-worktrees forgit::worktree::unlock
 
 # this is the case of calling the command and pressing tab
 # the very first time of a shell session, we have to manually
