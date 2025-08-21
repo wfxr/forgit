@@ -35,6 +35,12 @@ _git_stash_show()
     __gitcomp_nl "$(__git stash list | sed -n -e 's/:.*//p')"
 }
 
+_git_worktrees()
+{
+    # --porcelain usually paired with -z but not needed since we use awk
+    __gitcomp_nl "$(git worktree list --porcelain | awk '/worktree/ {print $2}')"
+}
+
 # Completion for git-forgit
 # This includes git aliases, e.g. "alias.cb=forgit checkout_branch" will
 # correctly complete available branches on "git cb".
@@ -80,6 +86,10 @@ _git_forgit()
         squash
         stash_show
         stash_push
+        worktree_select
+        worktree_lock
+        worktree_remove
+        worktree_unlock
     "
 
     case ${cword} in
@@ -108,6 +118,10 @@ _git_forgit()
                 show) _git_show ;;
                 squash) _git_log ;;
                 stash_show) _git_stash_show ;;
+                worktree_select) _git_worktrees ;;
+                worktree_lock) _git_worktrees ;;
+                worktree_remove) _git_worktrees ;;
+                worktree_unlock) _git_worktrees ;;
             esac
             ;;
         *)
@@ -145,6 +159,10 @@ then
     __git_complete forgit::show _git_show
     __git_complete forgit::squash _git_log
     __git_complete forgit::stash::show _git_stash_show
+    __git_complete forgit::worktree::select _git_worktrees
+    __git_complete forgit::worktree::lock _git_worktrees
+    __git_complete forgit::worktree::remove _git_worktrees
+    __git_complete forgit::worktree::unlock _git_worktrees
 
     # Completion for forgit plugin shell aliases
     if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -167,5 +185,9 @@ then
         __git_complete "${forgit_show}" _git_show
         __git_complete "${forgit_squash}" _git_log
         __git_complete "${forgit_stash_show}" _git_stash_show
+        __git_complete "${forgit_worktree_select}" _git_worktrees
+        __git_complete "${forgit_worktree_lock}" _git_worktrees
+        __git_complete "${forgit_worktree_remove}" _git_worktrees
+        __git_complete "${forgit_worktree_unlock}" _git_worktrees
     fi
 fi

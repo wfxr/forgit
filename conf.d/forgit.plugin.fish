@@ -55,4 +55,9 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_revert_commit; or string collect "grc") git-forgit revert_commit
     abbr -a -- (string collect $forgit_blame; or string collect "gbl") git-forgit blame
     abbr -a -- (string collect $forgit_checkout_tag; or string collect "gct") git-forgit checkout_tag
+    abbr -a -- (string collect $forgit_worktree_select; or string collect "gwj") git-forgit worktree_select
+    abbr -a -- (string collect $forgit_worktree_jump; or string collect "gwj") 'set tree (git-forgit worktree_select); test -n "$tree"; and cd "$tree"'
+    abbr -a -- (string collect $forgit_worktree_lock; or string collect "gwl") git-forgit worktree_lock
+    abbr -a -- (string collect $forgit_worktree_remove; or string collect "gwr") git-forgit worktree_remove
+    abbr -a -- (string collect $forgit_worktree_unlock; or string collect "gwu") git-forgit worktree_unlock
 end
