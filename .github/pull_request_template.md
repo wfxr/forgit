@@ -6,6 +6,7 @@
 
 - [ ] I have performed a self-review of my code
 - [ ] I have commented my code in hard-to-understand areas
+- [ ] I have added unit tests for my code
 - [ ] I have made corresponding changes to the documentation
 
 ## Description
@@ -18,6 +19,7 @@
 - [ ] New feature
 - [ ] Refactor
 - [ ] Breaking change
+- [ ] Test
 - [ ] Documentation change
 
 ## Test environment
