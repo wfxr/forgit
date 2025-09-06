@@ -232,6 +232,14 @@ _forgit_reflog() {
     return $fzf_exit_code
 }
 
+_forgit_remove_status_from_diff_line() {
+    # Remove the status prefix from a diff line, e.g.
+    #   [M]     somefile
+    # becomes
+    #   somefile
+    sed 's/^[[:space:]]*\[[A-Z0-9]*\][[:space:]]*//'
+}
+
 _forgit_get_files_from_diff_line() {
     # Construct a null-terminated list of the filenames
     # The input looks like one of these lines:
@@ -244,13 +252,13 @@ _forgit_get_files_from_diff_line() {
     #   oldfile\0
     # We have to do a two-step sed -> tr pipe because OSX's sed implementation does
     # not support the null-character directly.
-    sed 's/^[[:space:]]*\[[A-Z0-9]*\][[:space:]]*//' | sed 's/  ->  /\n/' | tr '\n' '\0'
+    _forgit_remove_status_from_diff_line | sed 's/  ->  /\n/' | tr '\n' '\0'
 }
 
 _forgit_get_single_file_from_diff_line() {
     # Similar to the function above, but only gets a single file from a single line
     # Gets the new name of renamed files
-    sed 's/^[[:space:]]*\[[A-Z0-9]*\][[:space:]]*//' | sed 's/.*->  //'
+    _forgit_remove_status_from_diff_line | sed 's/.*->  //'
 }
 
 _forgit_exec_diff() {
