@@ -1270,4 +1270,10 @@ PRIVATE_COMMANDS=(
     "pager"
 )
 
+# Check if the script is being sourced. This is necessary for unit tests where
+# we do not want to execute the main function.
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+    return 0
+fi
+
 main "${@}"
