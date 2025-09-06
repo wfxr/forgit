@@ -12,27 +12,7 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
-# Check if fzf is installed
-installed_fzf_version=$(fzf --version 2>/dev/null | awk '{print $1}')
-if [[ -z "$installed_fzf_version" ]]; then
-    echo "fzf is not installed. Please install fzf first."
-    exit 1
-fi
-
-# Check fzf version
-required_fzf_version="0.49.0"
-higher_fzf_version=$(printf '%s\n' "$required_fzf_version" "$installed_fzf_version" | sort -V | tail -n1)
-if [[ "$higher_fzf_version" != "$installed_fzf_version" ]]; then
-    echo "fzf version $required_fzf_version or higher is required. You have $installed_fzf_version."
-    exit 1
-fi
-
-# Set shell for fzf preview commands
-SHELL="$(which bash)"
-export SHELL
-
-# Get absolute forgit path
-FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+REQUIRED_FZF_VERSION="0.49.0"
 
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
@@ -1185,7 +1165,54 @@ _forgit_paths_list() {
     find "$path" -name "*$ext" -print |sed -e "s#$ext\$##" -e 's#.*/##' -e '/^$/d' | sort -fu
 }
 
-public_commands=(
+check_prequisites() {
+    local installed_fzf_version
+    local higher_fzf_version
+
+    # Check if fzf is installed
+    installed_fzf_version=$(fzf --version 2>/dev/null | awk '{print $1}')
+    if [[ -z "$installed_fzf_version" ]]; then
+        echo "fzf is not installed. Please install fzf first."
+        exit 1
+    fi
+
+    # Check fzf version
+    higher_fzf_version=$(printf '%s\n' "$REQUIRED_FZF_VERSION" "$installed_fzf_version" | sort -V | tail -n1)
+    if [[ "$higher_fzf_version" != "$installed_fzf_version" ]]; then
+        echo "fzf version $REQUIRED_FZF_VERSION or higher is required. You have $installed_fzf_version."
+        exit 1
+    fi
+}
+
+main() {
+    local cmd="$1"
+    shift
+
+    check_prequisites
+
+    # Set shell for fzf preview commands
+    SHELL="$(which bash)"
+    export SHELL
+
+    # Get absolute forgit path
+    FORGIT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)/$(basename -- "${BASH_SOURCE[0]}")
+
+    # shellcheck disable=SC2076
+    if [[ ! " ${PUBLIC_COMMANDS[*]} " =~ " ${cmd} " ]] && [[ ! " ${PRIVATE_COMMANDS[*]} " =~ " ${cmd} " ]]; then
+        if [[ -z "$cmd" ]]; then
+            printf "forgit: missing command\n\n"
+        else
+            printf "forgit: '%s' is not a valid forgit command.\n\n" "$cmd"
+        fi
+        printf "The following commands are supported:\n"
+        printf "\t%s\n" "${PUBLIC_COMMANDS[@]}"
+        exit 1
+    fi
+
+    _forgit_"${cmd}" "$@"
+}
+
+PUBLIC_COMMANDS=(
     "add"
     "attributes"
     "blame"
@@ -1212,7 +1239,7 @@ public_commands=(
     "stash_push"
 )
 
-private_commands=(
+PRIVATE_COMMANDS=(
     "add_preview"
     "blame_preview"
     "branch_preview"
@@ -1243,19 +1270,4 @@ private_commands=(
     "pager"
 )
 
-cmd="$1"
-shift
-
-# shellcheck disable=SC2076
-if [[ ! " ${public_commands[*]} " =~ " ${cmd} " ]] && [[ ! " ${private_commands[*]} " =~ " ${cmd} " ]]; then
-    if [[ -z "$cmd" ]]; then
-        printf "forgit: missing command\n\n"
-    else
-        printf "forgit: '%s' is not a valid forgit command.\n\n" "$cmd"
-    fi
-    printf "The following commands are supported:\n"
-    printf "\t%s\n" "${public_commands[@]}"
-    exit 1
-fi
-
-_forgit_"${cmd}" "$@"
+main "${@}"
