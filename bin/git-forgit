@@ -452,13 +452,11 @@ _forgit_edit_add_file() {
 # git add selector
 _forgit_add() {
     _forgit_inside_work_tree || return 1
-    local changed unmerged untracked files opts show_untracked
+    local added files opts show_untracked
     # Add files if passed as arguments
     _forgit_contains_non_flags "$@" && { _forgit_git_add "$@" && git status -s; return $?; }
 
-    changed=$(git config --get-color color.status.changed red)
-    unmerged=$(git config --get-color color.status.unmerged red)
-    untracked=$(git config --get-color color.status.untracked red)
+    added=$(git config --get-color color.status.added green)
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -0 -m --nth 2..,..
@@ -470,8 +468,9 @@ _forgit_add() {
     show_untracked=$(git config status.showUntrackedFiles)
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(git -c color.status=always -c status.relativePaths=true -c core.quotePath=false status -s --untracked="${show_untracked:-all}" |
-        grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
+    done < <(git -c color.status=always -c status.relativePaths=true status -s -z --untracked="${show_untracked:-all}" |
+        tr '\0' '\n' |
+        grep -F --invert-match "$added" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/' |
         FZF_DEFAULT_OPTS="$opts" fzf |
         _forgit_get_single_file_from_add_line)
@@ -622,7 +621,7 @@ _forgit_clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git -c core.quotePath=false clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    files=$(_forgit_list_files --others "$@" | sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean "${_forgit_clean_git_opts[@]}" -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
 }
