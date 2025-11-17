@@ -170,6 +170,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin export forgit_attributes="${forgit_attributes:-gat}"
     builtin export forgit_checkout_file="${forgit_checkout_file:-gcf}"
     builtin export forgit_checkout_branch="${forgit_checkout_branch:-gcb}"
+    builtin export forgit_switch_branch="${forgit_switch_branch:-gsw}"
     builtin export forgit_checkout_commit="${forgit_checkout_commit:-gco}"
     builtin export forgit_checkout_tag="${forgit_checkout_tag:-gct}"
     builtin export forgit_branch_delete="${forgit_branch_delete:-gbd}"

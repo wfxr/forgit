@@ -105,7 +105,7 @@ Forgit offers completions for all supported shells. Completions are automaticall
 - Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) in
   `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
 - Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) explicitly to have
-  bash tab completion for forgit shell functions and aliases (e.g., `gcb <tab>` completes branches).
+  bash tab completion for forgit shell functions and aliases (e.g., `gsw <tab>` completes branches).
 
 ## Fish
 
@@ -147,6 +147,8 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 - **Interactive `git checkout <file>` selector** (`gcf`)
 
 - **Interactive `git checkout <branch>` selector** (`gcb`)
+
+- **Interactive `git switch <branch>` selector** (`gsw`)
 
 - **Interactive `git branch -D <branch>` selector** (`gbd`)
 
@@ -224,6 +226,7 @@ forgit_ignore=gi
 forgit_attributes=gat
 forgit_checkout_file=gcf
 forgit_checkout_branch=gcb
+forgit_switch_branch=gsw
 forgit_branch_delete=gbd
 forgit_checkout_tag=gct
 forgit_checkout_commit=gco
@@ -285,6 +288,7 @@ These are passed to the according `git` calls.
 | `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS`                                                |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS`                                             |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`, `FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` |
+| `gsw`    | `FORGIT_SWITCH_BRANCH_GIT_OPTS`                                             |
 | `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS`                                             |
 | `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS`                                              |
 | `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS`                                           |
@@ -344,6 +348,7 @@ Customizing fzf options for each command individually is also supported:
 | `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_FZF_OPTS`   |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
+| `gsw`    | `FORGIT_SWITCH_BRANCH_FZF_OPTS`   |
 | `gbd`    | `FORGIT_BRANCH_DELETE_FZF_OPTS`   |
 | `gct`    | `FORGIT_CHECKOUT_TAG_FZF_OPTS`    |
 | `gco`    | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
