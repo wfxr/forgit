@@ -112,6 +112,10 @@ forgit::checkout::branch() {
     "$FORGIT" checkout_branch "$@"
 }
 
+forgit::switch::branch() {
+    "$FORGIT" switch_branch "$@"
+}
+
 forgit::checkout::tag() {
     "$FORGIT" checkout_tag "$@"
 }
@@ -195,6 +199,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin alias "${forgit_attributes}"='forgit::attributes'
     builtin alias "${forgit_checkout_file}"='forgit::checkout::file'
     builtin alias "${forgit_checkout_branch}"='forgit::checkout::branch'
+    builtin alias "${forgit_switch_branch}"='forgit::switch::branch'
     builtin alias "${forgit_checkout_commit}"='forgit::checkout::commit'
     builtin alias "${forgit_checkout_tag}"='forgit::checkout::tag'
     builtin alias "${forgit_branch_delete}"='forgit::branch::delete'

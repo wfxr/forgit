@@ -113,6 +113,7 @@ _git-forgit() {
 compdef _git-add forgit::add
 compdef _git-branches forgit::branch::delete
 compdef _git-branches forgit::checkout::branch
+compdef _git-branches forgit::switch::branch
 compdef __git_recent_commits forgit::checkout::commit
 compdef _git-checkout-file forgit::checkout::file
 compdef __git_tags forgit::checkout::tag
