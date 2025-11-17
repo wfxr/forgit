@@ -849,15 +849,15 @@ _forgit_checkout_file() {
     [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "$@" "${files[@]}"
 }
 
-_forgit_git_checkout_branch() {
-    echo "forgit: 'gcb' is deprecated and will be removed in a future release. Please use 'gsw' instead." >&2
-    _forgit_switch_branch "$@"
-}
-
 _forgit_git_switch_branch() {
     _forgit_switch_branch_git_opts=()
     _forgit_parse_array _forgit_switch_branch_git_opts "$FORGIT_SWITCH_BRANCH_GIT_OPTS"
     git switch "${_forgit_switch_branch_git_opts[@]}" "$@"
+}
+
+_forgit_checkout_branch() {
+    _forgit_switch_branch "$@"
+    echo "forgit: 'gcb' is deprecated and will be removed in a future release. Please use 'gsw' instead." >&2
 }
 
 _forgit_switch_branch() {
