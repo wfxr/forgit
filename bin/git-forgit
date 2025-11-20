@@ -855,6 +855,7 @@ _forgit_git_switch_branch() {
     git switch "${_forgit_switch_branch_git_opts[@]}" "$@"
 }
 
+# git checkout-branch selector
 _forgit_checkout_branch() {
     _forgit_switch_branch "$@"
     echo "forgit: 'gcb' is deprecated and will be removed in a future release. Please use 'gsw' instead." >&2
