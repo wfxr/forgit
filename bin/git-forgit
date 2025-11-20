@@ -891,7 +891,7 @@ _forgit_switch_branch() {
     if [[ "$branch" == "remotes/"* ]]; then
         if git branch | grep -qw "${branch#remotes/*/}"; then
             # hack to force creating a new branch which tracks the remote if a local branch already exists
-            _forgit_git_switch_branch -ct "track/${branch#remotes/*/}" --track "$branch"
+            _forgit_git_switch_branch --create "track/${branch#remotes/*/}" --track "$branch"
         elif ! _forgit_git_switch_branch --track "$branch" 2>/dev/null; then
             _forgit_git_switch_branch "$branch"
         fi
