@@ -65,6 +65,14 @@ _forgit_emojify() {
     fi
 }
 
+_forgit_worktree_filter() {
+    if [[ "${FORGIT_CHECKOUT_BRANCH_EXCLUDE_WORKTREES:-true}" == "true" ]]; then
+        grep -v '^[+]'
+    else
+        cat
+    fi
+}
+
 # extract the first git sha occurring in the input and strip trailing newline
 _forgit_extract_sha() {
     grep -Eo '[a-f0-9]+' | head -1 | tr -d '[:space:]'
@@ -879,7 +887,7 @@ _forgit_checkout_branch() {
         "
     _forgit_checkout_branch_branch_git_opts=()
     _forgit_parse_array _forgit_checkout_branch_branch_git_opts "$FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS"
-    branch="$(git branch --color=always "${_forgit_checkout_branch_branch_git_opts[@]:---all}" | LC_ALL=C sort -k1.1,1.1 -rs |
+    branch="$(git branch --color=always "${_forgit_checkout_branch_branch_git_opts[@]:---all}" | _forgit_worktree_filter | LC_ALL=C sort -k1.1,1.1 -rs |
               FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
     [[ -z "$branch" ]] && return 1
 
