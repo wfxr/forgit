@@ -67,6 +67,7 @@ _forgit_emojify() {
 
 _forgit_worktree_filter() {
     if [[ "${FORGIT_CHECKOUT_BRANCH_EXCLUDE_WORKTREES:-true}" == "true" ]]; then
+        # Worktree branches are prefixed with '+' in 'git branch' output
         grep -v '^[+]'
     else
         cat

@@ -384,9 +384,10 @@ export FORGIT_LOG_FZF_OPTS='
 
 ## other options
 
-| Option                      | Description                               | Default                                       |
-|-----------------------------|-------------------------------------------|-----------------------------------------------|
-| `FORGIT_LOG_FORMAT`         | git log format                            | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
+| Option                                     | Description                                   | Default                                       |
+|--------------------------------------------|-----------------------------------------------|-----------------------------------------------|
+| `FORGIT_CHECKOUT_BRANCH_EXCLUDE_WORKTREES` | exclude worktree branches in `gcb`            | `true`                                        |
+| `FORGIT_LOG_FORMAT`                        | git log format                                | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
 | `FORGIT_PREVIEW_CONTEXT`    | lines of diff context in preview mode     | 3                                             |
 | `FORGIT_FULLSCREEN_CONTEXT` | lines of diff context in full-screen mode | 10                                            |
 | `FORGIT_DIR_VIEW`           | command used to preview directories       | `tree` if available, otherwise `find`         |
