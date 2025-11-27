@@ -608,13 +608,8 @@ _forgit_clean_preview() {
     fi
 }
 
-# git clean selector
-_forgit_clean() {
-    _forgit_inside_work_tree || return 1
-    _forgit_contains_non_flags "$@" && { git clean -q "$@"; return $?; }
-    local files opts
-    _forgit_clean_git_opts=()
-    _forgit_parse_array _forgit_clean_git_opts "$FORGIT_CLEAN_GIT_OPTS"
+_forgit_clean_select_files() {
+    local opts
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         --preview=\"$FORGIT clean_preview {}\"
@@ -622,7 +617,17 @@ _forgit_clean() {
         $FORGIT_CLEAN_FZF_OPTS
     "
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    files=$(git -c core.quotePath=false clean -xdffn "$@"| sed 's/^Would remove //' | FZF_DEFAULT_OPTS="$opts" fzf |sed 's#/$##')
+    _forgit_list_files --others "$@" | FZF_DEFAULT_OPTS="$opts" fzf | sed 's#/$##'
+}
+
+# git clean selector
+_forgit_clean() {
+    _forgit_inside_work_tree || return 1
+    _forgit_contains_non_flags "$@" && { git clean -q "$@"; return $?; }
+    local files
+    _forgit_clean_git_opts=()
+    _forgit_parse_array _forgit_clean_git_opts "$FORGIT_CLEAN_GIT_OPTS"
+    files=$(_forgit_clean_select_files "$@")
     [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean "${_forgit_clean_git_opts[@]}" -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
 }
