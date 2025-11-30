@@ -849,6 +849,12 @@ _forgit_checkout_file() {
     [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "$@" "${files[@]}"
 }
 
+_forgit_git_checkout_branch() {
+    _forgit_checkout_branch_git_opts=()
+    _forgit_parse_array _forgit_checkout_branch_git_opts "$FORGIT_CHECKOUT_BRANCH_GIT_OPTS"
+    git checkout "${_forgit_checkout_branch_git_opts[@]}" "$@"
+}
+
 _forgit_git_switch_branch() {
     _forgit_switch_branch_git_opts=()
     _forgit_parse_array _forgit_switch_branch_git_opts "$FORGIT_SWITCH_BRANCH_GIT_OPTS"
@@ -857,8 +863,43 @@ _forgit_git_switch_branch() {
 
 # git checkout-branch selector
 _forgit_checkout_branch() {
-    _forgit_switch_branch "$@"
-    echo "forgit: 'gcb' is deprecated and will be removed in a future release. Please use 'gsw' instead." >&2
+    _forgit_inside_work_tree || return 1
+    # if called with arguments, check if branch exists, else create a new one
+    if [[ $# -ne 0 ]]; then
+        if [[ "$*" == "-" ]] || git show-branch "$@" &>/dev/null; then
+            git switch "$@"
+        else
+            git switch -c "$@"
+        fi
+        checkout_status=$?
+        git status --short
+        return $checkout_status
+    fi
+
+    local opts branch
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index --header-lines=1
+        --preview=\"$FORGIT branch_preview {1}\"
+        $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
+        "
+    _forgit_checkout_branch_branch_git_opts=()
+    _forgit_parse_array _forgit_checkout_branch_branch_git_opts "$FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS"
+    branch="$(git branch --color=always "${_forgit_checkout_branch_branch_git_opts[@]:---all}" | LC_ALL=C sort -k1.1,1.1 -rs |
+              FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
+    [[ -z "$branch" ]] && return 1
+
+    # track the remote branch if possible
+    if [[ "$branch" == "remotes/"* ]]; then
+        if git branch | grep -qw "${branch#remotes/*/}"; then
+            # hack to force creating a new branch which tracks the remote if a local branch already exists
+            _forgit_git_checkout_branch -b "track/${branch#remotes/*/}" --track "$branch"
+        elif ! _forgit_git_checkout_branch --track "$branch" 2>/dev/null; then
+            _forgit_git_checkout_branch "$branch"
+        fi
+    else
+        _forgit_git_checkout_branch "$branch"
+    fi
 }
 
 _forgit_switch_branch() {
