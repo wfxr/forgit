@@ -901,7 +901,6 @@ _forgit_switch_branch() {
     fi
 }
 
-
 _forgit_git_checkout_tag() {
     _forgit_checkout_tag_git_opts=()
     _forgit_parse_array _forgit_checkout_tag_git_opts "$FORGIT_CHECKOUT_TAG_GIT_OPTS"
