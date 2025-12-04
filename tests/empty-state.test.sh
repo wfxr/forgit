@@ -24,16 +24,14 @@ function tear_down() {
 
 function test_checkout_file_shows_message_when_no_modified_files() {
     output=$(_forgit_checkout_file 2>&1)
-    exit_code=$?
+    assert_general_error
 
     assert_same "Nothing to checkout." "$output"
-    assert_same "1" "$exit_code"
 }
 
 function test_checkout_tag_shows_message_when_no_tags() {
     output=$(_forgit_checkout_tag 2>&1)
-    exit_code=$?
+    assert_general_error
 
     assert_same "Nothing to checkout: there are no tags." "$output"
-    assert_same "1" "$exit_code"
 }
