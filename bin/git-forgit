@@ -855,12 +855,6 @@ _forgit_git_checkout_branch() {
     git checkout "${_forgit_checkout_branch_git_opts[@]}" "$@"
 }
 
-_forgit_git_switch_branch() {
-    _forgit_switch_branch_git_opts=()
-    _forgit_parse_array _forgit_switch_branch_git_opts "$FORGIT_SWITCH_BRANCH_GIT_OPTS"
-    git switch "${_forgit_switch_branch_git_opts[@]}" "$@"
-}
-
 # git checkout-branch selector
 _forgit_checkout_branch() {
     _forgit_inside_work_tree || return 1
@@ -900,6 +894,12 @@ _forgit_checkout_branch() {
     else
         _forgit_git_checkout_branch "$branch"
     fi
+}
+
+_forgit_git_switch_branch() {
+    _forgit_switch_branch_git_opts=()
+    _forgit_parse_array _forgit_switch_branch_git_opts "$FORGIT_SWITCH_BRANCH_GIT_OPTS"
+    git switch "${_forgit_switch_branch_git_opts[@]}" "$@"
 }
 
 _forgit_switch_branch() {
