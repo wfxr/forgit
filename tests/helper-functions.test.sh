@@ -26,8 +26,8 @@ function test_forgit_get_files_from_diff_line() {
 }
 
 function provider_diff_lines() {
-    data_set "[A]     newfile" "newfile"
-    data_set "[D]     oldfile with spaces" "oldfile with spaces"
-    data_set "[R100]  file  ->  another file" "file" "another file"
-    data_set "[M]     \"file with\ttab.txt\"" "\"file with\ttab.txt\""
+    bashunit::data_set "[A]     newfile" "newfile"
+    bashunit::data_set "[D]     oldfile with spaces" "oldfile with spaces"
+    bashunit::data_set "[R100]  file  ->  another file" "file" "another file"
+    bashunit::data_set "[M]     \"file with\ttab.txt\"" "\"file with\ttab.txt\""
 }
