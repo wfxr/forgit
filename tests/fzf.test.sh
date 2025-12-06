@@ -2,7 +2,7 @@
 
 function test_exit_when_fzf_is_not_installed() {
     # Error code 127 = "command not found"
-    mock fzf "return 127"
+    bashunit::mock fzf "return 127"
 
     output=$(bin/git-forgit)
 
@@ -12,7 +12,7 @@ function test_exit_when_fzf_is_not_installed() {
 
 # @data_provider fzf_versions_below_required_version
 function test_exit_when_fzf_version_is_below_required_version() {
-    mock "fzf" "echo '$1'"
+    bashunit::mock "fzf" "echo '$1'"
 
     output=$(bin/git-forgit)
 
@@ -29,7 +29,7 @@ function fzf_versions_below_required_version() {
 
 # @data_provider fzf_versions_satisfying_required_version
 function test_pass_when_fzf_version_satisfies_required_version() {
-    mock "fzf" "echo '$1'"
+    bashunit::mock "fzf" "echo '$1'"
 
     output=$(bin/git-forgit)
 
