@@ -616,8 +616,10 @@ _forgit_clean_select_files() {
         -m -0
         $FORGIT_CLEAN_FZF_OPTS
     "
+    _forgit_clean_list_files_opts=()
+    _forgit_parse_array _forgit_clean_list_files_opts "$FORGIT_CLEAN_LIST_FILES_OPTS"
     # Note: Postfix '/' in directory path should be removed. Otherwise the directory itself will not be removed.
-    _forgit_list_files --others "$@" | FZF_DEFAULT_OPTS="$opts" fzf | sed 's#/$##'
+    _forgit_list_files --others "${_forgit_clean_list_files_opts[@]}" "$@" | FZF_DEFAULT_OPTS="$opts" fzf | sed 's#/$##'
 }
 
 # git clean selector
