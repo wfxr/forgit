@@ -2,9 +2,7 @@
 
 function set_up_before_script() {
     source bin/git-forgit
-}
 
-function set_up() {
     # Create a temporary git repository for testing
     cd "$(temp_dir)" || return 1
     git init -q
@@ -16,7 +14,7 @@ function set_up() {
     git commit -q -m "Initial commit"
 }
 
-function tear_down() {
+function tear_down_after_script() {
     cd - > /dev/null || exit 1
     rm -rf "$TEST_DIR"
 }
