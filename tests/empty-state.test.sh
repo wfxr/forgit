@@ -6,8 +6,7 @@ function set_up_before_script() {
 
 function set_up() {
     # Create a temporary git repository for testing
-    TEST_DIR=$(mktemp -d)
-    cd "$TEST_DIR" || exit 1
+    cd "$(temp_dir)" || return 1
     git init -q
     git config user.email "test@example.com"
     git config user.name "Test User"
