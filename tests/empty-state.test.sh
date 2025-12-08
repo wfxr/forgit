@@ -4,7 +4,7 @@ function set_up_before_script() {
     source bin/git-forgit
 
     # Create a temporary git repository for testing
-    cd "$(temp_dir)" || return 1
+    cd "$(bashunit::temp_dir)" || return 1
     git init -q
     git config user.email "test@example.com"
     git config user.name "Test User"
@@ -12,11 +12,6 @@ function set_up_before_script() {
     echo "initial" > README.md
     git add README.md
     git commit -q -m "Initial commit"
-}
-
-function tear_down_after_script() {
-    cd - > /dev/null || exit 1
-    rm -rf "$TEST_DIR"
 }
 
 function test_checkout_file_shows_message_when_no_modified_files() {
