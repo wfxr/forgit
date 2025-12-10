@@ -842,6 +842,7 @@ _forgit_checkout_file() {
     _forgit_inside_work_tree || return 1
     local files opts
     _forgit_contains_non_flags "$@" && { _forgit_git_checkout_file "$@"; return $?; }
+    [[ $(_forgit_list_files --modified | wc -l) -eq 0 ]] && echo 'Nothing to checkout.' && return 1
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
@@ -958,8 +959,9 @@ _forgit_git_checkout_tag() {
 # git checkout-tag selector
 _forgit_checkout_tag() {
     _forgit_inside_work_tree || return 1
-    local opts
+    local opts tag
     [[ $# -ne 0 ]] && { _forgit_git_checkout_tag "$@"; return $?; }
+    [[ $(git tag -l | wc -l) -eq 0 ]] && echo 'Nothing to checkout: there are no tags.' && return 1
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
