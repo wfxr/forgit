@@ -39,7 +39,7 @@ jobs:
           sudo apt -y update
           sudo apt -y install zsh fish shellcheck
         fi
-        curl -s https://bashunit.typeddevs.com/install.sh | bash -s beta
+        curl -s https://bashunit.typeddevs.com/install.sh | bash -s 0.31.0
 
     - name: Show version
       run: |
