@@ -166,6 +166,10 @@ _forgit_list_files() {
     git ls-files -z "$@" "$rootdir" | tr '\0' '\n' | uniq
 }
 
+_forgit_is_submodule() {
+    git submodule --quiet status "$1"
+}
+
 _forgit_log_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
@@ -418,10 +422,12 @@ _forgit_show() {
 
 _forgit_add_preview() {
     file=$(echo "$1" | _forgit_get_single_file_from_add_line)
-    # $file can be a directory when status.showUntrackedFiles is explicitly set to 'normal'
-    # In this case, show the content of the directory and return
-    [ -d "$file" ] && eval "$_forgit_dir_view \"$file\"" && return 0
-
+    # $file can be a directory when status.showUntrackedFiles is set to 'normal'
+    # When this is the case and the directory is not a submodule show the content of the directory and return
+    if [[ -d "$file"  ]] && ! _forgit_is_submodule "$file"; then
+        eval "$_forgit_dir_view \"$file\""
+        return 0
+    fi
     if (git status -s -- "$file" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
         git diff --color=always --no-index -- /dev/null "$file" | _forgit_pager diff | sed '2 s/added:/untracked:/'
     else
