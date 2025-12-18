@@ -62,7 +62,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download Changelog
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: changelog
 
