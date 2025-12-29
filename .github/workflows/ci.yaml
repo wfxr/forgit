@@ -63,3 +63,18 @@ jobs:
 
     - name: Test fish
       run: fish conf.d/forgit.plugin.fish
+
+  # Validate conventional commit messages of PRs
+  commitlint:
+      runs-on: ubuntu-latest
+      if: github.event_name == 'pull_request'
+      steps:
+          - uses: actions/checkout@v6
+            with:
+              fetch-depth: 0
+          - name: Install npm
+            run: sudo apt update && sudo apt install --no-install-recommends -y npm
+          - name: Install commitlint
+            run: npm install -g @commitlint/cli @commitlint/config-conventional
+          - name: Validate PR commits
+            run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
