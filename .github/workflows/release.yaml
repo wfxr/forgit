@@ -18,24 +18,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate Changelog
-        id: changelog
-        run: .github/scripts/changelog.sh > CHANGELOG.md
-        # When the script returns with an error, it indicates that we don't have
-        # any public changes to be released. This is expected behavior, so we
-        # quit the workflow successfully in this case.
-        continue-on-error: true
-
-      - name: Upload Changelog
-        uses: actions/upload-artifact@v6
-        if: steps.changelog.outcome == 'success'
-        with:
-          name: changelog
-          path: CHANGELOG.md
-
       - name: Set version
         id: set_version
-        if: steps.changelog.outcome == 'success'
         # Set version depending on whether this is a regular monthly release or
         # a custom release triggered by a tag push.
         run: |
@@ -47,8 +31,28 @@ jobs:
           echo "VERSION=$VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Generate Changelog
+        id: changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+            config: cliff.toml
+            # Consider the changes from the pushed tag (latest) when running due to a
+            # tag push and consider unreleased changes when this is a regular monthly
+            # release. This is necessary, because on monthly releases, the tag is created later.
+            args: --verbose $( [ "${{github.event_name }}" == "push" ] && echo --latest || echo --unreleased --tag ${{ steps.set_version.outputs.VERSION }} )
+        env:
+            OUTPUT: CHANGELOG.md
+            GITHUB_REPO: ${{ github.repository }}
+
+      - name: Check Changelog
+        id: check_changelog
+        # Test if the changelog contains any entries
+        run: test -n "${{ steps.changelog.outputs.content }}"
+        continue-on-error: true
+
     outputs:
-      changeLogOutcome: ${{ steps.changelog.outcome }}
+      changeLogOutcome: ${{ steps.check_changelog.outcome }}
+      changelog: ${{ steps.changelog.outputs.content }}
       version: ${{ steps.set_version.outputs.VERSION }}
 
   release:
@@ -61,18 +65,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download Changelog
-        uses: actions/download-artifact@v7
-        with:
-          name: changelog
-
       - name: Create Package
-        run: tar -czf forgit-${{ needs.changelog.outputs.version }}.tar.gz --exclude LICENSE --exclude README.md *
+        run: tar -czf forgit-${{ needs.changelog.outputs.version }}.tar.gz --exclude LICENSE --exclude README.md --exclude cliff.toml *
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           # The release action implicitly creates the tag if it does not exist.
           tag_name: ${{ needs.changelog.outputs.version }}
-          body_path: CHANGELOG.md
+          body: ${{ needs.changelog.outputs.changelog }}
           files: forgit-${{ needs.changelog.outputs.version }}.tar.gz
