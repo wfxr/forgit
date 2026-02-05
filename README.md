@@ -178,6 +178,20 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 - **Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector** (`grw`)
 
+- **Interactive `git worktree` browser** (`gw`)
+
+- **Interactive `git worktree` jump** (`gwj`)
+
+  Select a worktree and `cd` into it. This command can only be used via the alias as it needs to change the current shell's working directory.
+
+- **Interactive `git worktree remove` selector** (`gwd`)
+
+- **Interactive `git worktree move` selector** (`gwm`)
+
+- **Interactive `git worktree lock` selector** (`gwl`)
+
+- **Interactive `git worktree unlock` selector** (`gwu`)
+
 # ⌨ Keybindings
 
 | Key                                           | Action                                      |
@@ -189,14 +203,14 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 | <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap                         |
 | <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort                                 |
 | <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection                            |
-| <kbd>Ctrl</kbd> - <kbd>Y</kbd>                | Copy commit hash/stash ID*                  |
+| <kbd>Ctrl</kbd> - <kbd>Y</kbd>                | Copy commit hash/stash ID/worktree path*    |
 | <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection move up                           |
 | <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection move down                         |
 | <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up                             |
 | <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down                           |
 | <kbd>Alt</kbd> - <kbd>E</kbd>                 | Open file in default editor (when possible) |
 
-\* Available when the selection contains a commit hash or a stash ID.
+\* Available when the selection contains a commit hash, stash ID, or worktree path.
 For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
 # ⚙ Options
@@ -240,6 +254,12 @@ forgit_blame=gbl
 forgit_fixup=gfu
 forgit_squash=gsq
 forgit_reword=grw
+forgit_worktree=gw
+forgit_worktree_jump=gwj
+forgit_worktree_delete=gwd
+forgit_worktree_move=gwm
+forgit_worktree_lock=gwl
+forgit_worktree_unlock=gwu
 ```
 
 ## git integration
@@ -302,6 +322,7 @@ These are passed to the according `git` calls.
 | `gsq`    | `FORGIT_SQUASH_GIT_OPTS`                                                    |
 | `grw`    | `FORGIT_REWORD_GIT_OPTS`                                                    |
 | `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
+| `gwd`    | `FORGIT_WORKTREE_DELETE_GIT_OPTS`                                           |
 
 ## pagers
 
@@ -362,6 +383,11 @@ Customizing fzf options for each command individually is also supported:
 | `gsq`    | `FORGIT_SQUASH_FZF_OPTS`          |
 | `grw`    | `FORGIT_REWORD_FZF_OPTS`          |
 | `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
+| `gw`     | `FORGIT_WORKTREE_FZF_OPTS`        |
+| `gwd`    | `FORGIT_WORKTREE_DELETE_FZF_OPTS` |
+| `gwm`    | `FORGIT_WORKTREE_MOVE_FZF_OPTS`   |
+| `gwl`    | `FORGIT_WORKTREE_LOCK_FZF_OPTS`   |
+| `gwu`    | `FORGIT_WORKTREE_UNLOCK_FZF_OPTS` |
 
 Complete loading order of fzf options is:
 

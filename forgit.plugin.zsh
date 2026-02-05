@@ -160,6 +160,33 @@ forgit::attributes() {
     "$FORGIT" attributes "$@"
 }
 
+forgit::worktree() {
+    "$FORGIT" worktree "$@"
+}
+
+forgit::worktree::jump() {
+    local tree
+    tree=$(forgit::worktree "$@")
+    [[ -z "$tree" ]] && return 1
+    builtin cd "$tree" || return 1
+}
+
+forgit::worktree::delete() {
+    "$FORGIT" worktree_delete "$@"
+}
+
+forgit::worktree::move() {
+    "$FORGIT" worktree_move "$@"
+}
+
+forgit::worktree::lock() {
+    "$FORGIT" worktree_lock "$@"
+}
+
+forgit::worktree::unlock() {
+    "$FORGIT" worktree_unlock "$@"
+}
+
 # register aliases
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -188,6 +215,12 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin export forgit_squash="${forgit_squash:-gsq}"
     builtin export forgit_reword="${forgit_reword:-grw}"
     builtin export forgit_blame="${forgit_blame:-gbl}"
+    builtin export forgit_worktree="${forgit_worktree:-gw}"
+    builtin export forgit_worktree_jump="${forgit_worktree_jump:-gwj}"
+    builtin export forgit_worktree_delete="${forgit_worktree_delete:-gwd}"
+    builtin export forgit_worktree_move="${forgit_worktree_move:-gwm}"
+    builtin export forgit_worktree_lock="${forgit_worktree_lock:-gwl}"
+    builtin export forgit_worktree_unlock="${forgit_worktree_unlock:-gwu}"
 
     builtin alias "${forgit_add}"='forgit::add'
     builtin alias "${forgit_reset_head}"='forgit::reset::head'
@@ -213,5 +246,11 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin alias "${forgit_squash}"='forgit::squash'
     builtin alias "${forgit_reword}"='forgit::reword'
     builtin alias "${forgit_blame}"='forgit::blame'
+    builtin alias "${forgit_worktree}"='forgit::worktree'
+    builtin alias "${forgit_worktree_jump}"='forgit::worktree::jump'
+    builtin alias "${forgit_worktree_delete}"='forgit::worktree::delete'
+    builtin alias "${forgit_worktree_move}"='forgit::worktree::move'
+    builtin alias "${forgit_worktree_lock}"='forgit::worktree::lock'
+    builtin alias "${forgit_worktree_unlock}"='forgit::worktree::unlock'
 
 fi
