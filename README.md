@@ -188,10 +188,6 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 - **Interactive `git worktree move` selector** (`gwm`)
 
-- **Interactive `git worktree lock` selector** (`gwl`)
-
-- **Interactive `git worktree unlock` selector** (`gwu`)
-
 # ⌨ Keybindings
 
 | Key                                           | Action                                      |
@@ -258,8 +254,6 @@ forgit_worktree=gw
 forgit_worktree_jump=gwj
 forgit_worktree_delete=gwd
 forgit_worktree_move=gwm
-forgit_worktree_lock=gwl
-forgit_worktree_unlock=gwu
 ```
 
 ## git integration
@@ -386,8 +380,6 @@ Customizing fzf options for each command individually is also supported:
 | `gw`     | `FORGIT_WORKTREE_FZF_OPTS`        |
 | `gwd`    | `FORGIT_WORKTREE_DELETE_FZF_OPTS` |
 | `gwm`    | `FORGIT_WORKTREE_MOVE_FZF_OPTS`   |
-| `gwl`    | `FORGIT_WORKTREE_LOCK_FZF_OPTS`   |
-| `gwu`    | `FORGIT_WORKTREE_UNLOCK_FZF_OPTS` |
 
 Complete loading order of fzf options is:
 

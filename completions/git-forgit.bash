@@ -88,8 +88,6 @@ _git_forgit()
         worktree
         worktree_delete
         worktree_move
-        worktree_lock
-        worktree_unlock
     "
 
     case ${cword} in
@@ -120,8 +118,6 @@ _git_forgit()
                 stash_show) _git_stash_show ;;
                 worktree_delete) _git_worktrees ;;
                 worktree_move) _git_worktrees ;;
-                worktree_lock) _git_worktrees ;;
-                worktree_unlock) _git_worktrees ;;
             esac
             ;;
         *)
@@ -162,8 +158,6 @@ then
     __git_complete forgit::stash::show _git_stash_show
     __git_complete forgit::worktree::delete _git_worktrees
     __git_complete forgit::worktree::move _git_worktrees
-    __git_complete forgit::worktree::lock _git_worktrees
-    __git_complete forgit::worktree::unlock _git_worktrees
 
     # Completion for forgit plugin shell aliases
     if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -189,7 +183,5 @@ then
         __git_complete "${forgit_stash_show}" _git_stash_show
         __git_complete "${forgit_worktree_delete}" _git_worktrees
         __git_complete "${forgit_worktree_move}" _git_worktrees
-        __git_complete "${forgit_worktree_lock}" _git_worktrees
-        __git_complete "${forgit_worktree_unlock}" _git_worktrees
     fi
 fi

@@ -1274,16 +1274,6 @@ _forgit_worktree_list_deletable() {
     _forgit_worktree_list | tail -n +2
 }
 
-# Return unlocked worktrees (for lock operation)
-_forgit_worktree_list_unlocked() {
-    _forgit_worktree_list | grep -v '\[locked\]'
-}
-
-# Return locked worktrees (for unlock operation)
-_forgit_worktree_list_locked() {
-    _forgit_worktree_list | grep '\[locked\]'
-}
-
 # Extract worktree path from formatted line
 _forgit_extract_worktree_path() {
     awk '{print $1}'
@@ -1292,6 +1282,17 @@ _forgit_extract_worktree_path() {
 # Copy worktree path to clipboard
 _forgit_worktree_yank_path() {
     echo "$1" | _forgit_extract_worktree_path | ${FORGIT_COPY_CMD:-pbcopy}
+}
+
+# Toggle worktree lock status
+_forgit_worktree_toggle_lock() {
+    local line="$1" worktree
+    worktree=$(echo "$line" | _forgit_extract_worktree_path)
+    if [[ "$line" =~ \[locked\] ]]; then
+        git worktree unlock "$worktree"
+    else
+        git worktree lock "$worktree"
+    fi
 }
 
 # Preview function for worktree
@@ -1355,6 +1356,7 @@ _forgit_worktree() {
         +s +m --tiebreak=index
         --preview=\"$FORGIT worktree_preview {}\"
         --bind=\"ctrl-y:execute-silent($FORGIT worktree_yank_path {})\"
+        --bind=\"alt-l:execute-silent($FORGIT worktree_toggle_lock {})+reload($FORGIT worktree_list)\"
         $FORGIT_WORKTREE_FZF_OPTS
     "
     worktree=$(_forgit_worktree_list | FZF_DEFAULT_OPTS="$opts" fzf)
@@ -1407,56 +1409,6 @@ _forgit_worktree_move() {
     [[ -z "$new_path" ]] && return 1
 
     git worktree move "$worktree" "$new_path"
-}
-
-# git worktree lock selector
-_forgit_worktree_lock() {
-    _forgit_inside_git_repo || return 1
-    local opts worktrees
-    [[ $# -ne 0 ]] && { git worktree lock "$@"; return $?; }
-
-    opts="
-        $FORGIT_FZF_DEFAULT_OPTS
-        +s --multi --tiebreak=index
-        --preview=\"$FORGIT worktree_preview {}\"
-        $FORGIT_WORKTREE_LOCK_FZF_OPTS
-    "
-
-    worktrees=()
-    while IFS='' read -r line; do
-        [[ -n "$line" ]] && worktrees+=("$(echo "$line" | _forgit_extract_worktree_path)")
-    done < <(_forgit_worktree_list_unlocked | FZF_DEFAULT_OPTS="$opts" fzf)
-
-    [[ ${#worktrees[@]} -eq 0 ]] && return 1
-
-    for worktree in "${worktrees[@]}"; do
-        git worktree lock "$worktree"
-    done
-}
-
-# git worktree unlock selector
-_forgit_worktree_unlock() {
-    _forgit_inside_git_repo || return 1
-    local opts worktrees
-    [[ $# -ne 0 ]] && { git worktree unlock "$@"; return $?; }
-
-    opts="
-        $FORGIT_FZF_DEFAULT_OPTS
-        +s --multi --tiebreak=index
-        --preview=\"$FORGIT worktree_preview {}\"
-        $FORGIT_WORKTREE_UNLOCK_FZF_OPTS
-    "
-
-    worktrees=()
-    while IFS='' read -r line; do
-        [[ -n "$line" ]] && worktrees+=("$(echo "$line" | _forgit_extract_worktree_path)")
-    done < <(_forgit_worktree_list_locked | FZF_DEFAULT_OPTS="$opts" fzf)
-
-    [[ ${#worktrees[@]} -eq 0 ]] && return 1
-
-    for worktree in "${worktrees[@]}"; do
-        git worktree unlock "$worktree"
-    done
 }
 
 check_prequisites() {
@@ -1535,8 +1487,6 @@ PUBLIC_COMMANDS=(
     "worktree"
     "worktree_delete"
     "worktree_move"
-    "worktree_lock"
-    "worktree_unlock"
 )
 
 PRIVATE_COMMANDS=(
@@ -1571,6 +1521,8 @@ PRIVATE_COMMANDS=(
     "worktree_preview"
     "worktree_delete_preview"
     "worktree_yank_path"
+    "worktree_toggle_lock"
+    "worktree_list"
 )
 
 # Check if the script is being sourced. This is necessary for unit tests where

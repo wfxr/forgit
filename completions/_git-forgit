@@ -86,8 +86,6 @@ _git-forgit() {
             'worktree:git worktree browser'
             'worktree_delete:git worktree remove selector'
             'worktree_move:git worktree move selector'
-            'worktree_lock:git worktree lock selector'
-            'worktree_unlock:git worktree unlock selector'
         )
         _describe -t commands 'git forgit' subcommands
         ;;
@@ -114,8 +112,6 @@ _git-forgit() {
     worktree) ;;
     worktree_delete) _git-worktrees ;;
     worktree_move) _git-worktrees ;;
-    worktree_lock) _git-worktrees ;;
-    worktree_unlock) _git-worktrees ;;
     esac
 }
 
@@ -147,8 +143,6 @@ compdef _git-stash-show forgit::stash::show
 compdef _git-show forgit::show
 compdef _git-worktrees forgit::worktree::delete
 compdef _git-worktrees forgit::worktree::move
-compdef _git-worktrees forgit::worktree::lock
-compdef _git-worktrees forgit::worktree::unlock
 
 # this is the case of calling the command and pressing tab
 # the very first time of a shell session, we have to manually

@@ -179,14 +179,6 @@ forgit::worktree::move() {
     "$FORGIT" worktree_move "$@"
 }
 
-forgit::worktree::lock() {
-    "$FORGIT" worktree_lock "$@"
-}
-
-forgit::worktree::unlock() {
-    "$FORGIT" worktree_unlock "$@"
-}
-
 # register aliases
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -219,8 +211,6 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin export forgit_worktree_jump="${forgit_worktree_jump:-gwj}"
     builtin export forgit_worktree_delete="${forgit_worktree_delete:-gwd}"
     builtin export forgit_worktree_move="${forgit_worktree_move:-gwm}"
-    builtin export forgit_worktree_lock="${forgit_worktree_lock:-gwl}"
-    builtin export forgit_worktree_unlock="${forgit_worktree_unlock:-gwu}"
 
     builtin alias "${forgit_add}"='forgit::add'
     builtin alias "${forgit_reset_head}"='forgit::reset::head'
@@ -250,7 +240,5 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin alias "${forgit_worktree_jump}"='forgit::worktree::jump'
     builtin alias "${forgit_worktree_delete}"='forgit::worktree::delete'
     builtin alias "${forgit_worktree_move}"='forgit::worktree::move'
-    builtin alias "${forgit_worktree_lock}"='forgit::worktree::lock'
-    builtin alias "${forgit_worktree_unlock}"='forgit::worktree::unlock'
 
 fi

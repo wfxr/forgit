@@ -8,8 +8,7 @@
 function __fish_forgit_needs_subcommand
     for subcmd in add blame branch_delete checkout_branch checkout_commit checkout_file checkout_tag \
         cherry_pick cherry_pick_from_branch clean diff fixup ignore log reflog rebase reset_head \
-        revert_commit reword squash stash_show stash_push switch_branch worktree worktree_delete \
-        worktree_move worktree_lock worktree_unlock
+        revert_commit reword squash stash_show stash_push switch_branch worktree worktree_delete worktree_move
         if contains -- $subcmd (commandline -opc)
             return 1
         end
@@ -54,8 +53,6 @@ complete -c git-forgit -n __fish_forgit_needs_subcommand -a switch_branch -d 'gi
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree -d 'git worktree browser'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree_delete -d 'git worktree remove selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree_move -d 'git worktree move selector'
-complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree_lock -d 'git worktree lock selector'
-complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree_unlock -d 'git worktree unlock selector'
 
 complete -c git-forgit -n '__fish_seen_subcommand_from add' -a "(complete -C 'git add ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from branch_delete' -a "(__fish_git_local_branches)"
@@ -80,5 +77,3 @@ complete -c git-forgit -n '__fish_seen_subcommand_from stash_push' -a "(__fish_g
 complete -c git-forgit -n '__fish_seen_subcommand_from switch_branch' -a "(complete -C 'git switch ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from worktree_delete' -a "(__fish_forgit_worktrees)"
 complete -c git-forgit -n '__fish_seen_subcommand_from worktree_move' -a "(__fish_forgit_worktrees)"
-complete -c git-forgit -n '__fish_seen_subcommand_from worktree_lock' -a "(__fish_forgit_worktrees)"
-complete -c git-forgit -n '__fish_seen_subcommand_from worktree_unlock' -a "(__fish_forgit_worktrees)"

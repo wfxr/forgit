@@ -60,6 +60,4 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_worktree_jump; or string collect "gwj") 'set -l tree (git-forgit worktree); test -n "$tree"; and cd "$tree"'
     abbr -a -- (string collect $forgit_worktree_delete; or string collect "gwd") git-forgit worktree_delete
     abbr -a -- (string collect $forgit_worktree_move; or string collect "gwm") git-forgit worktree_move
-    abbr -a -- (string collect $forgit_worktree_lock; or string collect "gwl") git-forgit worktree_lock
-    abbr -a -- (string collect $forgit_worktree_unlock; or string collect "gwu") git-forgit worktree_unlock
 end
