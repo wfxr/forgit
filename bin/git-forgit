@@ -153,6 +153,27 @@ _forgit_is_file_tracked() {
     git ls-files "$1" --error-unmatch &> /dev/null
 }
 
+# List branches with current branch first (for use as fzf header)
+# Usage: _forgit_branch_list [git-branch-options...]
+#
+# Note: We explicitly print the current branch first rather than using
+# `LC_ALL=C sort -k1.1,1.1 -rs` because git branch output has three possible
+# prefixes: '*' (current), '+' (checked out in a worktree), and ' ' (other).
+# Sorting by the first character doesn't reliably place '*' first when '+'
+# is present, since their ASCII order (* < +) conflicts with the desired order.
+_forgit_branch_list() {
+    local current
+    current=$(git branch --show-current)
+    [[ -n "$current" ]] && printf '\e[90m%s\e[0m\n' "* $current"
+    git branch --color=always "$@" | grep -v '^\*'
+}
+
+# Extract branch name by removing the 2-char prefix from git branch output
+# (* for current, + for worktree, ' ' for others, etc.)
+_forgit_extract_branch_name() {
+    cut -c3-
+}
+
 _forgit_list_files() {
     local rootdir
     rootdir=$(git rev-parse --show-toplevel)
@@ -688,7 +709,9 @@ _forgit_cherry_pick() {
 }
 
 _forgit_cherry_pick_from_branch_preview() {
-    git log --right-only --color=always --cherry-pick --oneline "$1"..."$2"
+    local branch
+    branch=$(echo "$2" | _forgit_extract_branch_name)
+    git log --right-only --color=always --cherry-pick --oneline "$1"..."$branch"
 }
 
 _forgit_cherry_pick_from_branch() {
@@ -705,7 +728,7 @@ _forgit_cherry_pick_from_branch() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --header-lines=1
-        --preview=\"$FORGIT cherry_pick_from_branch_preview '$base' {1}\"
+        --preview=\"$FORGIT cherry_pick_from_branch_preview '$base' {}\"
         $FORGIT_CHERRY_PICK_FROM_BRANCH_FZF_OPTS
         "
     # loop until either the branch selector is closed or a commit to be cherry
@@ -713,10 +736,7 @@ _forgit_cherry_pick_from_branch() {
     while true
     do
         if [[ -z $input_branch ]]; then
-            branch="$(git branch --color=always --all |
-            LC_ALL=C sort -k1.1,1.1 -rs |
-            FZF_DEFAULT_OPTS="$opts" fzf |
-            awk '{print $1}')"
+            branch="$(_forgit_branch_list --all | FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)"
         else
             branch=$input_branch
         fi
@@ -890,13 +910,13 @@ _forgit_checkout_branch() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index --header-lines=1
-        --preview=\"$FORGIT branch_preview {1}\"
+        --preview=\"$FORGIT branch_preview {}\"
         $FORGIT_CHECKOUT_BRANCH_FZF_OPTS
         "
     _forgit_checkout_branch_branch_git_opts=()
     _forgit_parse_array _forgit_checkout_branch_branch_git_opts "$FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS"
-    branch="$(git branch --color=always "${_forgit_checkout_branch_branch_git_opts[@]:---all}" | LC_ALL=C sort -k1.1,1.1 -rs |
-              FZF_DEFAULT_OPTS="$opts" fzf | awk '{print $1}')"
+    branch="$(_forgit_branch_list "${_forgit_checkout_branch_branch_git_opts[@]:---all}" |
+        FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)"
     [[ -z "$branch" ]] && return 1
 
     # track the remote branch if possible
@@ -1014,9 +1034,11 @@ _forgit_checkout_commit() {
 }
 
 _forgit_branch_preview() {
+    local branch
+    branch=$(echo "$1" | _forgit_extract_branch_name)
     # the trailing '--' ensures that this works for branches that have a name
     # that is identical to a file
-    git log "$1" "${_forgit_log_preview_options[@]}" --
+    git log "$branch" "${_forgit_log_preview_options[@]}" --
 }
 
 _forgit_git_branch_delete() {
@@ -1033,14 +1055,10 @@ _forgit_branch_delete() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s --multi --tiebreak=index --header-lines=1
-        --preview=\"$FORGIT branch_preview {1}\"
+        --preview=\"$FORGIT branch_preview {}\"
         $FORGIT_BRANCH_DELETE_FZF_OPTS
     "
-
-    for branch in $(git branch --color=always |
-        LC_ALL=C sort -k1.1,1.1 -rs |
-        FZF_DEFAULT_OPTS="$opts" fzf |
-        awk '{print $1}')
+    for branch in $(_forgit_branch_list | FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)
     do
         _forgit_git_branch_delete "$branch"
     done
