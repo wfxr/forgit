@@ -36,6 +36,7 @@ _forgit_inside_git_dir() { git rev-parse --is-inside-git-dir >/dev/null 2>&1; }
 _forgit_inside_git_repo() { _forgit_inside_work_tree || _forgit_inside_git_dir; }
 # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
 _forgit_reverse_lines() { tac 2> /dev/null || tail -r; }
+_forgit_strip_ansi() { sed 's/\x1b\[[0-9;]*m//g'; }
 
 _forgit_previous_commit() {
     # "SHA~" is invalid when the commit is the first commit, but we can use "--root" instead
@@ -1255,10 +1256,15 @@ _forgit_paths_list() {
 }
 
 # Parse git worktree list --porcelain output and format it for display
-# Output format: /path/to/worktree (branch) 3 hours ago [LOCKED]?
+# Output format: [XY] /path/to/worktree (branch) 3 hours ago
+#   X: '*' = current worktree, ' ' = other
+#   Y: 'L' (yellow) = locked, 'P' (yellow) = prunable, ' ' = normal
+#   When both locked and prunable, 'L' takes precedence
 _forgit_worktree_list() {
     local worktree head branch locked prunable line relative_date
     local _cyan=$'\033[36m' _gray=$'\033[90m' _yellow=$'\033[33m' _reset=$'\033[0m'
+    local current_worktree
+    current_worktree=$(git rev-parse --show-toplevel 2>/dev/null)
     git worktree list --porcelain | while IFS= read -r line; do
         case "$line" in
             "worktree "*)
@@ -1275,17 +1281,19 @@ _forgit_worktree_list() {
                 branch="detached"
                 ;;
             "locked"*)
-                locked="[LOCKED]"
+                locked="${_yellow}L${_reset}"
                 ;;
             "prunable"*)
-                prunable="[PRUNABLE]"
+                prunable="${_yellow}P${_reset}"
                 ;;
             "")
                 relative_date=$(git log -1 --format='%cr' "$head" 2>/dev/null)
-                printf "%s ${_cyan}(%s)${_reset} ${_gray}%s${_reset}%s%s\n" \
-                    "$worktree" "${branch:-HEAD}" "$relative_date" \
-                    "${locked:+ ${_yellow}${locked}${_reset}}" \
-                    "${prunable:+ ${_yellow}${prunable}${_reset}}"
+                local current_marker=" " lock_marker=" "
+                [[ "$worktree" == "$current_worktree" ]] && current_marker="*"
+                [[ -n "$prunable" ]] && lock_marker="$prunable"
+                [[ -n "$locked" ]] && lock_marker="$locked"
+                printf "[%s%s] %s ${_cyan}(%s)${_reset} ${_gray}%s${_reset}\n" \
+                    "$current_marker" "$lock_marker" "$worktree" "${branch:-HEAD}" "$relative_date"
                 ;;
         esac
     done
@@ -1296,9 +1304,9 @@ _forgit_worktree_list_deletable() {
     _forgit_worktree_list | tail -n +2
 }
 
-# Extract worktree path from formatted line
+# Extract worktree path from formatted line (strip ANSI codes, skip 5-char prefix '[XY] ')
 _forgit_extract_worktree_path() {
-    awk '{print $1}'
+    _forgit_strip_ansi | cut -c6- | awk '{print $1}'
 }
 
 # Copy worktree path to clipboard
@@ -1306,11 +1314,12 @@ _forgit_worktree_yank_path() {
     echo "$1" | _forgit_extract_worktree_path | ${FORGIT_COPY_CMD:-pbcopy}
 }
 
-# Toggle worktree lock status
+# Toggle worktree lock status (check 3rd char 'L' in prefix '[XY]')
 _forgit_worktree_toggle_lock() {
-    local line="$1" worktree
+    local line="$1" worktree stripped
     worktree=$(echo "$line" | _forgit_extract_worktree_path)
-    if [[ "$line" =~ \[LOCKED\] ]]; then
+    stripped=$(echo "$line" | _forgit_strip_ansi)
+    if [[ "${stripped:2:1}" == "L" ]]; then
         git worktree unlock "$worktree"
     else
         git worktree lock "$worktree"
