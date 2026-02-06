@@ -1255,9 +1255,10 @@ _forgit_paths_list() {
 }
 
 # Parse git worktree list --porcelain output and format it for display
-# Output format: /path/to/worktree  abc1234  [branch-name]  [locked]?  [prunable]?
+# Output format: /path/to/worktree (branch) 3 hours ago [LOCKED]?
 _forgit_worktree_list() {
-    local worktree head branch locked prunable line
+    local worktree head branch locked prunable line relative_date
+    local _cyan=$'\033[36m' _gray=$'\033[90m' _yellow=$'\033[33m' _reset=$'\033[0m'
     git worktree list --porcelain | while IFS= read -r line; do
         case "$line" in
             "worktree "*)
@@ -1266,22 +1267,25 @@ _forgit_worktree_list() {
                 ;;
             "HEAD "*)
                 head="${line#HEAD }"
-                head="${head:0:7}"
                 ;;
             "branch "*)
                 branch="${line#branch refs/heads/}"
                 ;;
             "detached")
-                branch="(detached)"
+                branch="detached"
                 ;;
             "locked"*)
-                locked="[locked]"
+                locked="[LOCKED]"
                 ;;
             "prunable"*)
-                prunable="[prunable]"
+                prunable="[PRUNABLE]"
                 ;;
             "")
-                printf "%s  %s  [%s]%s%s\n" "$worktree" "$head" "${branch:-HEAD}" "${locked:+  $locked}" "${prunable:+  $prunable}"
+                relative_date=$(git log -1 --format='%cr' "$head" 2>/dev/null)
+                printf "%s ${_cyan}(%s)${_reset} ${_gray}%s${_reset}%s%s\n" \
+                    "$worktree" "${branch:-HEAD}" "$relative_date" \
+                    "${locked:+ ${_yellow}${locked}${_reset}}" \
+                    "${prunable:+ ${_yellow}${prunable}${_reset}}"
                 ;;
         esac
     done
@@ -1306,7 +1310,7 @@ _forgit_worktree_yank_path() {
 _forgit_worktree_toggle_lock() {
     local line="$1" worktree
     worktree=$(echo "$line" | _forgit_extract_worktree_path)
-    if [[ "$line" =~ \[locked\] ]]; then
+    if [[ "$line" =~ \[LOCKED\] ]]; then
         git worktree unlock "$worktree"
     else
         git worktree lock "$worktree"
@@ -1319,41 +1323,22 @@ _forgit_worktree_preview() {
     worktree=$(echo "$1" | _forgit_extract_worktree_path)
     [[ ! -d "$worktree" ]] && echo "Worktree directory not found: $worktree" && return 1
 
-    echo "Worktree: $worktree"
-    echo ""
-
-    # Show git status
-    echo "=== Status ==="
-    git -C "$worktree" status -s 2>/dev/null || echo "(unable to get status)"
-    echo ""
-
-    # Show recent commits
-    echo "=== Recent Commits ==="
-    git -C "$worktree" log --oneline -n 10 --color=always 2>/dev/null || echo "(unable to get commits)"
+    local status_output
+    status_output=$(git -c color.status=always -C "$worktree" status -s 2>/dev/null)
+    [[ -n "$status_output" ]] && echo "$status_output" && echo ""
+    git -C "$worktree" log --oneline -n 200 --color=always 2>/dev/null
 }
 
 # Preview function for worktree delete (shows dirty status)
 _forgit_worktree_delete_preview() {
-    local worktree status_output
+    local worktree
     worktree=$(echo "$1" | _forgit_extract_worktree_path)
     [[ ! -d "$worktree" ]] && echo "Worktree directory not found: $worktree" && return 1
 
-    echo "Worktree: $worktree"
-    echo ""
-
-    # Check if worktree is dirty
-    status_output=$(git -C "$worktree" status -s 2>/dev/null)
-    if [[ -n "$status_output" ]]; then
-        echo "⚠️  DIRTY - has uncommitted changes:"
-        echo "$status_output"
-    else
-        echo "✓ Clean - no uncommitted changes"
-    fi
-    echo ""
-
-    # Show branch info
-    echo "=== Branch Info ==="
-    git -C "$worktree" log --oneline -n 5 --color=always 2>/dev/null || echo "(unable to get commits)"
+    local status_output
+    status_output=$(git -c color.status=always -C "$worktree" status -s 2>/dev/null)
+    [[ -n "$status_output" ]] && echo "$status_output" && echo ""
+    git -C "$worktree" log --oneline -n 200 --color=always 2>/dev/null
 }
 
 # Git worktree delete wrapper
