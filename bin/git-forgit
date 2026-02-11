@@ -522,6 +522,39 @@ _forgit_reset_head() {
     git status --short
 }
 
+_forgit_restore_preview() {
+    git diff --color=always -- "$1" | _forgit_pager diff
+}
+
+_forgit_git_restore() {
+    _forgit_restore_git_opts=()
+    _forgit_parse_array _forgit_restore_git_opts "$FORGIT_RESTORE_GIT_OPTS"
+    git restore "${_forgit_restore_git_opts[@]}" "$@"
+}
+
+# git restore selector
+_forgit_restore() {
+    _forgit_inside_work_tree || return 1
+    local files opts
+    _forgit_contains_non_flags "$@" && {
+        _forgit_git_restore "$@"
+        return $?
+    }
+    [[ $(_forgit_list_files --modified | wc -l) -eq 0 ]] && echo 'Nothing to restore.' && return 1
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+        --preview=\"$FORGIT restore_preview {}\"
+        $FORGIT_RESTORE_FZF_OPTS
+    "
+    files=()
+    while IFS='' read -r file; do
+        files+=("$file")
+    done < <(_forgit_list_files --modified |
+        FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ "${#files[@]}" -gt 0 ]] && _forgit_git_restore "$@" "${files[@]}"
+}
+
 _forgit_stash_show_preview() {
     local stash
     stash=$(echo "$1" | _forgit_extract_stash_name)
@@ -1303,6 +1336,7 @@ PUBLIC_COMMANDS=(
     "reflog"
     "rebase"
     "reset_head"
+    "restore"
     "revert_commit"
     "show"
     "stash_show"
@@ -1324,6 +1358,7 @@ PRIVATE_COMMANDS=(
     "path_preview"
     "revert_preview"
     "reset_head_preview"
+    "restore_preview"
     "show_enter"
     "show_preview"
     "stash_push_preview"
