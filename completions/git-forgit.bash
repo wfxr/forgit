@@ -35,6 +35,11 @@ _git_stash_show()
     __gitcomp_nl "$(__git stash list | sed -n -e 's/:.*//p')"
 }
 
+_git_worktrees()
+{
+    __gitcomp_nl "$(__git worktree list --porcelain 2>/dev/null | grep '^worktree ' | cut -d' ' -f2-)"
+}
+
 # Completion for git-forgit
 # This includes git aliases, e.g. "alias.cb=forgit checkout_branch" will
 # correctly complete available branches on "git cb".
@@ -80,6 +85,8 @@ _git_forgit()
         squash
         stash_show
         stash_push
+        worktree
+        worktree_delete
     "
 
     case ${cword} in
@@ -108,6 +115,7 @@ _git_forgit()
                 show) _git_show ;;
                 squash) _git_log ;;
                 stash_show) _git_stash_show ;;
+                worktree_delete) _git_worktrees ;;
             esac
             ;;
         *)
@@ -146,6 +154,7 @@ then
     __git_complete forgit::show _git_show
     __git_complete forgit::squash _git_log
     __git_complete forgit::stash::show _git_stash_show
+    __git_complete forgit::worktree::delete _git_worktrees
 
     # Completion for forgit plugin shell aliases
     if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -169,5 +178,6 @@ then
         __git_complete "${forgit_show}" _git_show
         __git_complete "${forgit_squash}" _git_log
         __git_complete "${forgit_stash_show}" _git_stash_show
+        __git_complete "${forgit_worktree_delete}" _git_worktrees
     fi
 fi

@@ -32,6 +32,8 @@ $FORGIT_FZF_DEFAULT_OPTS
 _forgit_warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 _forgit_info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 _forgit_inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null 2>&1; }
+_forgit_inside_git_dir() { git rev-parse --is-inside-git-dir >/dev/null 2>&1; }
+_forgit_inside_git_repo() { _forgit_inside_work_tree || _forgit_inside_git_dir; }
 # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
 _forgit_reverse_lines() { tac 2> /dev/null || tail -r; }
 _forgit_strip_ansi() { local ESC=$'\033'; sed "s/${ESC}\[[0-9;]*m//g"; }
@@ -1259,6 +1261,146 @@ _forgit_paths_list() {
     find "$path" -name "*$ext" -print |sed -e "s#$ext\$##" -e 's#.*/##' -e '/^$/d' | sort -fu
 }
 
+# Parse git worktree list --porcelain output and format it for display
+# Output format: [XY] /path/to/worktree (branch) 3 hours ago
+#   X: '*' = current worktree, ' ' = other
+#   Y: 'L' (yellow) = locked, 'P' (yellow) = prunable, ' ' = normal
+#   When both locked and prunable, 'L' takes precedence
+_forgit_worktree_list() {
+    local worktree head branch locked prunable line relative_date
+    local _cyan=$'\033[36m' _gray=$'\033[90m' _yellow=$'\033[33m' _reset=$'\033[0m'
+    local current_worktree
+    current_worktree=$(git rev-parse --show-toplevel 2>/dev/null)
+    git worktree list --porcelain | while IFS= read -r line; do
+        case "$line" in
+            "worktree "*)
+                worktree="${line#worktree }"
+                head="" branch="" locked="" prunable=""
+                ;;
+            "HEAD "*)
+                head="${line#HEAD }"
+                ;;
+            "branch "*)
+                branch="${line#branch refs/heads/}"
+                ;;
+            "detached")
+                branch="detached"
+                ;;
+            "locked"*)
+                locked="${_yellow}L${_reset}"
+                ;;
+            "prunable"*)
+                prunable="${_yellow}P${_reset}"
+                ;;
+            "")
+                relative_date=$(git log -1 --format='%cr' "$head" 2>/dev/null)
+                local current_marker=" " lock_marker=" "
+                [[ "$worktree" == "$current_worktree" ]] && current_marker="*"
+                [[ -n "$prunable" ]] && lock_marker="$prunable"
+                [[ -n "$locked" ]] && lock_marker="$locked"
+                printf "[%s%s] %s ${_cyan}(%s)${_reset} ${_gray}%s${_reset}\n" \
+                    "$current_marker" "$lock_marker" "$worktree" "${branch:-HEAD}" "$relative_date"
+                ;;
+        esac
+    done
+}
+
+# Return deletable worktrees (exclude main worktree which is the first one)
+_forgit_worktree_list_deletable() {
+    _forgit_worktree_list | tail -n +2
+}
+
+# Extract worktree path from formatted line (strip ANSI codes, skip 5-char prefix '[XY] ')
+# TODO: awk '{print $1}' breaks on paths containing spaces or parentheses.
+# Consider switching _forgit_worktree_list to a tab-delimited format so we can
+# use 'cut -f1' (or awk -F'\t') for reliable path extraction.
+_forgit_extract_worktree_path() {
+    _forgit_strip_ansi | cut -c6- | awk '{print $1}'
+}
+
+# Copy worktree path to clipboard
+_forgit_worktree_yank_path() {
+    echo "$1" | _forgit_extract_worktree_path | ${FORGIT_COPY_CMD:-pbcopy}
+}
+
+# Toggle worktree lock status (check 3rd char 'L' in prefix '[XY]')
+_forgit_worktree_toggle_lock() {
+    local line="$1" worktree stripped
+    worktree=$(echo "$line" | _forgit_extract_worktree_path)
+    stripped=$(echo "$line" | _forgit_strip_ansi)
+    if [[ "${stripped:2:1}" == "L" ]]; then
+        git worktree unlock "$worktree"
+    else
+        git worktree lock "$worktree"
+    fi
+}
+
+# Preview function for worktree
+_forgit_worktree_preview() {
+    local worktree
+    worktree=$(echo "$1" | _forgit_extract_worktree_path)
+    [[ ! -d "$worktree" ]] && echo "Worktree directory not found: $worktree" && return 1
+
+    local status_output
+    status_output=$(git -c color.status=always -C "$worktree" status -s 2>/dev/null)
+    [[ -n "$status_output" ]] && echo "$status_output" && echo ""
+    git -C "$worktree" log --oneline -n 200 --color=always 2>/dev/null
+}
+
+# Git worktree delete wrapper
+_forgit_git_worktree_delete() {
+    _forgit_worktree_delete_git_opts=()
+    _forgit_parse_array _forgit_worktree_delete_git_opts "$FORGIT_WORKTREE_DELETE_GIT_OPTS"
+    git worktree remove "${_forgit_worktree_delete_git_opts[@]}" "$@"
+}
+
+# git worktree browser
+# Note: we intentionally do NOT use --header-lines=1 here, because the current
+# worktree (listed first) should remain selectable for operations like lock/unlock.
+_forgit_worktree() {
+    _forgit_inside_git_repo || return 1
+    local opts worktree
+    [[ $# -ne 0 ]] && { git worktree "$@"; return $?; }
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --preview=\"$FORGIT worktree_preview {}\"
+        --bind=\"ctrl-y:execute-silent($FORGIT worktree_yank_path {})\"
+        --bind=\"alt-l:execute-silent($FORGIT worktree_toggle_lock {})+reload($FORGIT worktree_list)\"
+        $FORGIT_WORKTREE_FZF_OPTS
+    "
+    worktree=$(_forgit_worktree_list | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ -z "$worktree" ]] && return 1
+    echo "$worktree" | _forgit_extract_worktree_path
+}
+
+# git worktree delete selector
+_forgit_worktree_delete() {
+    _forgit_inside_git_repo || return 1
+    local opts worktrees
+    [[ $# -ne 0 ]] && { _forgit_git_worktree_delete "$@"; return $?; }
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s --multi --tiebreak=index
+        --preview=\"$FORGIT worktree_preview {}\"
+        --bind=\"ctrl-y:execute-silent($FORGIT worktree_yank_path {})\"
+        $FORGIT_WORKTREE_DELETE_FZF_OPTS
+    "
+
+    worktrees=()
+    while IFS='' read -r line; do
+        [[ -n "$line" ]] && worktrees+=("$(echo "$line" | _forgit_extract_worktree_path)")
+    done < <(_forgit_worktree_list_deletable | FZF_DEFAULT_OPTS="$opts" fzf)
+
+    [[ ${#worktrees[@]} -eq 0 ]] && return 1
+
+    for worktree in "${worktrees[@]}"; do
+        _forgit_git_worktree_delete "$worktree"
+    done
+}
+
 check_prequisites() {
     local installed_fzf_version
     local higher_fzf_version
@@ -1332,6 +1474,8 @@ PUBLIC_COMMANDS=(
     "show"
     "stash_show"
     "stash_push"
+    "worktree"
+    "worktree_delete"
 )
 
 PRIVATE_COMMANDS=(
@@ -1363,6 +1507,10 @@ PRIVATE_COMMANDS=(
     "edit_diffed_file"
     "edit_add_file"
     "pager"
+    "worktree_preview"
+    "worktree_yank_path"
+    "worktree_toggle_lock"
+    "worktree_list"
 )
 
 # Check if the script is being sourced. This is necessary for unit tests where

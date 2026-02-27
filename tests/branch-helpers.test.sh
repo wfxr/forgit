@@ -39,3 +39,19 @@ function provider_strip_ansi() {
     bashunit::data_set '\e[1;31mbar\e[0m' "bar"
     bashunit::data_set 'no-ansi' "no-ansi"
 }
+
+# --- _forgit_extract_worktree_path ---
+
+# @data_provider provider_extract_worktree_path
+function test_forgit_extract_worktree_path() {
+    local -r input="$1"
+    local -r expected="$2"
+    local actual
+    actual=$(echo "$input" | _forgit_extract_worktree_path)
+    assert_same "$expected" "$actual"
+}
+
+function provider_extract_worktree_path() {
+    bashunit::data_set '[* ] /tmp/foo (main) 3 hours ago' "/tmp/foo"
+    bashunit::data_set '[  ] /tmp/bar (feature) 1 day ago' "/tmp/bar"
+}

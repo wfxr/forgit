@@ -30,6 +30,15 @@ end
 # alias `git-forgit` to the full-path of the command
 alias git-forgit "$FORGIT"
 
+function forgit::worktree
+    if test (count $argv) -ne 0
+        git-forgit worktree $argv
+        return $status
+    end
+    set -l tree (git-forgit worktree)
+    test -n "$tree"; and cd "$tree"
+end
+
 # register abbreviations
 if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_add; or string collect "ga") git-forgit add
@@ -56,4 +65,6 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_revert_commit; or string collect "grc") git-forgit revert_commit
     abbr -a -- (string collect $forgit_blame; or string collect "gbl") git-forgit blame
     abbr -a -- (string collect $forgit_checkout_tag; or string collect "gct") git-forgit checkout_tag
+    abbr -a -- (string collect $forgit_worktree; or string collect "gwt") forgit::worktree
+    abbr -a -- (string collect $forgit_worktree_delete; or string collect "gwd") git-forgit worktree_delete
 end

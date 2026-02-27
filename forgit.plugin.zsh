@@ -160,6 +160,17 @@ forgit::attributes() {
     "$FORGIT" attributes "$@"
 }
 
+forgit::worktree() {
+    if [[ $# -ne 0 ]]; then "$FORGIT" worktree "$@"; return $?; fi
+    local tree
+    tree=$("$FORGIT" worktree) || return $?
+    [[ -n "$tree" ]] && builtin cd "$tree" || return 1
+}
+
+forgit::worktree::delete() {
+    "$FORGIT" worktree_delete "$@"
+}
+
 # register aliases
 # shellcheck disable=SC2139
 if [[ -z "$FORGIT_NO_ALIASES" ]]; then
@@ -188,6 +199,8 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin export forgit_squash="${forgit_squash:-gsq}"
     builtin export forgit_reword="${forgit_reword:-grw}"
     builtin export forgit_blame="${forgit_blame:-gbl}"
+    builtin export forgit_worktree="${forgit_worktree:-gwt}"
+    builtin export forgit_worktree_delete="${forgit_worktree_delete:-gwd}"
 
     builtin alias "${forgit_add}"='forgit::add'
     builtin alias "${forgit_reset_head}"='forgit::reset::head'
@@ -213,5 +226,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin alias "${forgit_squash}"='forgit::squash'
     builtin alias "${forgit_reword}"='forgit::reword'
     builtin alias "${forgit_blame}"='forgit::blame'
+    builtin alias "${forgit_worktree}"='forgit::worktree'
+    builtin alias "${forgit_worktree_delete}"='forgit::worktree::delete'
 
 fi
