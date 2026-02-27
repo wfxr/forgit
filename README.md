@@ -69,6 +69,8 @@ It's **lightweight** and **easy to use**.
 | `gsq`    | Interactive `git commit --squash && git rebase -i --autosquash` selector |
 | `grw`    | Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector |
 | `gclean` | Interactive `git clean` selector |
+| `gwt`    | Interactive `git worktree` selector |
+| `gwd`    | Interactive `git worktree remove` selector |
 
 # 📥 Installation
 
@@ -197,6 +199,8 @@ forgit_blame=gbl
 forgit_fixup=gfu
 forgit_squash=gsq
 forgit_reword=grw
+forgit_worktree=gwt
+forgit_worktree_delete=gwd
 ```
 
 ## Git Integration
@@ -271,6 +275,8 @@ Each forgit command can be customized with dedicated environment variables for g
 | `gfu`    | `FORGIT_FIXUP_GIT_OPTS` | `FORGIT_FIXUP_FZF_OPTS` |
 | `gsq`    | `FORGIT_SQUASH_GIT_OPTS` | `FORGIT_SQUASH_FZF_OPTS` |
 | `grw`    | `FORGIT_REWORD_GIT_OPTS` | `FORGIT_REWORD_FZF_OPTS` |
+| `gwt`    | | `FORGIT_WORKTREE_FZF_OPTS` |
+| `gwd`    | `FORGIT_WORKTREE_DELETE_GIT_OPTS` | `FORGIT_WORKTREE_DELETE_FZF_OPTS` |
 
 ## Pagers
 
@@ -352,15 +358,19 @@ export FORGIT_LOG_FZF_OPTS='
 | <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap                         |
 | <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort                                 |
 | <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection                            |
-| <kbd>Ctrl</kbd> - <kbd>Y</kbd>                | Copy commit hash/stash ID*                  |
+| <kbd>Ctrl</kbd> - <kbd>Y</kbd>                | Copy commit hash/stash ID/worktree path<sup>1</sup> |
 | <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection move up                           |
 | <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection move down                         |
 | <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up                             |
 | <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down                           |
 | <kbd>Alt</kbd> - <kbd>E</kbd>                 | Open file in default editor (when possible) |
 | <kbd>Alt</kbd> - <kbd>T</kbd>                 | Show commit message (when viewing a commit) |
+| <kbd>Alt</kbd> - <kbd>L</kbd>                 | Toggle worktree lock/unlock<sup>2</sup>              |
 
-\* Available when the selection contains a commit hash or a stash ID.
+<sup>1</sup> Available when the selection contains a commit hash, stash ID, or worktree path.
+
+<sup>2</sup> Available in the worktree browser (`gwt`) and worktree delete selector (`gwd`).
+
 For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
 # 📦 Optional dependencies
