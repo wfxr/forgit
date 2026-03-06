@@ -147,6 +147,12 @@ _forgit_get_pager() {
     esac
 }
 
+_forgit_preview_pager() {
+    local pager
+    pager="${FORGIT_PREVIEW_PAGER:-$(hash delta &>/dev/null && echo 'delta --paging=never' || (hash bat &>/dev/null && echo 'bat --plain --color=always' || echo 'cat'))}"
+    eval "$pager"
+}
+
 _forgit_is_file_tracked() {
     git ls-files "$1" --error-unmatch &> /dev/null
 }
@@ -174,7 +180,7 @@ _forgit_log_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    git show --color=always -U"$_forgit_preview_context" "${sha}" -- "$@" | _forgit_pager show
+    git show --color=always -U"$_forgit_preview_context" "${sha}" -- "$@" | _forgit_preview_pager
 }
 
 _forgit_log_enter() {
@@ -429,9 +435,9 @@ _forgit_add_preview() {
         return 0
     fi
     if (git status -s -- "$file" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
-        git diff --color=always --no-index -- /dev/null "$file" | _forgit_pager diff | sed '2 s/added:/untracked:/'
+        git diff --color=always --no-index -- /dev/null "$file" | _forgit_preview_pager | sed '2 s/added:/untracked:/'
     else
-        git diff --color=always -- "$file" | _forgit_pager diff
+        git diff --color=always -- "$file" | _forgit_preview_pager
     fi
 }
 
@@ -487,7 +493,7 @@ _forgit_add() {
 
 _forgit_reset_head_preview() {
     file=$1
-    git diff --staged --color=always -- "$file" | _forgit_pager diff
+    git diff --staged --color=always -- "$file" | _forgit_preview_pager
 }
 
 _forgit_git_reset_head() {
@@ -525,7 +531,7 @@ _forgit_reset_head() {
 _forgit_stash_show_preview() {
     local stash
     stash=$(echo "$1" | _forgit_extract_stash_name)
-    git show --color=always -U"$_forgit_preview_context" "${stash}" | _forgit_pager show
+    git show --color=always -U"$_forgit_preview_context" "${stash}" | _forgit_preview_pager
 }
 
 _forgit_stash_show_enter() {
@@ -557,9 +563,9 @@ _forgit_stash_show() {
 
 _forgit_stash_push_preview() {
     if _forgit_is_file_tracked "$1"; then
-        git diff --color=always -- "$1" | _forgit_pager diff
+        git diff --color=always -- "$1" | _forgit_preview_pager
     else
-        git diff --color=always /dev/null "$1" | _forgit_pager diff
+        git diff --color=always /dev/null "$1" | _forgit_preview_pager
     fi
 }
 
@@ -610,7 +616,7 @@ _forgit_clean_preview() {
     if [[ -d "$path" ]]; then
         eval "$_forgit_dir_view \"$path\""
     else
-        git diff --color=always /dev/null "$path" | _forgit_pager diff
+        git diff --color=always /dev/null "$path" | _forgit_preview_pager
     fi
 }
 
@@ -643,7 +649,7 @@ _forgit_clean() {
 _forgit_cherry_pick_preview() {
     local sha
     sha=$(echo "$1" | cut -f2- | _forgit_extract_sha)
-    git show --color=always "${sha}" | _forgit_pager show
+    git show --color=always "${sha}" | _forgit_preview_pager
 }
 
 _forgit_cherry_pick() {
@@ -759,7 +765,7 @@ _forgit_file_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
     shift
-    git show --color=always "${sha}" -- "$@" | _forgit_pager show
+    git show --color=always "${sha}" -- "$@" | _forgit_preview_pager
 }
 
 _forgit_fixup() {
@@ -834,7 +840,7 @@ _forgit_reword() {
 }
 
 _forgit_checkout_file_preview() {
-    git diff --color=always -- "$1" | _forgit_pager diff
+    git diff --color=always -- "$1" | _forgit_preview_pager
 }
 
 _forgit_git_checkout_file() {
@@ -982,7 +988,7 @@ _forgit_checkout_tag() {
 _forgit_checkout_commit_preview() {
     local sha
     sha=$(echo "$1" | _forgit_extract_sha)
-    git show --color=always "${sha}" | _forgit_pager show
+    git show --color=always "${sha}" | _forgit_preview_pager
 }
 
 _forgit_git_checkout_commit() {
@@ -1047,7 +1053,7 @@ _forgit_branch_delete() {
 _forgit_revert_preview() {
     local sha
     sha=$(echo "$1" | cut -f2- | _forgit_extract_sha)
-    git show --color=always "${sha}" | _forgit_pager show
+    git show --color=always "${sha}" | _forgit_preview_pager
 }
 
 _forgit_git_revert() {
@@ -1098,7 +1104,7 @@ _forgit_blame_preview() {
     if _forgit_is_file_tracked "$1"; then
         _forgit_blame_git_opts=()
         _forgit_parse_array _forgit_blame_git_opts "$FORGIT_BLAME_GIT_OPTS"
-        git blame --date=short "${_forgit_blame_git_opts[@]}" "$@" | _forgit_pager blame
+        git blame --date=short "${_forgit_blame_git_opts[@]}" "$@" | _forgit_preview_pager
     else
         echo "File not tracked"
     fi

@@ -315,6 +315,7 @@ variables:
 | pager on `git show`      | `FORGIT_SHOW_PAGER`       | `git config pager.show` _or_ `$FORGIT_PAGER`      |
 | pager on `git diff`      | `FORGIT_DIFF_PAGER`       | `git config pager.diff` _or_ `$FORGIT_PAGER`      |
 | pager on `git blame`     | `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`     |
+| pager in fzf previews    | `FORGIT_PREVIEW_PAGER`    | `delta --paging=never` _or_ `bat --plain` _or_ `cat` |
 | pager on `gitignore`     | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`      |
 | pager on `gitatrributes` | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat`  |
 | git log format           | `FORGIT_GLO_FORMAT`       | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset`      |
