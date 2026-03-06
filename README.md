@@ -56,6 +56,9 @@ omf install https://github.com/wfxr/forgit
 # for zinit
 zinit load wfxr/forgit
 
+# for antidote (in .zsh_plugins.txt)
+wfxr/forgit kind:defer
+
 # for oh-my-zsh
 git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 
@@ -144,6 +147,10 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 - **Interactive `git reset HEAD <file>` selector** (`grh`)
 
+- **Interactive `git restore <file>` selector** (`grs`)
+
+
+
 - **Interactive `git checkout <file>` selector** (`gcf`)
 
 - **Interactive `git checkout <branch>` selector** (`gcb`)
@@ -222,6 +229,7 @@ forgit_diff=gd
 forgit_show=gso
 forgit_add=ga
 forgit_reset_head=grh
+forgit_restore=grs
 forgit_ignore=gi
 forgit_attributes=gat
 forgit_checkout_file=gcf
@@ -286,6 +294,7 @@ These are passed to the according `git` calls.
 | `gd`     | `FORGIT_DIFF_GIT_OPTS`                                                      |
 | `gso`     | `FORGIT_SHOW_GIT_OPTS`                                                      |
 | `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS`                                                |
+| `grs`    | `FORGIT_RESTORE_GIT_OPTS`                                                   |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS`                                             |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`, `FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` |
 | `gsw`    | `FORGIT_SWITCH_BRANCH_GIT_OPTS`                                             |
@@ -346,6 +355,7 @@ Customizing fzf options for each command individually is also supported:
 | `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
 | `gso`    | `FORGIT_SHOW_FZF_OPTS`            |
 | `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
+| `grs`    | `FORGIT_RESTORE_FZF_OPTS`         |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_FZF_OPTS`   |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
 | `gsw`    | `FORGIT_SWITCH_BRANCH_FZF_OPTS`   |

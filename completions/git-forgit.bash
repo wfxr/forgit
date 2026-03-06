@@ -74,6 +74,7 @@ _git_forgit()
         reflog
         rebase
         reset_head
+        restore
         revert_commit
         reword
         show
@@ -103,6 +104,7 @@ _git_forgit()
                 reflog) _git_reflog ;;
                 rebase) _git_rebase ;;
                 reset_head) _git_reset ;;
+                restore) _git_checkout_file ;;
                 revert_commit) _git_revert ;;
                 reword) _git_log ;;
                 show) _git_show ;;
@@ -141,6 +143,7 @@ then
     __git_complete forgit::reflog _git_reflog
     __git_complete forgit::rebase _git_rebase
     __git_complete forgit::reset::head _git_reset
+    __git_complete forgit::restore _git_checkout_file
     __git_complete forgit::revert::commit _git_revert
     __git_complete forgit::reword _git_log
     __git_complete forgit::show _git_show
@@ -164,6 +167,7 @@ then
         __git_complete "${forgit_reflog}" _git_reflog
         __git_complete "${forgit_rebase}" _git_rebase
         __git_complete "${forgit_reset_head}" _git_reset
+        __git_complete "${forgit_restore}" _git_checkout_file
         __git_complete "${forgit_revert_commit}" _git_revert
         __git_complete "${forgit_reword}" _git_log
         __git_complete "${forgit_show}" _git_show

@@ -68,6 +68,10 @@ forgit::reset::head() {
     "$FORGIT" reset_head "$@"
 }
 
+forgit::restore() {
+    "$FORGIT" restore "$@"
+}
+
 forgit::stash::show() {
     "$FORGIT" stash_show "$@"
 }
@@ -166,6 +170,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
 
     builtin export forgit_add="${forgit_add:-ga}"
     builtin export forgit_reset_head="${forgit_reset_head:-grh}"
+    builtin export forgit_restore="${forgit_restore:-grs}"
     builtin export forgit_log="${forgit_log:-glo}"
     builtin export forgit_reflog="${forgit_reflog:-grl}"
     builtin export forgit_diff="${forgit_diff:-gd}"
@@ -191,6 +196,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
 
     builtin alias "${forgit_add}"='forgit::add'
     builtin alias "${forgit_reset_head}"='forgit::reset::head'
+    builtin alias "${forgit_restore}"='forgit::restore'
     builtin alias "${forgit_log}"='forgit::log'
     builtin alias "${forgit_reflog}"='forgit::reflog'
     builtin alias "${forgit_diff}"='forgit::diff'

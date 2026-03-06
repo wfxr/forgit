@@ -7,8 +7,7 @@
 
 function __fish_forgit_needs_subcommand
     for subcmd in add blame branch_delete checkout_branch checkout_commit checkout_file checkout_tag \
-        cherry_pick cherry_pick_from_branch clean diff fixup ignore log reflog rebase reset_head \
-        revert_commit reword squash stash_show stash_push switch_branch
+        restore revert_commit reword squash stash_show stash_push switch_branch
         if contains -- $subcmd (commandline -opc)
             return 1
         end
@@ -39,6 +38,7 @@ complete -c git-forgit -n __fish_forgit_needs_subcommand -a log -d 'git commit v
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a reflog -d 'git reflog viewer'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a rebase -d 'git rebase'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a reset_head -d 'git reset HEAD (unstage) selector'
+complete -c git-forgit -n __fish_forgit_needs_subcommand -a restore -d 'git restore file selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a revert_commit -d 'git revert commit selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a reword -d 'git fixup=reword'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a show -d 'git show viewer'
@@ -61,6 +61,7 @@ complete -c git-forgit -n '__fish_seen_subcommand_from log' -a "(complete -C 'gi
 complete -c git-forgit -n '__fish_seen_subcommand_from reflog' -a "(complete -C 'git reflog ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from rebase' -a "(complete -C 'git rebase ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from reset_head' -a "(__fish_git_files all-staged)"
+complete -c git-forgit -n '__fish_seen_subcommand_from restore' -a "(__fish_git_files modified)"
 complete -c git-forgit -n '__fish_seen_subcommand_from revert_commit' -a "(__fish_git_commits)"
 complete -c git-forgit -n '__fish_seen_subcommand_from reword' -a "(complete -C 'git log ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from show' -a "(complete -C 'git show ')"
