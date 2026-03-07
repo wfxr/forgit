@@ -33,7 +33,7 @@ It's **lightweight** and **easy to use**.
 
 - [`fzf`](https://github.com/junegunn/fzf) version `0.49.0` or higher
 
-  If your OS package manager bundles an older version of `fzf`, you might install it using [`fzf`'s own install script'](https://github.com/junegunn/fzf?tab=readme-ov-file#using-git).
+  If your OS package manager bundles an older version of `fzf`, you might install it using [`fzf`'s own install script](https://github.com/junegunn/fzf?tab=readme-ov-file#using-git).
 
 ## Shell package managers
 
@@ -316,7 +316,7 @@ variables:
 | pager on `git diff`      | `FORGIT_DIFF_PAGER`       | `git config pager.diff` _or_ `$FORGIT_PAGER`      |
 | pager on `git blame`     | `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`     |
 | pager on `gitignore`     | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`      |
-| pager on `gitatrributes` | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat`  |
+| pager on `gitattributes` | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat`  |
 | git log format           | `FORGIT_GLO_FORMAT`       | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset`      |
 
 ## fzf options
@@ -401,7 +401,7 @@ export FORGIT_LOG_FZF_OPTS='
 
 - [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human-readable diffs.
 
-- [`bat`](https://github.com/sharkdp/bat.git): Syntax highlighting for `gitignore` and `gitattributes`.
+- [`bat`](https://github.com/sharkdp/bat): Syntax highlighting for `gitignore` and `gitattributes`.
 
 - [`emoji-cli`](https://github.com/wfxr/emoji-cli): Emoji support for `git log`.
 
@@ -410,8 +410,8 @@ export FORGIT_LOG_FZF_OPTS='
 # 💡 Tips
 
 - Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco main`).
-- `gd` supports specifying revision(e.g., `gd HEAD~`, `gd v1.0 README.md`).
-- Call `gi` or `gat` with arguments to get the wanted `.gitignore`/`.gitattributes` contents directly(e.g., `gi cmake c++`).
+- `gd` supports specifying revision (e.g., `gd HEAD~`, `gd v1.0 README.md`).
+- Call `gi` or `gat` with arguments to get the wanted `.gitignore`/`.gitattributes` contents directly (e.g., `gi cmake c++`).
 
 # 📃 License
 
