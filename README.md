@@ -27,6 +27,49 @@
 This tool is designed to help you use git more efficiently.
 It's **lightweight** and **easy to use**.
 
+# 📝 Features
+
+**`ga`** - Interactive `git add` selector:
+
+![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-ga.png)
+
+**`glo`** - Interactive `git log` viewer:
+
+![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-glo.png)
+
+**`gi`** - Interactive `.gitignore` generator:
+
+![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-gi.png)
+
+## Full Command List
+
+| Command  | Description |
+|----------|-------------|
+| `ga`     | Interactive `git add` selector |
+| `gd`     | Interactive `git diff` viewer |
+| `gi`     | Interactive `.gitignore` generator |
+| `glo`    | Interactive `git log` viewer |
+| `gat`    | Interactive `.gitattributes` generator |
+| `gso`    | Interactive `git show` viewer |
+| `grh`    | Interactive `git reset HEAD <file>` selector |
+| `gcf`    | Interactive `git checkout <file>` selector |
+| `gcb`    | Interactive `git checkout <branch>` selector |
+| `gsw`    | Interactive `git switch <branch>` selector |
+| `gbd`    | Interactive `git branch -D <branch>` selector |
+| `gct`    | Interactive `git checkout <tag>` selector |
+| `gco`    | Interactive `git checkout <commit>` selector |
+| `grc`    | Interactive `git revert <commit>` selector |
+| `gss`    | Interactive `git stash` viewer |
+| `gsp`    | Interactive `git stash push` selector |
+| `gcp`    | Interactive `git cherry-pick` selector |
+| `grb`    | Interactive `git rebase -i` selector |
+| `grl`    | Interactive `git reflog` viewer |
+| `gbl`    | Interactive `git blame` selector |
+| `gfu`    | Interactive `git commit --fixup && git rebase -i --autosquash` selector |
+| `gsq`    | Interactive `git commit --squash && git rebase -i --autosquash` selector |
+| `grw`    | Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector |
+| `gclean` | Interactive `git clean` selector |
+
 # 📥 Installation
 
 ## Requirements
@@ -35,7 +78,7 @@ It's **lightweight** and **easy to use**.
 
   If your OS package manager bundles an older version of `fzf`, you might install it using [`fzf`'s own install script](https://github.com/junegunn/fzf?tab=readme-ov-file#using-git).
 
-## Shell package managers
+## Shell Package Managers
 
 ``` zsh
 # for zplug
@@ -96,22 +139,22 @@ Then add the following to your shell's config file:
 
 [AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit, are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or [forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the default branch of this repository.
 
-# Completions
+## Completions
 
 Forgit offers completions for all supported shells. Completions are automatically configured when installing forgit through Homebrew or the AUR. All other installation methods mentioned above require manual setup for completions. The necessary steps depend on the shell you use.
 
-## Bash
+### Bash
 
 - Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) in
   `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
 - Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) explicitly to have
   bash tab completion for forgit shell functions and aliases (e.g., `gsw <tab>` completes branches).
 
-## Fish
+### Fish
 
 - Put [`completions/git-forgit.fish`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.fish) in `~/.config/fish/completions/` to have fish tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `ga`.
 
-## Zsh
+### Zsh
 
 - Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`.
 
@@ -122,95 +165,7 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 > zsh
 ```
 
-# 📝 Features
-
-- **Interactive `git add` selector** (`ga`)
-
-![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-ga.png)
-
-- **Interactive `git log` viewer** (`glo`)
-
-![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-glo.png)
-
-*The log graph can be disabled by option `FORGIT_LOG_GRAPH_ENABLE` (see discuss in [issue #71](https://github.com/wfxr/forgit/issues/71)).*
-
-- **Interactive `.gitignore` generator** (`gi`)
-
-![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-gi.png)
-
-- **Interactive `.gitattributes` generator** (`gat`)
-
-- **Interactive `git diff` viewer** (`gd`)
-
-- **Interactive `git show` viewer** (`gso`)
-
-- **Interactive `git reset HEAD <file>` selector** (`grh`)
-
-- **Interactive `git checkout <file>` selector** (`gcf`)
-
-- **Interactive `git checkout <branch>` selector** (`gcb`)
-
-- **Interactive `git switch <branch>` selector** (`gsw`)
-
-- **Interactive `git branch -D <branch>` selector** (`gbd`)
-
-- **Interactive `git checkout <tag>` selector** (`gct`)
-
-- **Interactive `git checkout <commit>` selector** (`gco`)
-
-- **Interactive `git revert <commit>` selector** (`grc`)
-
-- **Interactive `git stash` viewer** (`gss`)
-
-- **Interactive `git stash push` selector** (`gsp`)
-
-- **Interactive `git clean` selector** (`gclean`)
-
-- **Interactive `git cherry-pick` selector** (`gcp`)
-
-- **Interactive `git rebase -i` selector** (`grb`)
-
-- **Interactive `git reflog` viewer** (`grl`)
-
-- **Interactive `git blame` selector** (`gbl`)
-
-- **Interactive `git commit --fixup && git rebase -i --autosquash` selector** (`gfu`)
-
-- **Interactive `git commit --squash && git rebase -i --autosquash` selector** (`gsq`)
-
-- **Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector** (`grw`)
-
-# ⌨ Keybindings
-
-| Key                                           | Action                                      |
-| :-------------------------------------------: | ------------------------------------------- |
-| <kbd>Enter</kbd>                              | Confirm                                     |
-| <kbd>Tab</kbd>                                | Toggle mark and move down                   |
-| <kbd>Shift</kbd> - <kbd>Tab</kbd>             | Toggle mark and move up                     |
-| <kbd>?</kbd>                                  | Toggle preview window                       |
-| <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap                         |
-| <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort                                 |
-| <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection                            |
-| <kbd>Ctrl</kbd> - <kbd>Y</kbd>                | Copy commit hash/stash ID*                  |
-| <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection move up                           |
-| <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection move down                         |
-| <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up                             |
-| <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down                           |
-| <kbd>Alt</kbd> - <kbd>E</kbd>                 | Open file in default editor (when possible) |
-
-\* Available when the selection contains a commit hash or a stash ID.
-For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
-
-# ⚙ Options
-
-Options can be set via environment variables. They have to be **exported** in
-order to be recognized by `forgit`.
-
-For instance, if you want to order branches in `gcb` by the last committed date you could:
-
-```shell
-export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
-```
+# 🚀 Usage
 
 ## Shell Aliases
 
@@ -275,50 +230,61 @@ And use forgit functions via a git alias:
 git cf
 ```
 
-## Git Options
+# ⚙ Configuration
 
-If you want to customize `git`'s behavior within forgit there is a dedicated variable for each forgit command.
-These are passed to the according `git` calls.
+Options can be set via environment variables. They have to be **exported** in
+order to be recognized by `forgit`.
 
-| Command  | Option                                                                      |
-| -------- | --------------------------------------------------------------------------- |
-| `ga`     | `FORGIT_ADD_GIT_OPTS`                                                       |
-| `glo`    | `FORGIT_LOG_GIT_OPTS`                                                       |
-| `grl`    | `FORGIT_REFLOG_GIT_OPTS`                                                    |
-| `gd`     | `FORGIT_DIFF_GIT_OPTS`                                                      |
-| `gso`     | `FORGIT_SHOW_GIT_OPTS`                                                      |
-| `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS`                                                |
-| `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS`                                             |
-| `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`, `FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` |
-| `gsw`    | `FORGIT_SWITCH_BRANCH_GIT_OPTS`                                             |
-| `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS`                                             |
-| `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS`                                              |
-| `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS`                                           |
-| `grc`    | `FORGIT_REVERT_COMMIT_GIT_OPTS`                                             |
-| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS`                                                |
-| `gsp`    | `FORGIT_STASH_PUSH_GIT_OPTS`                                                |
-| `gclean` | `FORGIT_CLEAN_GIT_OPTS`                                                     |
-| `grb`    | `FORGIT_REBASE_GIT_OPTS`                                                    |
-| `gbl`    | `FORGIT_BLAME_GIT_OPTS`                                                     |
-| `gfu`    | `FORGIT_FIXUP_GIT_OPTS`                                                     |
-| `gsq`    | `FORGIT_SQUASH_GIT_OPTS`                                                    |
-| `grw`    | `FORGIT_REWORD_GIT_OPTS`                                                    |
-| `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
+For instance, if you want to order branches in `gcb` by the last committed date you could:
 
-## Pagers
+```shell
+export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
+```
+
+## Per-command Options
+
+Each forgit command can be customized with dedicated environment variables for git arguments, fzf options, and pager:
+
+| Command  | Git Options | FZF Options | Pager |
+|----------|-------------|-------------|-------|
+| `ga`     | `FORGIT_ADD_GIT_OPTS` | `FORGIT_ADD_FZF_OPTS` | |
+| `glo`    | `FORGIT_LOG_GIT_OPTS` | `FORGIT_LOG_FZF_OPTS` | |
+| `grl`    | `FORGIT_REFLOG_GIT_OPTS` | `FORGIT_REFLOG_FZF_OPTS` | |
+| `gi`     | | `FORGIT_IGNORE_FZF_OPTS` | `FORGIT_IGNORE_PAGER` |
+| `gat`    | | `FORGIT_ATTRIBUTES_FZF_OPTS` | `FORGIT_ATTRIBUTES_PAGER` |
+| `gd`     | `FORGIT_DIFF_GIT_OPTS` | `FORGIT_DIFF_FZF_OPTS` | `FORGIT_DIFF_PAGER` |
+| `gso`    | `FORGIT_SHOW_GIT_OPTS` | `FORGIT_SHOW_FZF_OPTS` | `FORGIT_SHOW_PAGER` |
+| `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS` | `FORGIT_RESET_HEAD_FZF_OPTS` | |
+| `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS` | `FORGIT_CHECKOUT_FILE_FZF_OPTS` | |
+| `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`<br>`FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` | |
+| `gsw`    | `FORGIT_SWITCH_BRANCH_GIT_OPTS` | `FORGIT_SWITCH_BRANCH_FZF_OPTS` | |
+| `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS` | `FORGIT_BRANCH_DELETE_FZF_OPTS` | |
+| `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS` | `FORGIT_CHECKOUT_TAG_FZF_OPTS` | |
+| `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS` | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` | |
+| `grc`    | `FORGIT_REVERT_COMMIT_GIT_OPTS` | `FORGIT_REVERT_COMMIT_FZF_OPTS` | |
+| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS` | `FORGIT_STASH_FZF_OPTS` | |
+| `gsp`    | `FORGIT_STASH_PUSH_GIT_OPTS` | `FORGIT_STASH_PUSH_FZF_OPTS` | |
+| `gclean` | `FORGIT_CLEAN_GIT_OPTS` | `FORGIT_CLEAN_FZF_OPTS` | |
+| `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS` | `FORGIT_CHERRY_PICK_FZF_OPTS` | |
+| `grb`    | `FORGIT_REBASE_GIT_OPTS` | `FORGIT_REBASE_FZF_OPTS` | |
+| `gbl`    | `FORGIT_BLAME_GIT_OPTS` | `FORGIT_BLAME_FZF_OPTS` | `FORGIT_BLAME_PAGER` |
+| `gfu`    | `FORGIT_FIXUP_GIT_OPTS` | `FORGIT_FIXUP_FZF_OPTS` | |
+| `gsq`    | `FORGIT_SQUASH_GIT_OPTS` | `FORGIT_SQUASH_FZF_OPTS` | |
+| `grw`    | `FORGIT_REWORD_GIT_OPTS` | `FORGIT_REWORD_FZF_OPTS` | |
+
+### Pager Fallback Chain
 
 Forgit will use the default configured pager from git (`core.pager`,
-`pager.show`, `pager.diff`) but can be altered with the following environment
-variables:
+`pager.show`, `pager.diff`) but can be altered with the pager variables above.
 
-| Use case                 | Option                    | Fallbacks to                                      |
-| ------------------------ | ------------------------- | ------------------------------------------------- |
-| common pager             | `FORGIT_PAGER`            | `git config core.pager` _or_ `cat`                |
-| pager on `git show`      | `FORGIT_SHOW_PAGER`       | `git config pager.show` _or_ `$FORGIT_PAGER`      |
-| pager on `git diff`      | `FORGIT_DIFF_PAGER`       | `git config pager.diff` _or_ `$FORGIT_PAGER`      |
-| pager on `git blame`     | `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`     |
-| pager on `gitignore`     | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`      |
-| pager on `gitattributes` | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat`  |
+| Pager                     | Fallbacks to                                     |
+|---------------------------|--------------------------------------------------|
+| `FORGIT_PAGER`            | `git config core.pager` _or_ `cat`               |
+| `FORGIT_SHOW_PAGER`       | `git config pager.show` _or_ `$FORGIT_PAGER`     |
+| `FORGIT_DIFF_PAGER`       | `git config pager.diff` _or_ `$FORGIT_PAGER`     |
+| `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`    |
+| `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`     |
+| `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat` |
 
 ## FZF Options
 
@@ -335,34 +301,7 @@ export FORGIT_FZF_DEFAULT_OPTS="
 "
 ```
 
-Customizing fzf options for each command individually is also supported:
-
-| Command  | Option                            |
-|----------|-----------------------------------|
-| `ga`     | `FORGIT_ADD_FZF_OPTS`             |
-| `glo`    | `FORGIT_LOG_FZF_OPTS`             |
-| `grl`    | `FORGIT_REFLOG_FZF_OPTS`          |
-| `gi`     | `FORGIT_IGNORE_FZF_OPTS`          |
-| `gat`    | `FORGIT_ATTRIBUTES_FZF_OPTS`      |
-| `gd`     | `FORGIT_DIFF_FZF_OPTS`            |
-| `gso`    | `FORGIT_SHOW_FZF_OPTS`            |
-| `grh`    | `FORGIT_RESET_HEAD_FZF_OPTS`      |
-| `gcf`    | `FORGIT_CHECKOUT_FILE_FZF_OPTS`   |
-| `gcb`    | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
-| `gsw`    | `FORGIT_SWITCH_BRANCH_FZF_OPTS`   |
-| `gbd`    | `FORGIT_BRANCH_DELETE_FZF_OPTS`   |
-| `gct`    | `FORGIT_CHECKOUT_TAG_FZF_OPTS`    |
-| `gco`    | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
-| `grc`    | `FORGIT_REVERT_COMMIT_FZF_OPTS`   |
-| `gss`    | `FORGIT_STASH_FZF_OPTS`           |
-| `gsp`    | `FORGIT_STASH_PUSH_FZF_OPTS`      |
-| `gclean` | `FORGIT_CLEAN_FZF_OPTS`           |
-| `grb`    | `FORGIT_REBASE_FZF_OPTS`          |
-| `gbl`    | `FORGIT_BLAME_FZF_OPTS`           |
-| `gfu`    | `FORGIT_FIXUP_FZF_OPTS`           |
-| `gsq`    | `FORGIT_SQUASH_FZF_OPTS`          |
-| `grw`    | `FORGIT_REWORD_FZF_OPTS`          |
-| `gcp`    | `FORGIT_CHERRY_PICK_FZF_OPTS`     |
+Per-command fzf options (`FORGIT_*_FZF_OPTS`) are listed in the [per-command options table](#per-command-options) above.
 
 Complete loading order of fzf options is:
 
@@ -400,6 +339,27 @@ export FORGIT_LOG_FZF_OPTS='
 | `FORGIT_FULLSCREEN_CONTEXT`    | lines of diff context in full-screen mode                                                                                      | 10                                            |
 | `FORGIT_DIR_VIEW`              | command used to preview directories                                                                                            | `tree` if available, otherwise `find`         |
 | `FORGIT_CLEAN_LIST_FILES_OPTS` | arguments passed to `git ls-files` together with `--others` to determine which files are shown when invoking `forgit clean`    |                                               |
+
+# ⌨ Keybindings
+
+| Key                                           | Action                                      |
+| :-------------------------------------------: | ------------------------------------------- |
+| <kbd>Enter</kbd>                              | Confirm                                     |
+| <kbd>Tab</kbd>                                | Toggle mark and move down                   |
+| <kbd>Shift</kbd> - <kbd>Tab</kbd>             | Toggle mark and move up                     |
+| <kbd>?</kbd>                                  | Toggle preview window                       |
+| <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap                         |
+| <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort                                 |
+| <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection                            |
+| <kbd>Ctrl</kbd> - <kbd>Y</kbd>                | Copy commit hash/stash ID*                  |
+| <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection move up                           |
+| <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection move down                         |
+| <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up                             |
+| <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down                           |
+| <kbd>Alt</kbd> - <kbd>E</kbd>                 | Open file in default editor (when possible) |
+
+\* Available when the selection contains a commit hash or a stash ID.
+For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
 # 📦 Optional dependencies
 
