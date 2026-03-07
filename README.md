@@ -138,6 +138,8 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-gi.png)
 
+- **Interactive `.gitattributes` generator** (`gat`)
+
 - **Interactive `git diff` viewer** (`gd`)
 
 - **Interactive `git show` viewer** (`gso`)
