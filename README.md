@@ -243,39 +243,40 @@ export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
 
 ## Per-command Options
 
-Each forgit command can be customized with dedicated environment variables for git arguments, fzf options, and pager:
+Each forgit command can be customized with dedicated environment variables for git arguments and fzf options:
 
-| Command  | Git Options | FZF Options | Pager |
-|----------|-------------|-------------|-------|
-| `ga`     | `FORGIT_ADD_GIT_OPTS` | `FORGIT_ADD_FZF_OPTS` | |
-| `glo`    | `FORGIT_LOG_GIT_OPTS` | `FORGIT_LOG_FZF_OPTS` | |
-| `grl`    | `FORGIT_REFLOG_GIT_OPTS` | `FORGIT_REFLOG_FZF_OPTS` | |
-| `gi`     | | `FORGIT_IGNORE_FZF_OPTS` | `FORGIT_IGNORE_PAGER` |
-| `gat`    | | `FORGIT_ATTRIBUTES_FZF_OPTS` | `FORGIT_ATTRIBUTES_PAGER` |
-| `gd`     | `FORGIT_DIFF_GIT_OPTS` | `FORGIT_DIFF_FZF_OPTS` | `FORGIT_DIFF_PAGER` |
-| `gso`    | `FORGIT_SHOW_GIT_OPTS` | `FORGIT_SHOW_FZF_OPTS` | `FORGIT_SHOW_PAGER` |
-| `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS` | `FORGIT_RESET_HEAD_FZF_OPTS` | |
-| `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS` | `FORGIT_CHECKOUT_FILE_FZF_OPTS` | |
-| `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`<br>`FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` | |
-| `gsw`    | `FORGIT_SWITCH_BRANCH_GIT_OPTS` | `FORGIT_SWITCH_BRANCH_FZF_OPTS` | |
-| `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS` | `FORGIT_BRANCH_DELETE_FZF_OPTS` | |
-| `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS` | `FORGIT_CHECKOUT_TAG_FZF_OPTS` | |
-| `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS` | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` | |
-| `grc`    | `FORGIT_REVERT_COMMIT_GIT_OPTS` | `FORGIT_REVERT_COMMIT_FZF_OPTS` | |
-| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS` | `FORGIT_STASH_FZF_OPTS` | |
-| `gsp`    | `FORGIT_STASH_PUSH_GIT_OPTS` | `FORGIT_STASH_PUSH_FZF_OPTS` | |
-| `gclean` | `FORGIT_CLEAN_GIT_OPTS` | `FORGIT_CLEAN_FZF_OPTS` | |
-| `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS` | `FORGIT_CHERRY_PICK_FZF_OPTS` | |
-| `grb`    | `FORGIT_REBASE_GIT_OPTS` | `FORGIT_REBASE_FZF_OPTS` | |
-| `gbl`    | `FORGIT_BLAME_GIT_OPTS` | `FORGIT_BLAME_FZF_OPTS` | `FORGIT_BLAME_PAGER` |
-| `gfu`    | `FORGIT_FIXUP_GIT_OPTS` | `FORGIT_FIXUP_FZF_OPTS` | |
-| `gsq`    | `FORGIT_SQUASH_GIT_OPTS` | `FORGIT_SQUASH_FZF_OPTS` | |
-| `grw`    | `FORGIT_REWORD_GIT_OPTS` | `FORGIT_REWORD_FZF_OPTS` | |
+| Command  | Git Options | FZF Options |
+|----------|-------------|-------------|
+| `ga`     | `FORGIT_ADD_GIT_OPTS` | `FORGIT_ADD_FZF_OPTS` |
+| `glo`    | `FORGIT_LOG_GIT_OPTS` | `FORGIT_LOG_FZF_OPTS` |
+| `grl`    | `FORGIT_REFLOG_GIT_OPTS` | `FORGIT_REFLOG_FZF_OPTS` |
+| `gi`     | | `FORGIT_IGNORE_FZF_OPTS` |
+| `gat`    | | `FORGIT_ATTRIBUTES_FZF_OPTS` |
+| `gd`     | `FORGIT_DIFF_GIT_OPTS` | `FORGIT_DIFF_FZF_OPTS` |
+| `gso`    | `FORGIT_SHOW_GIT_OPTS` | `FORGIT_SHOW_FZF_OPTS` |
+| `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS` | `FORGIT_RESET_HEAD_FZF_OPTS` |
+| `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS` | `FORGIT_CHECKOUT_FILE_FZF_OPTS` |
+| `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`<br>`FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
+| `gsw`    | `FORGIT_SWITCH_BRANCH_GIT_OPTS` | `FORGIT_SWITCH_BRANCH_FZF_OPTS` |
+| `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS` | `FORGIT_BRANCH_DELETE_FZF_OPTS` |
+| `gct`    | `FORGIT_CHECKOUT_TAG_GIT_OPTS` | `FORGIT_CHECKOUT_TAG_FZF_OPTS` |
+| `gco`    | `FORGIT_CHECKOUT_COMMIT_GIT_OPTS` | `FORGIT_CHECKOUT_COMMIT_FZF_OPTS` |
+| `grc`    | `FORGIT_REVERT_COMMIT_GIT_OPTS` | `FORGIT_REVERT_COMMIT_FZF_OPTS` |
+| `gss`    | `FORGIT_STASH_SHOW_GIT_OPTS` | `FORGIT_STASH_FZF_OPTS` |
+| `gsp`    | `FORGIT_STASH_PUSH_GIT_OPTS` | `FORGIT_STASH_PUSH_FZF_OPTS` |
+| `gclean` | `FORGIT_CLEAN_GIT_OPTS` | `FORGIT_CLEAN_FZF_OPTS` |
+| `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS` | `FORGIT_CHERRY_PICK_FZF_OPTS` |
+| `grb`    | `FORGIT_REBASE_GIT_OPTS` | `FORGIT_REBASE_FZF_OPTS` |
+| `gbl`    | `FORGIT_BLAME_GIT_OPTS` | `FORGIT_BLAME_FZF_OPTS` |
+| `gfu`    | `FORGIT_FIXUP_GIT_OPTS` | `FORGIT_FIXUP_FZF_OPTS` |
+| `gsq`    | `FORGIT_SQUASH_GIT_OPTS` | `FORGIT_SQUASH_FZF_OPTS` |
+| `grw`    | `FORGIT_REWORD_GIT_OPTS` | `FORGIT_REWORD_FZF_OPTS` |
 
-### Pager Fallback Chain
+## Pagers
 
 Forgit will use the default configured pager from git (`core.pager`,
-`pager.show`, `pager.diff`) but can be altered with the pager variables above.
+`pager.show`, `pager.diff`) but can be altered with the following environment
+variables:
 
 | Pager                     | Fallbacks to                                     |
 |---------------------------|--------------------------------------------------|
