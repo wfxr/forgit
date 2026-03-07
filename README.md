@@ -319,7 +319,6 @@ variables:
 | pager on `git blame`     | `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`     |
 | pager on `gitignore`     | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`      |
 | pager on `gitattributes` | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat`  |
-| git log format           | `FORGIT_GLO_FORMAT`       | `%C(auto)%h%d %s %C(black)%C(bold)%cr%reset`      |
 
 ## fzf options
 
@@ -394,6 +393,9 @@ export FORGIT_LOG_FZF_OPTS='
 | Option                         | Description                                                                                                                    | Default                                       |
 |--------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
 | `FORGIT_LOG_FORMAT`            | git log format                                                                                                                 | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
+| `FORGIT_GLO_FORMAT`            | override log format for `glo` command                                                                                          | `$FORGIT_LOG_FORMAT`                          |
+| `FORGIT_LOG_GRAPH_ENABLE`     | enable log graph display                                                                                                       | `true`                                        |
+| `FORGIT_COPY_CMD`             | command for copying to clipboard                                                                                               | `pbcopy`                                      |
 | `FORGIT_PREVIEW_CONTEXT`       | lines of diff context in preview mode                                                                                          | 3                                             |
 | `FORGIT_FULLSCREEN_CONTEXT`    | lines of diff context in full-screen mode                                                                                      | 10                                            |
 | `FORGIT_DIR_VIEW`              | command used to preview directories                                                                                            | `tree` if available, otherwise `find`         |
