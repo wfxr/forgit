@@ -212,7 +212,7 @@ For instance, if you want to order branches in `gcb` by the last committed date 
 export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
 ```
 
-## shell aliases
+## Shell Aliases
 
 You can change the default aliases by defining these variables below before sourcing the forgit shell plugin.
 (To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
@@ -244,7 +244,7 @@ forgit_squash=gsq
 forgit_reword=grw
 ```
 
-## git integration
+## Git Integration
 
 You can use forgit as a sub-command of git by making `git-forgit` available in `$PATH`:
 
@@ -275,7 +275,7 @@ And use forgit functions via a git alias:
 git cf
 ```
 
-## git options
+## Git Options
 
 If you want to customize `git`'s behavior within forgit there is a dedicated variable for each forgit command.
 These are passed to the according `git` calls.
@@ -305,7 +305,7 @@ These are passed to the according `git` calls.
 | `grw`    | `FORGIT_REWORD_GIT_OPTS`                                                    |
 | `gcp`    | `FORGIT_CHERRY_PICK_GIT_OPTS`                                               |
 
-## pagers
+## Pagers
 
 Forgit will use the default configured pager from git (`core.pager`,
 `pager.show`, `pager.diff`) but can be altered with the following environment
@@ -320,7 +320,7 @@ variables:
 | pager on `gitignore`     | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`      |
 | pager on `gitattributes` | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat`  |
 
-## fzf options
+## FZF Options
 
 You can add default fzf options for `forgit`, including keybindings, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
@@ -388,7 +388,7 @@ export FORGIT_LOG_FZF_OPTS='
 '
 ```
 
-## other options
+## Other Options
 
 | Option                         | Description                                                                                                                    | Default                                       |
 |--------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
