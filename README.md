@@ -62,7 +62,7 @@ git clone https://github.com/wfxr/forgit.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/
 # for sheldon.cli
 [plugins.forgit]
 github = "wfxr/forgit"
-rev = "25.02.0"
+rev = "26.01.0"  # check https://github.com/wfxr/forgit/releases for latest version
 use = ["forgit.plugin.zsh"]
 apply = ["source"]
 
