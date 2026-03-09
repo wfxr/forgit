@@ -67,6 +67,7 @@ _git_forgit()
 
     cmds="
         add
+        attributes
         blame
         branch_delete
         checkout_branch
@@ -89,6 +90,7 @@ _git_forgit()
         squash
         stash_show
         stash_push
+        switch_branch
         worktree
         worktree_delete
     "
@@ -100,6 +102,8 @@ _git_forgit()
         3)
             case ${prev} in
                 add) _git_add ;;
+                attributes) ;;
+                blame) ;;
                 branch_delete) _git_branch_delete ;;
                 checkout_branch) _git_checkout_branch ;;
                 checkout_commit) _git_checkout ;;
@@ -110,6 +114,7 @@ _git_forgit()
                 clean) _git_clean ;;
                 diff) _git_diff ;;
                 fixup) _git_log ;;
+                ignore) ;;
                 log) _git_log ;;
                 reflog) _git_reflog ;;
                 rebase) _git_rebase ;;
@@ -119,6 +124,8 @@ _git_forgit()
                 show) _git_show ;;
                 squash) _git_log ;;
                 stash_show) _git_stash_show ;;
+                stash_push) _git_stash ;;
+                switch_branch) _git_checkout_branch ;;
                 worktree) _git_worktree ;;
                 worktree_delete) _git_worktrees ;;
             esac
@@ -159,6 +166,7 @@ then
     __git_complete forgit::show _git_show
     __git_complete forgit::squash _git_log
     __git_complete forgit::stash::show _git_stash_show
+    __git_complete forgit::stash::push _git_stash
     __git_complete forgit::worktree _git_worktree
     __git_complete forgit::worktree::delete _git_worktrees
 
@@ -184,6 +192,7 @@ then
         __git_complete "${forgit_show}" _git_show
         __git_complete "${forgit_squash}" _git_log
         __git_complete "${forgit_stash_show}" _git_stash_show
+        __git_complete "${forgit_stash_push}" _git_stash
         __git_complete "${forgit_worktree}" _git_worktree
         __git_complete "${forgit_worktree_delete}" _git_worktrees
     fi
