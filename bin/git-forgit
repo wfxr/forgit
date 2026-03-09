@@ -543,7 +543,7 @@ _forgit_reset_head() {
     while IFS='' read -r file; do
         files+=("$file")
     done < <(git diff -z --staged --name-only | tr '\0' '\n' | FZF_DEFAULT_OPTS="$opts" fzf)
-    if [[ ${#files} -eq 0 ]]; then
+    if [[ ${#files[@]} -eq 0 ]]; then
         echo 'Nothing to unstage.'
         return 1
     fi
