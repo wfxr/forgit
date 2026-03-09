@@ -67,6 +67,7 @@ _git-forgit() {
         local -a subcommands
         subcommands=(
             'add:git add selector'
+            'attributes:git attributes generator'
             'blame:git blame viewer'
             'branch_delete:git branch deletion selector'
             'checkout_branch:git checkout branch selector'
@@ -85,15 +86,19 @@ _git-forgit() {
             'reset_head:git reset HEAD (unstage) selector'
             'revert_commit:git revert commit selector'
             'reword:git fixup=reword'
+            'show:git show viewer'
             'squash:git squash'
             'stash_show:git stash viewer'
             'stash_push:git stash push selector'
+            'switch_branch:git switch branch selector'
             'worktree:git worktree browser'
             'worktree_delete:git worktree remove selector'
         )
         _describe -t commands 'git forgit' subcommands
         ;;
     add) _git-add ;;
+    attributes) ;;
+    blame) ;;
     branch_delete) _git-branches ;;
     checkout_branch) _git-branches ;;
     checkout_commit) __git_recent_commits ;;
@@ -104,6 +109,7 @@ _git-forgit() {
     clean) _git-clean ;;
     diff) _git-forgit-diff ;;
     fixup) _git-log ;;
+    ignore) ;;
     log) _git-log ;;
     reflog) _git-forgit-reflog ;;
     rebase) _git-rebase ;;
@@ -112,7 +118,9 @@ _git-forgit() {
     reword) _git-log ;;
     squash) _git-log ;;
     stash_show) _git-stash-show ;;
+    stash_push) _git-add ;;
     show) _git-show ;;
+    switch_branch) _git-branches ;;
     worktree) _git-worktree ;;
     worktree_delete) _git-worktrees ;;
     esac
@@ -143,6 +151,7 @@ compdef __git_recent_commits forgit::revert::commit
 compdef _git-log forgit::reword
 compdef _git-log forgit::squash
 compdef _git-stash-show forgit::stash::show
+compdef _git-add forgit::stash::push
 compdef _git-show forgit::show
 compdef _git-worktree forgit::worktree
 compdef _git-worktrees forgit::worktree::delete
