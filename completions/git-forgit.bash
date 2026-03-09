@@ -37,7 +37,11 @@ _git_stash_show()
 
 _git_worktrees()
 {
-    __gitcomp_nl "$(__git worktree list --porcelain 2>/dev/null | grep '^worktree ' | cut -d' ' -f2-)"
+    local wt_list="" field
+    while IFS= read -r -d '' field; do
+        [[ "$field" == worktree\ * ]] && wt_list+="${field#worktree }"$'\n'
+    done < <(__git worktree list --porcelain -z 2>/dev/null)
+    __gitcomp_nl "$wt_list"
 }
 
 # Completion for git-forgit
@@ -115,6 +119,7 @@ _git_forgit()
                 show) _git_show ;;
                 squash) _git_log ;;
                 stash_show) _git_stash_show ;;
+                worktree) _git_worktree ;;
                 worktree_delete) _git_worktrees ;;
             esac
             ;;
@@ -154,6 +159,7 @@ then
     __git_complete forgit::show _git_show
     __git_complete forgit::squash _git_log
     __git_complete forgit::stash::show _git_stash_show
+    __git_complete forgit::worktree _git_worktree
     __git_complete forgit::worktree::delete _git_worktrees
 
     # Completion for forgit plugin shell aliases
@@ -178,6 +184,7 @@ then
         __git_complete "${forgit_show}" _git_show
         __git_complete "${forgit_squash}" _git_log
         __git_complete "${forgit_stash_show}" _git_stash_show
+        __git_complete "${forgit_worktree}" _git_worktree
         __git_complete "${forgit_worktree_delete}" _git_worktrees
     fi
 fi
