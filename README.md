@@ -358,6 +358,7 @@ export FORGIT_LOG_FZF_OPTS='
 | <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview move up                             |
 | <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview move down                           |
 | <kbd>Alt</kbd> - <kbd>E</kbd>                 | Open file in default editor (when possible) |
+| <kbd>Alt</kbd> - <kbd>T</kbd>                 | Show commit message (when viewing a commit) |
 
 \* Available when the selection contains a commit hash or a stash ID.
 For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
