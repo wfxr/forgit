@@ -19,7 +19,12 @@ _git-stash-show() {
 }
 
 _git-worktrees() {
-    _alternative "worktrees:worktree:($(git worktree list --porcelain 2>/dev/null | grep '^worktree ' | cut -d' ' -f2-))"
+    local -a wt_list
+    local field
+    while IFS= read -r -d '' field; do
+        [[ "$field" == worktree\ * ]] && wt_list+=("${field#worktree }")
+    done < <(git worktree list --porcelain -z 2>/dev/null)
+    _alternative "worktrees:worktree:(${(@q)wt_list})"
 }
 
 # The completions for git already define a _git-diff completion function, but
@@ -108,7 +113,7 @@ _git-forgit() {
     squash) _git-log ;;
     stash_show) _git-stash-show ;;
     show) _git-show ;;
-    worktree) ;;
+    worktree) _git-worktree ;;
     worktree_delete) _git-worktrees ;;
     esac
 }
@@ -139,6 +144,7 @@ compdef _git-log forgit::reword
 compdef _git-log forgit::squash
 compdef _git-stash-show forgit::stash::show
 compdef _git-show forgit::show
+compdef _git-worktree forgit::worktree
 compdef _git-worktrees forgit::worktree::delete
 
 # this is the case of calling the command and pressing tab

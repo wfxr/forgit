@@ -31,3 +31,10 @@ function test_checkout_tag_shows_message_when_no_tags() {
 
     assert_same "Nothing to checkout: there are no tags." "$output"
 }
+
+function test_worktree_delete_shows_message_when_no_deletable_worktrees() {
+    output=$(_forgit_worktree_delete 2>&1)
+    assert_general_error
+
+    assert_same "Nothing to delete." "$output"
+}

@@ -31,6 +31,7 @@ $FORGIT_FZF_DEFAULT_OPTS
 
 _forgit_warn() { printf "%b[Warn]%b %s\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 _forgit_info() { printf "%b[Info]%b %s\n" '\e[0;32m' '\e[0m' "$@" >&2; }
+_forgit_print_dim() { printf "\e[90m%s\e[0m\n" "$*"; }
 _forgit_inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null 2>&1; }
 _forgit_inside_git_dir() { git rev-parse --is-inside-git-dir >/dev/null 2>&1; }
 _forgit_inside_git_repo() { _forgit_inside_work_tree || _forgit_inside_git_dir; }
@@ -166,9 +167,9 @@ _forgit_branch_list() {
     local current
     current=$(git branch --show-current)
     if [[ -n "$current" ]]; then
-        printf '\e[90m%s\e[0m\n' "* $current"
+        _forgit_print_dim "* $current"
     else
-        printf '\e[90m%s\e[0m\n' "* (HEAD detached at $(git rev-parse --short HEAD))"
+        _forgit_print_dim "* (HEAD detached at $(git rev-parse --short HEAD))"
     fi
     git branch --color=always "$@" | grep -v '^\*' | grep -v ' -> '
 }
@@ -1381,18 +1382,26 @@ _forgit_worktree_delete() {
     local opts worktrees
     [[ $# -ne 0 ]] && { _forgit_git_worktree_delete "$@"; return $?; }
 
+    local candidates
+    candidates=$(_forgit_worktree_list_deletable)
+    if [[ -z "$candidates" ]]; then
+        echo "Nothing to delete."
+        return 1
+    fi
+
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s --multi --tiebreak=index
         --preview=\"$FORGIT worktree_preview {}\"
         --bind=\"ctrl-y:execute-silent($FORGIT worktree_yank_path {})\"
+        --bind=\"alt-l:execute-silent($FORGIT worktree_toggle_lock {})+reload($FORGIT worktree_list_deletable)\"
         $FORGIT_WORKTREE_DELETE_FZF_OPTS
     "
 
     worktrees=()
     while IFS='' read -r line; do
         [[ -n "$line" ]] && worktrees+=("$(echo "$line" | _forgit_extract_worktree_path)")
-    done < <(_forgit_worktree_list_deletable | FZF_DEFAULT_OPTS="$opts" fzf)
+    done < <(echo "$candidates" | FZF_DEFAULT_OPTS="$opts" fzf)
 
     [[ ${#worktrees[@]} -eq 0 ]] && return 1
 
@@ -1511,6 +1520,7 @@ PRIVATE_COMMANDS=(
     "worktree_yank_path"
     "worktree_toggle_lock"
     "worktree_list"
+    "worktree_list_deletable"
 )
 
 # Check if the script is being sourced. This is necessary for unit tests where
