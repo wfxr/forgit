@@ -396,6 +396,12 @@ For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 - `gd` supports specifying revision (e.g., `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` or `gat` with arguments to get the wanted `.gitignore`/`.gitattributes` contents directly (e.g., `gi cmake c++`).
 
+Contributing
+-----------
+
+Contributions are welcome.
+For the repository-specific contribution workflow, local validation steps, and commit message guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 📃 License
 -----------
 
