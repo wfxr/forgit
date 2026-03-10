@@ -125,7 +125,7 @@ _git_forgit()
                 squash) _git_log ;;
                 stash_show) _git_stash_show ;;
                 stash_push) _git_add ;;
-                switch_branch) _git_checkout_branch ;;
+                switch_branch) _git_switch ;;
                 worktree) _git_worktree ;;
                 worktree_delete) _git_worktrees ;;
             esac
@@ -148,7 +148,7 @@ then
     __git_complete forgit::add _git_add
     __git_complete forgit::branch::delete _git_branch_delete
     __git_complete forgit::checkout::branch _git_checkout_branch
-    __git_complete forgit::switch::branch _git_checkout_branch
+    __git_complete forgit::switch::branch _git_switch
     __git_complete forgit::checkout::commit _git_checkout
     __git_complete forgit::checkout::file _git_checkout_file
     __git_complete forgit::checkout::tag _git_checkout_tag
@@ -175,7 +175,7 @@ then
         __git_complete "${forgit_add}" _git_add
         __git_complete "${forgit_branch_delete}" _git_branch_delete
         __git_complete "${forgit_checkout_branch}" _git_checkout_branch
-        __git_complete "${forgit_switch_branch}" _git_checkout_branch
+        __git_complete "${forgit_switch_branch}" _git_switch
         __git_complete "${forgit_checkout_commit}" _git_checkout
         __git_complete "${forgit_checkout_file}" _git_checkout_file
         __git_complete "${forgit_checkout_tag}" _git_checkout_tag
