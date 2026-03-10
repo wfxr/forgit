@@ -27,7 +27,8 @@
 This tool is designed to help you use git more efficiently.
 It's **lightweight** and **easy to use**.
 
-# 📝 Features
+📝 Features
+------------
 
 **`ga`** - Interactive `git add` selector:
 
@@ -41,7 +42,7 @@ It's **lightweight** and **easy to use**.
 
 ![screenshot](https://raw.githubusercontent.com/wfxr/i/master/forgit-gi.png)
 
-## Full Command List
+### Full Command List
 
 | Command  | Description |
 |----------|-------------|
@@ -72,15 +73,16 @@ It's **lightweight** and **easy to use**.
 | `gwt`    | Interactive `git worktree` selector |
 | `gwd`    | Interactive `git worktree remove` selector |
 
-# 📥 Installation
+📥 Installation
+----------------
 
-## Requirements
+### Requirements
 
 - [`fzf`](https://github.com/junegunn/fzf) version `0.49.0` or higher
 
   If your OS package manager bundles an older version of `fzf`, you might install it using [`fzf`'s own install script](https://github.com/junegunn/fzf?tab=readme-ov-file#using-git).
 
-## Shell Package Managers
+### Shell Package Managers
 
 ``` zsh
 # for zplug
@@ -115,7 +117,7 @@ apply = ["source"]
 # Clone the repository and source it in your shell's rc file or put bin/git-forgit into your $PATH
 ```
 
-## Homebrew
+### Homebrew
 
 To install using brew
 ```sh
@@ -137,26 +139,26 @@ Then add the following to your shell's config file:
 [ -f $HOMEBREW_PREFIX/share/forgit/forgit.plugin.sh ] && source $HOMEBREW_PREFIX/share/forgit/forgit.plugin.sh
 ```
 
-## Arch User Repository
+### Arch User Repository
 
 [AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit, are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or [forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the default branch of this repository.
 
-## Completions
+### Completions
 
 Forgit offers completions for all supported shells. Completions are automatically configured when installing forgit through Homebrew or the AUR. All other installation methods mentioned above require manual setup for completions. The necessary steps depend on the shell you use.
 
-### Bash
+#### Bash
 
 - Put [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) in
   `~/.local/share/bash-completion/completions` to have bash tab completion for `git forgit` and configured git aliases.
 - Source [`completions/git-forgit.bash`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.bash) explicitly to have
   bash tab completion for forgit shell functions and aliases (e.g., `gsw <tab>` completes branches).
 
-### Fish
+#### Fish
 
 - Put [`completions/git-forgit.fish`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.fish) in `~/.config/fish/completions/` to have fish tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `ga`.
 
-### Zsh
+#### Zsh
 
 - Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`.
 
@@ -167,9 +169,10 @@ If you're having issues after updating, and commands such as `forgit::add` or al
 > zsh
 ```
 
-# 🚀 Usage
+🚀 Usage
+---------
 
-## Shell Aliases
+### Shell Aliases
 
 You can change the default aliases by defining these variables below before sourcing the forgit shell plugin.
 (To disable all aliases, Set the `FORGIT_NO_ALIASES` flag.)
@@ -203,7 +206,7 @@ forgit_worktree=gwt
 forgit_worktree_delete=gwd
 ```
 
-## Git Integration
+### Git Integration
 
 You can use forgit as a sub-command of git by making `git-forgit` available in `$PATH`:
 
@@ -234,7 +237,8 @@ And use forgit functions via a git alias:
 git cf
 ```
 
-# ⚙ Configuration
+⚙ Configuration
+-----------------
 
 Options can be set via environment variables. They have to be **exported** in
 order to be recognized by `forgit`.
@@ -245,7 +249,7 @@ For instance, if you want to order branches in `gcb` by the last committed date 
 export FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS='--sort=-committerdate'
 ```
 
-## Per-command Options
+### Per-command Options
 
 Each forgit command can be customized with dedicated environment variables for git arguments and fzf options:
 
@@ -278,7 +282,7 @@ Each forgit command can be customized with dedicated environment variables for g
 | `gwt`    | | `FORGIT_WORKTREE_FZF_OPTS` |
 | `gwd`    | `FORGIT_WORKTREE_DELETE_GIT_OPTS` | `FORGIT_WORKTREE_DELETE_FZF_OPTS` |
 
-## Pagers
+### Pagers
 
 Forgit will use the default configured pager from git (`core.pager`,
 `pager.show`, `pager.diff`) but can be altered with the following environment
@@ -293,7 +297,7 @@ variables:
 | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`     |
 | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat` |
 
-## FZF Options
+### FZF Options
 
 You can add default fzf options for `forgit`, including keybindings, layout, etc.
 (No need to repeat the options already defined in `FZF_DEFAULT_OPTS`)
@@ -334,7 +338,7 @@ export FORGIT_LOG_FZF_OPTS='
 '
 ```
 
-## Other Options
+### Other Options
 
 | Option                         | Description                                                                                                                    | Default                                       |
 |--------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
@@ -347,7 +351,8 @@ export FORGIT_LOG_FZF_OPTS='
 | `FORGIT_DIR_VIEW`              | command used to preview directories                                                                                            | `tree` if available, otherwise `find`         |
 | `FORGIT_CLEAN_LIST_FILES_OPTS` | arguments passed to `git ls-files` together with `--others` to determine which files are shown when invoking `forgit clean`    |                                               |
 
-# ⌨ Keybindings
+⌨ Keybindings
+---------------
 
 | Key                                           | Action                                      |
 | :-------------------------------------------: | ------------------------------------------- |
@@ -373,7 +378,8 @@ export FORGIT_LOG_FZF_OPTS='
 
 For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FORGIT_COPY_CMD='xclip -selection clipboard'`.
 
-# 📦 Optional dependencies
+📦 Optional dependencies
+-------------------------
 
 - [`delta`](https://github.com/dandavison/delta) / [`diff-so-fancy`](https://github.com/so-fancy/diff-so-fancy): For better human-readable diffs.
 
@@ -383,12 +389,14 @@ For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 
 - [`tree`](https://gitlab.com/OldManProgrammer/unix-tree): Directory tree view for `gclean`.
 
-# 💡 Tips
+💡 Tips
+--------
 
 - Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco main`).
 - `gd` supports specifying revision (e.g., `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` or `gat` with arguments to get the wanted `.gitignore`/`.gitattributes` contents directly (e.g., `gi cmake c++`).
 
-# 📃 License
+📃 License
+-----------
 
 [MIT](https://wfxr.mit-license.org/2017) (c) Wenxuan Zhang
