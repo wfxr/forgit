@@ -396,11 +396,16 @@ For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 - `gd` supports specifying revision (e.g., `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` or `gat` with arguments to get the wanted `.gitignore`/`.gitattributes` contents directly (e.g., `gi cmake c++`).
 
-Contributing
+⚒️ Contributing
 -----------
 
 Contributions are welcome.
 For the repository-specific contribution workflow, local validation steps, and commit message guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+⭐ Star History
+----------------
+
+[![Star History Chart](https://api.star-history.com/svg?repos=wfxr/forgit&type=date&legend=top-left)](https://www.star-history.com/?repos=wfxr%2Fforgit&type=date&legend=top-left)
 
 📃 License
 -----------
