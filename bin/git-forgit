@@ -920,6 +920,54 @@ _forgit_checkout_file() {
     [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "$@" "${files[@]}"
 }
 
+# git checkout-file from commit selector
+_forgit_checkout_file_from_commit() {
+    _forgit_inside_work_tree || return 1
+    local opts commit file branch
+
+    if [[ $# -gt 0 ]]; then
+        branch=$1
+        shift
+    else
+        # default to the current branch if none was passed
+        branch=$(git rev-parse --abbrev-ref HEAD)
+    fi
+
+    # select the commit interactively
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --preview=\"$FORGIT log_preview {}\"
+        $FORGIT_CHECKOUT_FILE_FROM_COMMIT_LOG_FZF_OPTS
+    "
+    commit=$(_forgit_git_log "$_forgit_log_format" "$branch" "$@" |
+        FZF_DEFAULT_OPTS="$opts" fzf |
+        _forgit_extract_sha)
+    [[ -n "$commit" ]] || return 0
+
+    # select the file interactively
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +m -0
+        --preview=\"$FORGIT preview show_preview {} '$_forgit_preview_context' $commit\"
+        --preview-label=\" Diff \"
+        --bind=\"alt-t:transform:[[ ! \\\"\$FZF_PREVIEW_LABEL\\\" =~ 'Diff' ]] &&
+                echo 'change-preview-label( Diff )+refresh-preview' ||
+                echo 'change-preview-label( Commit Message )+refresh-preview'\"
+        $FORGIT_CHECKOUT_FILE_FROM_COMMIT_SHOW_FZF_OPTS
+        --prompt=\"${commit} > \"
+    "
+    file=$(_forgit_git_show "$commit" | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ -n "$file" ]] || return 0
+
+    # special case: when the file was deleted in the commit
+    # check out the file from the previous commit.
+    [[ "$file" =~ ^\[D\] ]] && commit="$commit~"
+    file=$(echo "$file" | _forgit_get_single_file_from_diff_line)
+
+    _forgit_git_checkout_file "$commit" -- "$file"
+}
+
 _forgit_git_checkout_branch() {
     _forgit_checkout_branch_git_opts=()
     _forgit_parse_array _forgit_checkout_branch_git_opts "$FORGIT_CHECKOUT_BRANCH_GIT_OPTS"
@@ -1543,6 +1591,7 @@ PUBLIC_COMMANDS=(
     "switch_branch"
     "checkout_commit"
     "checkout_file"
+    "checkout_file_from_commit"
     "checkout_tag"
     "cherry_pick"
     "cherry_pick_from_branch"

@@ -73,6 +73,7 @@ _git_forgit()
         checkout_branch
         checkout_commit
         checkout_file
+        checkout_file_from_commit
         checkout_tag
         cherry_pick
         cherry_pick_from_branch
@@ -109,6 +110,7 @@ _git_forgit()
                 checkout_branch) _git_checkout_branch ;;
                 checkout_commit) _git_checkout ;;
                 checkout_file) _git_checkout_file ;;
+                checkout_file_from_commit) _git_checkout_branch ;;
                 checkout_tag) _git_checkout_tag ;;
                 cherry_pick) _git_cherry_pick ;;
                 cherry_pick_from_branch) _git_checkout_branch ;;
@@ -152,6 +154,7 @@ then
     __git_complete forgit::switch::branch _git_switch
     __git_complete forgit::checkout::commit _git_checkout
     __git_complete forgit::checkout::file _git_checkout_file
+    __git_complete forgit::checkout::file::from::commit _git_checkout_branch
     __git_complete forgit::checkout::tag _git_checkout_tag
     __git_complete forgit::cherry::pick _git_cherry_pick
     __git_complete forgit::cherry::pick::from::branch _git_checkout_branch
@@ -179,6 +182,7 @@ then
         __git_complete "${forgit_switch_branch}" _git_switch
         __git_complete "${forgit_checkout_commit}" _git_checkout
         __git_complete "${forgit_checkout_file}" _git_checkout_file
+        __git_complete "${forgit_checkout_file_from_commit}" _git_checkout_branch
         __git_complete "${forgit_checkout_tag}" _git_checkout_tag
         __git_complete "${forgit_cherry_pick}" _git_checkout_branch
         __git_complete "${forgit_clean}" _git_clean

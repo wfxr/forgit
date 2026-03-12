@@ -104,6 +104,10 @@ forgit::reword() {
     "$FORGIT" reword "$@"
 }
 
+forgit::checkout::file::from::commit() {
+    "$FORGIT" checkout_file_from_commit "$@"
+}
+
 forgit::checkout::file() {
     "$FORGIT" checkout_file "$@"
 }
@@ -191,6 +195,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin export forgit_ignore="${forgit_ignore:-gi}"
     builtin export forgit_attributes="${forgit_attributes:-gat}"
     builtin export forgit_checkout_file="${forgit_checkout_file:-gcf}"
+    builtin export forgit_checkout_file_from_commit="${forgit_checkout_file_from_commit:-gcff}"
     builtin export forgit_checkout_branch="${forgit_checkout_branch:-gcb}"
     builtin export forgit_switch_branch="${forgit_switch_branch:-gsw}"
     builtin export forgit_checkout_commit="${forgit_checkout_commit:-gco}"
@@ -219,6 +224,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin alias "${forgit_ignore}"='forgit::ignore'
     builtin alias "${forgit_attributes}"='forgit::attributes'
     builtin alias "${forgit_checkout_file}"='forgit::checkout::file'
+    builtin alias "${forgit_checkout_file_from_commit}"='forgit::checkout::file::from::commit'
     builtin alias "${forgit_checkout_branch}"='forgit::checkout::branch'
     builtin alias "${forgit_switch_branch}"='forgit::switch::branch'
     builtin alias "${forgit_checkout_commit}"='forgit::checkout::commit'

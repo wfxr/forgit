@@ -6,8 +6,8 @@
 # sourced when git-forgit command or forgit subcommand of git is invoked.
 
 function __fish_forgit_needs_subcommand
-    for subcmd in add blame branch_delete checkout_branch checkout_commit checkout_file checkout_tag \
-        cherry_pick cherry_pick_from_branch clean diff fixup ignore log reflog rebase reset_head \
+    for subcmd in add blame branch_delete checkout_branch checkout_commit checkout_file checkout_file_from_commit \
+        checkout_tag cherry_pick cherry_pick_from_branch clean diff fixup ignore log reflog rebase reset_head \
         revert_commit reword squash stash_show stash_push switch_branch worktree worktree_add worktree_delete
         if contains -- $subcmd (commandline -opc)
             return 1
@@ -32,6 +32,7 @@ complete -c git-forgit -n __fish_forgit_needs_subcommand -a branch_delete -d 'gi
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a checkout_branch -d 'git checkout branch selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a checkout_commit -d 'git checkout commit selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a checkout_file -d 'git checkout-file selector'
+complete -c git-forgit -n __fish_forgit_needs_subcommand -a checkout_file_from_commit -d 'git checkout-file from commit selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a checkout_tag -d 'git checkout tag selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a cherry_pick -d 'git cherry-picking'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a cherry_pick_from_branch -d 'git cherry-picking with interactive branch selection'
@@ -59,6 +60,7 @@ complete -c git-forgit -n '__fish_seen_subcommand_from branch_delete' -a "(__fis
 complete -c git-forgit -n '__fish_seen_subcommand_from checkout_branch' -a "(complete -C 'git switch ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from checkout_commit' -a "(__fish_git_commits)"
 complete -c git-forgit -n '__fish_seen_subcommand_from checkout_file' -a "(__fish_git_files modified)"
+complete -c git-forgit -n '__fish_seen_subcommand_from checkout_file_from_commit' -a "(complete -C 'git switch ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from checkout_tag' -a "(__fish_git_tags)" -d Tag
 complete -c git-forgit -n '__fish_seen_subcommand_from cherry_pick' -a "(complete -C 'git cherry-pick ')"
 complete -c git-forgit -n '__fish_seen_subcommand_from clean' -a "(__fish_git_files untracked ignored)"
