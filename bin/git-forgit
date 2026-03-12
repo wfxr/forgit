@@ -430,6 +430,19 @@ _forgit_show_enter() {
     _forgit_show_view "$file" "$_forgit_fullscreen_context" "${commit}"
 }
 
+_forgit_git_show() {
+    local commit=$1
+    shift
+
+    _forgit_show_git_opts=()
+    _forgit_parse_array _forgit_show_git_opts "$FORGIT_SHOW_GIT_OPTS"
+    # Add "^{commit}" suffix after the actual commit. This suppresses the tag information in case it is a tag.
+    # See: https://git-scm.com/docs/git-show#Documentation/git-show.txt-codegitshow-s--formatsv100commitcode
+    git show --pretty="" --name-status --diff-merges=first-parent "${_forgit_show_git_opts[@]}" "${commit}^{commit}" -- "$@" |
+        sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]	\2/' |
+        sed 's/	/  ->  /2' | expand -t 8
+}
+
 # git show viewer
 _forgit_show() {
     _forgit_inside_work_tree || return 1
@@ -458,15 +471,7 @@ _forgit_show() {
         $FORGIT_SHOW_FZF_OPTS
         --prompt=\"${commit} > \"
     "
-    _forgit_show_git_opts=()
-    _forgit_parse_array _forgit_show_git_opts "$FORGIT_SHOW_GIT_OPTS"
-    # Add "^{commit}" suffix after the actual commit. This suppresses the tag information in case it is a tag.
-    # See: https://git-scm.com/docs/git-show#Documentation/git-show.txt-codegitshow-s--formatsv100commitcode
-    git show --pretty="" --name-status --diff-merges=first-parent "${_forgit_show_git_opts[@]}" "${commit}^{commit}" \
-        -- "${files[@]}" |
-        sed -E 's/^([[:alnum:]]+)[[:space:]]+(.*)$/[\1]	\2/' |
-        sed 's/	/  ->  /2' | expand -t 8 |
-        FZF_DEFAULT_OPTS="$opts" fzf
+    _forgit_git_show "$commit" "${files[@]}" | FZF_DEFAULT_OPTS="$opts" fzf
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
