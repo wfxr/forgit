@@ -215,10 +215,21 @@ _forgit_log_enter() {
     "${FORGIT}" show "${sha}" "$@"
 }
 
+_forgit_git_log() {
+    local graph log_format
+    graph=()
+    [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
+    log_format=${FORGIT_GLO_FORMAT:-$_forgit_log_format}
+    _forgit_log_git_opts=()
+    _forgit_parse_array _forgit_log_git_opts "$FORGIT_LOG_GIT_OPTS"
+    git log "${graph[@]}" --color=always --format="$log_format" "${_forgit_log_git_opts[@]}" "$@" |
+        _forgit_emojify
+}
+
 # git commit viewer
 _forgit_log() {
     _forgit_inside_work_tree || return 1
-    local opts graph quoted_files log_format
+    local opts quoted_files
     quoted_files=$(_forgit_quote_files "$@")
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -228,14 +239,7 @@ _forgit_log() {
         --preview=\"$FORGIT log_preview {} $quoted_files\"
         $FORGIT_LOG_FZF_OPTS
     "
-    graph=()
-    [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
-    log_format=${FORGIT_GLO_FORMAT:-$_forgit_log_format}
-    _forgit_log_git_opts=()
-    _forgit_parse_array _forgit_log_git_opts "$FORGIT_LOG_GIT_OPTS"
-    git log "${graph[@]}" --color=always --format="$log_format" "${_forgit_log_git_opts[@]}" "$@" |
-        _forgit_emojify |
-        FZF_DEFAULT_OPTS="$opts" fzf
+    _forgit_git_log "$@" | FZF_DEFAULT_OPTS="$opts" fzf
     fzf_exit_code=$?
     # exit successfully on 130 (ctrl-c/esc)
     [[ $fzf_exit_code == 130 ]] && return 0
