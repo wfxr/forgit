@@ -8,7 +8,7 @@
 function __fish_forgit_needs_subcommand
     for subcmd in add blame branch_delete checkout_branch checkout_commit checkout_file checkout_tag \
         cherry_pick cherry_pick_from_branch clean diff fixup ignore log reflog rebase reset_head \
-        revert_commit reword squash stash_show stash_push switch_branch worktree worktree_delete
+        revert_commit reword squash stash_show stash_push switch_branch worktree worktree_add worktree_delete
         if contains -- $subcmd (commandline -opc)
             return 1
         end
@@ -51,6 +51,7 @@ complete -c git-forgit -n __fish_forgit_needs_subcommand -a stash_show -d 'git s
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a stash_push -d 'git stash push selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a switch_branch -d 'git switch branch selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree -d 'git worktree browser'
+complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree_add -d 'git worktree add selector'
 complete -c git-forgit -n __fish_forgit_needs_subcommand -a worktree_delete -d 'git worktree remove selector'
 
 complete -c git-forgit -n '__fish_seen_subcommand_from add' -a "(complete -C 'git add ')"

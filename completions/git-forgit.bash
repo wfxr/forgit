@@ -92,6 +92,7 @@ _git_forgit()
         stash_push
         switch_branch
         worktree
+        worktree_add
         worktree_delete
     "
 
