@@ -54,6 +54,7 @@ It's **lightweight** and **easy to use**.
 | `gso`    | Interactive `git show` viewer |
 | `grh`    | Interactive `git reset HEAD <file>` selector |
 | `gcf`    | Interactive `git checkout <file>` selector |
+| `gcff`   | Interactive `git checkout <file> from <commit>` selector |
 | `gcb`    | Interactive `git checkout <branch>` selector |
 | `gsw`    | Interactive `git switch <branch>` selector |
 | `gbd`    | Interactive `git branch -D <branch>` selector |
@@ -188,6 +189,7 @@ forgit_reset_head=grh
 forgit_ignore=gi
 forgit_attributes=gat
 forgit_checkout_file=gcf
+forgit_checkout_file_from_commit=gcff
 forgit_checkout_branch=gcb
 forgit_switch_branch=gsw
 forgit_branch_delete=gbd
@@ -266,6 +268,7 @@ Each forgit command can be customized with dedicated environment variables for g
 | `gso`    | `FORGIT_SHOW_GIT_OPTS` | `FORGIT_SHOW_FZF_OPTS` |
 | `grh`    | `FORGIT_RESET_HEAD_GIT_OPTS` | `FORGIT_RESET_HEAD_FZF_OPTS` |
 | `gcf`    | `FORGIT_CHECKOUT_FILE_GIT_OPTS` | `FORGIT_CHECKOUT_FILE_FZF_OPTS` |
+| `gcff`   | `FORGIT_SHOW_GIT_OPTS`<br>`FORGIT_CHECKOUT_FILE_GIT_OPTS` | `FORGIT_CHECKOUT_FILE_FROM_COMMIT_LOG_FZF_OPTS`<br>`FORGIT_CHECKOUT_FILE_FROM_COMMIT_SHOW_FZF_OPTS` |
 | `gcb`    | `FORGIT_CHECKOUT_BRANCH_GIT_OPTS`<br>`FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS` | `FORGIT_CHECKOUT_BRANCH_FZF_OPTS` |
 | `gsw`    | `FORGIT_SWITCH_BRANCH_GIT_OPTS` | `FORGIT_SWITCH_BRANCH_FZF_OPTS` |
 | `gbd`    | `FORGIT_BRANCH_DELETE_GIT_OPTS` | `FORGIT_BRANCH_DELETE_FZF_OPTS` |
