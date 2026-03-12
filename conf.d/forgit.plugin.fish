@@ -57,6 +57,7 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_ignore; or string collect "gi") git-forgit ignore
     abbr -a -- (string collect $forgit_attributes; or string collect "gat") git-forgit attributes
     abbr -a -- (string collect $forgit_checkout_file; or string collect "gcf") git-forgit checkout_file
+    abbr -a -- (string collect $forgit_checkout_file_from_commit; or string collect "gcff") git-forgit checkout_file_from_commit
     abbr -a -- (string collect $forgit_checkout_branch; or string collect "gcb") git-forgit checkout_branch
     abbr -a -- (string collect $forgit_switch_branch; or string collect "gsw") git-forgit switch_branch
     abbr -a -- (string collect $forgit_branch_delete; or string collect "gbd") git-forgit branch_delete
