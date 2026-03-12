@@ -36,7 +36,14 @@ function forgit::worktree
         return $status
     end
     set -l tree (git-forgit worktree)
-    test -n "$tree"; and cd "$tree"
+    test -d "$tree"; and cd "$tree"
+end
+
+function forgit::worktree::add
+    set -l tree (git-forgit worktree_add $argv)
+    or return $status
+    test -d "$tree"; or return 0
+    cd "$tree"; or return 1
 end
 
 # register abbreviations
@@ -66,5 +73,6 @@ if test -z "$FORGIT_NO_ALIASES"
     abbr -a -- (string collect $forgit_blame; or string collect "gbl") git-forgit blame
     abbr -a -- (string collect $forgit_checkout_tag; or string collect "gct") git-forgit checkout_tag
     abbr -a -- (string collect $forgit_worktree; or string collect "gwt") forgit::worktree
+    abbr -a -- (string collect $forgit_worktree_add; or string collect "gwa") forgit::worktree::add
     abbr -a -- (string collect $forgit_worktree_delete; or string collect "gwd") git-forgit worktree_delete
 end

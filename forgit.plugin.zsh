@@ -164,7 +164,14 @@ forgit::worktree() {
     if [[ $# -ne 0 ]]; then "$FORGIT" worktree "$@"; return $?; fi
     local tree
     tree=$("$FORGIT" worktree) || return $?
-    [[ -n "$tree" ]] && builtin cd "$tree" || return 1
+    [[ -d "$tree" ]] && builtin cd "$tree" || return 1
+}
+
+forgit::worktree::add() {
+    local tree
+    tree=$("$FORGIT" worktree_add "$@") || return $?
+    [[ -d "$tree" ]] || return 0
+    builtin cd "$tree" || return 1
 }
 
 forgit::worktree::delete() {
@@ -200,6 +207,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin export forgit_reword="${forgit_reword:-grw}"
     builtin export forgit_blame="${forgit_blame:-gbl}"
     builtin export forgit_worktree="${forgit_worktree:-gwt}"
+    builtin export forgit_worktree_add="${forgit_worktree_add:-gwa}"
     builtin export forgit_worktree_delete="${forgit_worktree_delete:-gwd}"
 
     builtin alias "${forgit_add}"='forgit::add'
@@ -227,6 +235,7 @@ if [[ -z "$FORGIT_NO_ALIASES" ]]; then
     builtin alias "${forgit_reword}"='forgit::reword'
     builtin alias "${forgit_blame}"='forgit::blame'
     builtin alias "${forgit_worktree}"='forgit::worktree'
+    builtin alias "${forgit_worktree_add}"='forgit::worktree::add'
     builtin alias "${forgit_worktree_delete}"='forgit::worktree::delete'
 
 fi

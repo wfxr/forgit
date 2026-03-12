@@ -1262,6 +1262,11 @@ _forgit_paths_list() {
     find "$path" -name "*$ext" -print |sed -e "s#$ext\$##" -e 's#.*/##' -e '/^$/d' | sort -fu
 }
 
+# Get the root path of the main worktree (not the current worktree)
+_forgit_main_worktree_root() {
+    git worktree list --porcelain | sed -n 's/^worktree //p;q'
+}
+
 # Parse git worktree list --porcelain output and format it for display
 # Output format: [XY] /path/to/worktree (branch) 3 hours ago
 #   X: '*' = current worktree, ' ' = other
@@ -1410,6 +1415,51 @@ _forgit_worktree_delete() {
     done
 }
 
+_forgit_worktree_add() {
+    _forgit_inside_git_repo || return 1
+
+    # Default to main worktree root, not current worktree's root
+    local wt_dir="${FORGIT_WORKTREE_ADD_DIR:-$(_forgit_main_worktree_root)/.wt}"
+
+    # Two or more arguments: pass through to git directly
+    if [[ $# -ge 2 ]]; then
+        git worktree add "$@"
+        return $?
+    fi
+
+    local new_branch="${1:-}"
+    local opts branch
+
+    _forgit_worktree_add_branch_git_opts=()
+    _forgit_parse_array _forgit_worktree_add_branch_git_opts "$FORGIT_WORKTREE_ADD_BRANCH_GIT_OPTS"
+
+    local header_opt=""
+    [[ -z "$new_branch" ]] && header_opt="--header-lines=1"
+
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index $header_opt
+        --preview=\"$FORGIT branch_preview {}\"
+        $FORGIT_WORKTREE_ADD_FZF_OPTS
+    "
+    branch=$(_forgit_branch_list "${_forgit_worktree_add_branch_git_opts[@]:---all}" |
+        FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)
+    [[ -z "$branch" ]] && return 1
+
+    # Strip remotes/<remote>/ prefix for remote branches
+    local local_branch="${branch#remotes/*/}"
+
+    if [[ -n "$new_branch" ]]; then
+        # gwa <new-branch>: create new branch from selected base
+        local target="$wt_dir/$new_branch"
+        git worktree add -b "$new_branch" "$target" "$branch" >&2 && echo "$target"
+    else
+        # gwa: create worktree for selected branch
+        local target="$wt_dir/$local_branch"
+        git worktree add "$target" "$branch" >&2 && echo "$target"
+    fi
+}
+
 check_prequisites() {
     local installed_fzf_version
     local higher_fzf_version
@@ -1484,6 +1534,7 @@ PUBLIC_COMMANDS=(
     "stash_show"
     "stash_push"
     "worktree"
+    "worktree_add"
     "worktree_delete"
 )
 

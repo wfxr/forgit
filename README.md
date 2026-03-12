@@ -71,6 +71,7 @@ It's **lightweight** and **easy to use**.
 | `grw`    | Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector |
 | `gclean` | Interactive `git clean` selector |
 | `gwt`    | Interactive `git worktree` selector |
+| `gwa`    | Interactive `git worktree add` selector |
 | `gwd`    | Interactive `git worktree remove` selector |
 
 📥 Installation
@@ -203,6 +204,7 @@ forgit_fixup=gfu
 forgit_squash=gsq
 forgit_reword=grw
 forgit_worktree=gwt
+forgit_worktree_add=gwa
 forgit_worktree_delete=gwd
 ```
 
@@ -280,6 +282,7 @@ Each forgit command can be customized with dedicated environment variables for g
 | `gsq`    | `FORGIT_SQUASH_GIT_OPTS` | `FORGIT_SQUASH_FZF_OPTS` |
 | `grw`    | `FORGIT_REWORD_GIT_OPTS` | `FORGIT_REWORD_FZF_OPTS` |
 | `gwt`    | | `FORGIT_WORKTREE_FZF_OPTS` |
+| `gwa`    | `FORGIT_WORKTREE_ADD_BRANCH_GIT_OPTS` | `FORGIT_WORKTREE_ADD_FZF_OPTS` |
 | `gwd`    | `FORGIT_WORKTREE_DELETE_GIT_OPTS` | `FORGIT_WORKTREE_DELETE_FZF_OPTS` |
 
 ### Pagers
@@ -350,6 +353,7 @@ export FORGIT_LOG_FZF_OPTS='
 | `FORGIT_FULLSCREEN_CONTEXT`    | lines of diff context in full-screen mode                                                                                      | 10                                            |
 | `FORGIT_DIR_VIEW`              | command used to preview directories                                                                                            | `tree` if available, otherwise `find`         |
 | `FORGIT_CLEAN_LIST_FILES_OPTS` | arguments passed to `git ls-files` together with `--others` to determine which files are shown when invoking `forgit clean`    |                                               |
+| `FORGIT_WORKTREE_ADD_DIR`      | directory where new worktrees are created                                                                                      | `<repo-root>/.wt`                             |
 
 ⌨ Keybindings
 ---------------
