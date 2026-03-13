@@ -73,6 +73,7 @@ _git-forgit() {
             'checkout_branch:git checkout branch selector'
             'checkout_commit:git checkout commit selector'
             'checkout_file:git checkout-file selector'
+            'checkout_file_from_commit:git checkout-file from commit selector'
             'checkout_tag:git checkout tag selector'
             'cherry_pick:git cherry-picking'
             'cherry_pick_from_branch:git cherry-picking with interactive branch selection'
@@ -104,6 +105,7 @@ _git-forgit() {
     checkout_branch) _git-branches ;;
     checkout_commit) __git_recent_commits ;;
     checkout_file) _git-checkout-file ;;
+    checkout_file_from_commit) _git-branches ;;
     checkout_tag) __git_tags ;;
     cherry_pick) _git-cherry-pick ;;
     cherry_pick_from_branch) _git-branches ;;
@@ -138,6 +140,7 @@ compdef _git-branches forgit::checkout::branch
 compdef _git-switch forgit::switch::branch
 compdef __git_recent_commits forgit::checkout::commit
 compdef _git-checkout-file forgit::checkout::file
+compdef _git-branches forgit::checkout::file::from::commit
 compdef __git_tags forgit::checkout::tag
 compdef _git-cherry-pick forgit::cherry::pick
 compdef _git-branches forgit::cherry::pick::from::branch
