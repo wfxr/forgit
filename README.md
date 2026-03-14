@@ -299,6 +299,9 @@ variables:
 | `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`    |
 | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`     |
 | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat` |
+| `FORGIT_PREVIEW_PAGER`    | Normal pager resolution<sup>*</sup>              |
+
+<sup>*</sup> If your pager is a TUI program (e.g., `diffnav`, `tig`), fzf preview panes will be blank because they run without a TTY. Set `FORGIT_PREVIEW_PAGER` to a non-interactive pager (e.g., `delta`) to fix this. When set, it overrides all other `FORGIT_*_PAGER` settings in fzf preview context.
 
 ### FZF Options
 
