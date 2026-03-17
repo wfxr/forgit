@@ -1528,7 +1528,7 @@ _forgit_worktree_pr() {
     local target="$wt_dir/$local_branch"
 
     # If worktree for this branch already exists, return its path
-    if git worktree list --porcelain | grep -q "^branch refs/heads/${local_branch}$"; then
+    if git worktree list --porcelain | grep -qxF "branch refs/heads/${local_branch}"; then
         local existing_path
         existing_path=$(git worktree list --porcelain | awk -v branch="refs/heads/$local_branch" '
             /^worktree / { wt=$0; sub(/^worktree /, "", wt) }
