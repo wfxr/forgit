@@ -70,6 +70,7 @@ It's **lightweight** and **easy to use**.
 | `gsq`    | Interactive `git commit --squash && git rebase -i --autosquash` selector |
 | `grw`    | Interactive `git commit --fixup=reword && git rebase -i --autosquash` selector |
 | `gclean` | Interactive `git clean` selector |
+| `gwp`    | Interactive `git worktree` PR checkout (requires `gh`) |
 | `gwt`    | Interactive `git worktree` selector |
 | `gwa`    | Interactive `git worktree add` selector |
 | `gwd`    | Interactive `git worktree remove` selector |
@@ -205,6 +206,7 @@ forgit_squash=gsq
 forgit_reword=grw
 forgit_worktree=gwt
 forgit_worktree_add=gwa
+forgit_worktree_pr=gwp
 forgit_worktree_delete=gwd
 ```
 
@@ -283,6 +285,7 @@ Each forgit command can be customized with dedicated environment variables for g
 | `grw`    | `FORGIT_REWORD_GIT_OPTS` | `FORGIT_REWORD_FZF_OPTS` |
 | `gwt`    | | `FORGIT_WORKTREE_FZF_OPTS` |
 | `gwa`    | `FORGIT_WORKTREE_ADD_BRANCH_GIT_OPTS` | `FORGIT_WORKTREE_ADD_FZF_OPTS` |
+| `gwp`    | | `FORGIT_WORKTREE_PR_FZF_OPTS` |
 | `gwd`    | `FORGIT_WORKTREE_DELETE_GIT_OPTS` | `FORGIT_WORKTREE_DELETE_FZF_OPTS` |
 
 ### Pagers

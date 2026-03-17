@@ -1476,6 +1476,78 @@ _forgit_worktree_add() {
     fi
 }
 
+_forgit_pr_preview() {
+    local pr_number
+    pr_number=$(echo "$1" | awk '{print $1}' | tr -d '#')
+    [[ -z "$pr_number" ]] && return 1
+    _forgit_print_dim "Loading PR #${pr_number}..."
+    local header
+    header=$(gh pr view "$pr_number" \
+        --json number,createdAt,author,baseRefName,headRefName,isDraft,commits,files \
+        --template $'\033[33m#{{.number}}\033[0m opened {{timeago .createdAt}} by \033[36m{{.author.login}}\033[0m{{if .isDraft}} \033[31m[draft]\033[0m{{end}}: \033[32m{{.baseRefName}}\033[0m \xe2\x86\x90 \033[36m{{.headRefName}}\033[0m\n\n\033[33mCommits\033[0m\n{{range .commits}}  {{.messageHeadline}}\n{{end}}\n\033[33mFiles changed\033[0m\n{{range .files}}  {{.path}}\n{{end}}') || return 1
+    printf '\e[2J\e[H'
+    printf '%s\n' "$header"
+    gh pr diff "$pr_number" --color=always | _forgit_pager diff
+}
+
+_forgit_worktree_pr() {
+    _forgit_inside_git_repo || return 1
+    hash gh 2>/dev/null || { _forgit_warn "gh (GitHub CLI) is not installed"; return 1; }
+
+    local wt_dir="${FORGIT_WORKTREE_PR_DIR:-${FORGIT_WORKTREE_ADD_DIR:-$(_forgit_main_worktree_root)/.wt}}"
+
+    local pr_list
+    pr_list=$(gh pr list --limit "${FORGIT_WORKTREE_PR_LIMIT:-100}" \
+        --json number,title,author,isDraft,updatedAt \
+        --template '{{range .}}{{printf "\033[33m#%g\033[0m " .number}}{{if .isDraft}}{{printf "\033[31m[draft]\033[0m "}}{{end}}{{.title}} ({{printf "\033[36m%s\033[0m" .author.login}}) {{printf "\033[1;30m%s\033[0m" (timeago .updatedAt)}}{{"\n"}}{{end}}')
+
+    [[ -z "$pr_list" ]] && { echo "No open pull requests." >&2; return 1; }
+
+    local opts
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --preview=\"$FORGIT preview pr_preview {}\"
+        --preview-window='right:60%'
+        $FORGIT_WORKTREE_PR_FZF_OPTS
+    "
+
+    local selection
+    selection=$(echo "$pr_list" | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ -z "$selection" ]] && return 1
+
+    local pr_number
+    pr_number=$(echo "$selection" | awk '{print $1}' | tr -d '#')
+    [[ -z "$pr_number" ]] && return 1
+
+    local head_ref
+    head_ref=$(gh pr view "$pr_number" --json headRefName -q .headRefName)
+    [[ -z "$head_ref" ]] && { _forgit_warn "Failed to get PR branch name"; return 1; }
+
+    local local_branch="pr-${pr_number}/${head_ref}"
+    local target="$wt_dir/$local_branch"
+
+    # If worktree for this branch already exists, return its path
+    if git worktree list --porcelain | grep -q "^branch refs/heads/${local_branch}$"; then
+        local existing_path
+        existing_path=$(git worktree list --porcelain | awk -v branch="refs/heads/$local_branch" '
+            /^worktree / { wt=$0; sub(/^worktree /, "", wt) }
+            /^branch / { br=$0; sub(/^branch /, "", br); if (br == branch) print wt }
+        ')
+        _forgit_info "Worktree for PR #${pr_number} already exists at: $existing_path"
+        echo "$existing_path"
+        return 0
+    fi
+
+    # Fetch PR head into local branch
+    git fetch origin "pull/${pr_number}/head:${local_branch}" >&2 || {
+        _forgit_warn "Failed to fetch PR #${pr_number}"
+        return 1
+    }
+
+    git worktree add "$target" "$local_branch" >&2 && echo "$target"
+}
+
 check_prequisites() {
     local installed_fzf_version
     local higher_fzf_version
@@ -1552,6 +1624,7 @@ PUBLIC_COMMANDS=(
     "worktree"
     "worktree_add"
     "worktree_delete"
+    "worktree_pr"
 )
 
 PRIVATE_COMMANDS=(

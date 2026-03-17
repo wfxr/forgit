@@ -93,6 +93,7 @@ _git-forgit() {
             'switch_branch:git switch branch selector'
             'worktree:git worktree browser'
             'worktree_add:git worktree add selector'
+            'worktree_pr:git worktree add from PR selector'
             'worktree_delete:git worktree remove selector'
         )
         _describe -t commands 'git forgit' subcommands
@@ -123,6 +124,7 @@ _git-forgit() {
     show) _git-show ;;
     switch_branch) _git-switch ;;
     worktree) _git-worktree ;;
+    worktree_pr) ;;
     worktree_delete) _git-worktrees ;;
     esac
 }

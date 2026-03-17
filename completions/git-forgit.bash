@@ -93,6 +93,7 @@ _git_forgit()
         switch_branch
         worktree
         worktree_add
+        worktree_pr
         worktree_delete
     "
 
@@ -128,6 +129,7 @@ _git_forgit()
                 stash_push) _git_add ;;
                 switch_branch) _git_switch ;;
                 worktree) _git_worktree ;;
+                worktree_pr) ;;
                 worktree_delete) _git_worktrees ;;
             esac
             ;;
