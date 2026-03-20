@@ -405,6 +405,7 @@ For Linux users `FORGIT_COPY_CMD` should be set to make copy work. Example: `FOR
 - Most of the commands accept optional arguments (e.g., `glo develop`, `glo f738479..188a849b -- main.go`, `gco main`).
 - `gd` supports specifying revision (e.g., `gd HEAD~`, `gd v1.0 README.md`).
 - Call `gi` or `gat` with arguments to get the wanted `.gitignore`/`.gitattributes` contents directly (e.g., `gi cmake c++`).
+- If `forgit::add` (`ga`) is not showing untracked files, it might be due to a broken Git version (e.g., `2.50.1`). Updating Git to a more recent version should resolve the issue. See [issue #503](https://github.com/wfxr/forgit/issues/503) for details.
 
 ⚒️ Contributing
 -----------
