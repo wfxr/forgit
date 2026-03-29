@@ -224,8 +224,7 @@ _forgit_worktree_changes() {
     untracked=$(git config --get-color color.status.untracked red)
     show_untracked=$(git config status.showUntrackedFiles)
 
-    git -c color.status=always -c status.relativePaths=true status --porcelain -zs --untracked="${show_untracked:-all}" |
-        tr '\0' '\n' |
+    git -c color.status=always -c status.relativePaths=true -c core.quotePath=false status -s --untracked="${show_untracked:-all}" |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
         sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/'
 }

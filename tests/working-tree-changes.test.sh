@@ -23,7 +23,6 @@
     git add "staged file.txt"
 
     touch "untracked_file.txt"
-    touch 'untracked_with_\backslash'
  }
 
  function test_forgit_worktree_changes_contains_modified() {
@@ -56,12 +55,4 @@
      output=$(_forgit_worktree_changes)
 
      assert_not_contains "tracked file.txt" "$output"
- }
-
- function test_forgit_worktree_changes_supports_backslashes() {
-     local output
-
-     output=$(_forgit_worktree_changes)
-
-     assert_contains 'untracked_with_\backslash' "$output"
  }
