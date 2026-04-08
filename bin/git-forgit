@@ -1019,7 +1019,7 @@ _forgit_checkout_file_from_commit() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
-        --preview=\"$FORGIT log_preview {}\"
+        --preview=\"$FORGIT preview log_preview {}\"
         $FORGIT_CHECKOUT_FILE_FROM_COMMIT_LOG_FZF_OPTS
     "
     commit=$(_forgit_git_log "$_forgit_log_format" "$branch" "$@" |
