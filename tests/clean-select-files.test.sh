@@ -24,9 +24,9 @@ function test_forgit_clean_select_files_preview() {
     assert_file_exists "$file"
 }
 
- function provider_clean_select_files() {
-     bashunit::data_set 1
-     bashunit::data_set 2
-     bashunit::data_set 3
-     bashunit::data_set 4
- }
+function provider_clean_select_files() {
+    bashunit::data_set 1
+    bashunit::data_set 2
+    bashunit::data_set 3
+    bashunit::data_set 4
+}

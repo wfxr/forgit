@@ -10,36 +10,30 @@
 # When using forgit via the shell plugin, source this file explicitly after
 # forgit.plugin.zsh to enable tab completion for shell functions and aliases.
 
-_git_branch_delete()
-{
+_git_branch_delete() {
     __gitcomp_nl "$(__git_heads)"
 }
 
-_git_checkout_branch()
-{
+_git_checkout_branch() {
     __gitcomp_nl "$(__git branch -a --format '%(refname:short)')"
 }
 
-_git_checkout_file()
-{
+_git_checkout_file() {
     __gitcomp_nl "$(__git ls-files --modified)"
 }
 
-_git_checkout_tag()
-{
+_git_checkout_tag() {
     __gitcomp_nl "$(__git_tags)"
 }
 
-_git_stash_show()
-{
+_git_stash_show() {
     __gitcomp_nl "$(__git stash list | sed -n -e 's/:.*//p')"
 }
 
-_git_worktrees()
-{
+_git_worktrees() {
     local wt_list="" field
     while IFS= read -r -d '' field; do
-        [[ "$field" == worktree\ * ]] && wt_list+="${field#worktree }"$'\n'
+        [[ $field == worktree\ * ]] && wt_list+="${field#worktree }"$'\n'
     done < <(__git worktree list --porcelain -z 2>/dev/null)
     __gitcomp_nl "$wt_list"
 }
@@ -47,20 +41,18 @@ _git_worktrees()
 # Completion for git-forgit
 # This includes git aliases, e.g. "alias.cb=forgit checkout_branch" will
 # correctly complete available branches on "git cb".
-_git_forgit()
-{
+_git_forgit() {
     local subcommand cword cur prev cmds
 
     subcommand="${COMP_WORDS[1]}"
-    if [[ "$subcommand" != "forgit" ]]
-    then
+    if [[ $subcommand != "forgit" ]]; then
         # Forgit is obviously called via a git alias. Get the original
         # aliased subcommand and proceed as if it was the previous word.
         prev=$(git config --get "alias.$subcommand" | cut -d' ' -f 2)
-        cword=$((${COMP_CWORD} + 1))
+        cword=$((COMP_CWORD + 1))
     else
         cword=${COMP_CWORD}
-        prev=${COMP_WORDS[COMP_CWORD-1]}
+        prev=${COMP_WORDS[COMP_CWORD - 1]}
     fi
 
     cur=${COMP_WORDS[COMP_CWORD]}
@@ -140,8 +132,7 @@ _git_forgit()
 }
 
 # Check if forgit plugin is loaded
-if [[ $(type -t forgit::add) == function ]]
-then
+if [[ $(type -t forgit::add) == function ]]; then
     # We're reusing existing git completion functions, so load those first
     # and check if completion function exists afterwards.
     _completion_loader git
@@ -175,7 +166,7 @@ then
     __git_complete forgit::worktree::delete _git_worktrees
 
     # Completion for forgit plugin shell aliases
-    if [[ -z "$FORGIT_NO_ALIASES" ]]; then
+    if [[ -z $FORGIT_NO_ALIASES ]]; then
         __git_complete "${forgit_add}" _git_add
         __git_complete "${forgit_branch_delete}" _git_branch_delete
         __git_complete "${forgit_checkout_branch}" _git_checkout_branch

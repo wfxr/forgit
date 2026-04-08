@@ -13,8 +13,8 @@ function test_forgit_get_files_from_diff_line() {
     local i
 
     while IFS= read -r line; do
-        actual+=( "$line" )
-    done < <( echo -n "$input" | _forgit_get_files_from_diff_line | xargs -0 -n 1 echo )
+        actual+=("$line")
+    done < <(echo -n "$input" | _forgit_get_files_from_diff_line | xargs -0 -n 1 echo)
 
     # Compare array sizes
     assert_same "${#expected[@]}" "${#actual[@]}"
