@@ -1,10 +1,13 @@
-# Contributing to forgit
+Contributing to forgit
+======================
 
 Thanks for your interest in contributing to `forgit`.
 
-This document covers the repository-specific workflow for reporting issues and opening pull requests. For installation, usage, commands, and configuration, see [README.md](README.md).
+This document covers the repository-specific workflow for reporting issues and opening pull requests.
+For installation, usage, commands, and configuration, see [README.md](README.md).
 
-## Before You Start
+Before You Start
+----------------
 
 Before opening an issue or pull request, please make sure that you:
 
@@ -12,7 +15,8 @@ Before opening an issue or pull request, please make sure that you:
 - use the latest released version of `forgit`
 - search existing issues and pull requests for duplicates
 
-## Repository Map
+Repository Map
+--------------
 
 These are the main places you will usually need to touch:
 
@@ -22,7 +26,8 @@ These are the main places you will usually need to touch:
 - [`completions/`](completions): tab completions for zsh, bash, and fish
 - [`tests/`](tests): [bashunit](https://bashunit.typeddevs.com/) test suite
 
-## Making Changes
+Making Changes
+--------------
 
 When changing or adding behavior, prefer to follow existing command patterns already used in the repository.
 
@@ -37,7 +42,8 @@ Please keep changes focused. Small pull requests are easier to review and usuall
 
 When possible, keep core logic testable by sourcing `bin/git-forgit` directly and calling helper functions from unit tests.
 
-## Development Dependencies
+Development Dependencies
+------------------------
 
 To run the same checks as CI, make sure these tools are available locally:
 
@@ -45,6 +51,7 @@ To run the same checks as CI, make sure these tools are available locally:
 - `shellcheck`
 - `curl`
 - `bashunit` as `lib/bashunit`
+- `rumdl`
 
 If `lib/bashunit` is not available yet, install it once with:
 
@@ -52,7 +59,8 @@ If `lib/bashunit` is not available yet, install it once with:
 curl -s https://bashunit.typeddevs.com/install.sh | bash -s 0.31.0
 ```
 
-## Local Validation
+Local Validation
+----------------
 
 Before opening a pull request, run the checks that match the current CI workflow:
 
@@ -63,11 +71,13 @@ bash forgit.plugin.sh
 zsh forgit.plugin.zsh
 fish conf.d/forgit.plugin.fish
 shfmt --write .
+rumdl check .
 ```
 
 In your pull request, report which shells and operating systems you tested.
 
-## Commit Messages
+Commit Messages
+---------------
 
 This repository uses [Conventional Commits](https://www.conventionalcommits.org), and pull requests are checked accordingly in CI.
 
@@ -109,7 +119,8 @@ Document the repository-specific review, testing, and completion update
 expectations so new contributors do not have to infer them from old issues.
 ```
 
-## Pull Requests
+Pull Requests
+-------------
 
 Before submitting a pull request, make sure that you:
 
@@ -119,9 +130,11 @@ Before submitting a pull request, make sure that you:
 - update documentation when the change is user-visible
 - summarize the pull request in terms of what changed and why
 
-Please use the pull request description to give reviewers the context they need. A short explanation of the approach is useful, but the main focus should be the behavior change and its motivation.
+Please use the pull request description to give reviewers the context they need.
+A short explanation of the approach is useful, but the main focus should be the behavior change and its motivation.
 
-## Maintainers
+Maintainers
+-----------
 
 - [@wfxr](https://github.com/wfxr)
 - [@cjappl](https://github.com/cjappl)

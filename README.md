@@ -122,11 +122,13 @@ apply = ["source"]
 ### Homebrew
 
 To install using brew
+
 ```sh
 brew install forgit
 ```
 
 Then add the following to your shell's config file:
+
 ```sh
 # Fish:
 # ~/.config/fish/config.fish:
@@ -143,11 +145,16 @@ Then add the following to your shell's config file:
 
 ### Arch User Repository
 
-[AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit, are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or [forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the default branch of this repository.
+[AUR](https://wiki.archlinux.org/title/Arch_User_Repository) packages, maintained by the developers of forgit,
+are available. Install the [forgit](https://aur.archlinux.org/packages/forgit) package for the latest release or
+[forgit-git](https://aur.archlinux.org/packages/forgit-git) to stay up to date with the latest commits from the default
+branch of this repository.
 
 ### Completions
 
-Forgit offers completions for all supported shells. Completions are automatically configured when installing forgit through Homebrew or the AUR. All other installation methods mentioned above require manual setup for completions. The necessary steps depend on the shell you use.
+Forgit offers completions for all supported shells. Completions are automatically configured when installing forgit
+through Homebrew or the AUR. All other installation methods mentioned above require manual setup for completions.
+The necessary steps depend on the shell you use.
 
 #### Bash
 
@@ -158,13 +165,18 @@ Forgit offers completions for all supported shells. Completions are automaticall
 
 #### Fish
 
-- Put [`completions/git-forgit.fish`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.fish) in `~/.config/fish/completions/` to have fish tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `ga`.
+- Put [`completions/git-forgit.fish`](https://github.com/wfxr/forgit/blob/main/completions/git-forgit.fish) in
+`~/.config/fish/completions/` to have fish tab completion for `git forgit` and configured git aliases, as well as shell
+command aliases, such as `ga`.
 
 #### Zsh
 
-- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath` (e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well as shell command aliases, such as `forgit::add` and `ga`.
+- Put [`completions/_git-forgit`](completions/_git-forgit) in a directory in your `$fpath`
+(e.g., `/usr/share/zsh/site-functions`) to have zsh tab completion for `git forgit` and configured git aliases, as well
+as shell command aliases, such as `forgit::add` and `ga`.
 
-If you're having issues after updating, and commands such as `forgit::add` or aliases `ga` aren't working, remove your completions cache and restart your shell.
+If you're having issues after updating, and commands such as `forgit::add` or aliases `ga` aren't working, remove your
+completions cache and restart your shell.
 
 ```zsh
 > rm ~/.zcompdump
@@ -219,7 +231,7 @@ You can use forgit as a sub-command of git by making `git-forgit` available in `
 PATH="$PATH:$FORGIT_INSTALL_DIR/bin"
 ```
 
-*Some plugin managers can help do this.*
+_Some plugin managers can help do this._
 
 Then, any forgit command will be a sub-command of git:
 
@@ -304,7 +316,9 @@ variables:
 | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat` |
 | `FORGIT_PREVIEW_PAGER`    | Normal pager resolution<sup>*</sup>              |
 
-<sup>*</sup> If your pager is a TUI program (e.g., `diffnav`, `tig`), fzf preview panes will be blank because they run without a TTY. Set `FORGIT_PREVIEW_PAGER` to a non-interactive pager (e.g., `delta`) to fix this. When set, it overrides all other `FORGIT_*_PAGER` settings in fzf preview context.
+<sup>*</sup> If your pager is a TUI program (e.g., `diffnav`, `tig`), fzf preview panes will be blank because they run
+without a TTY. Set `FORGIT_PREVIEW_PAGER` to a non-interactive pager (e.g., `delta`) to fix this. When set, it
+overrides all other `FORGIT_*_PAGER` settings in fzf preview context.
 
 ### FZF Options
 
