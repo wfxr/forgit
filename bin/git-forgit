@@ -12,7 +12,10 @@
 # This gives users the choice to set aliases inside of their git config instead
 # of their shell config if they prefer.
 
-REQUIRED_FZF_VERSION="0.49.0"
+REQUIRED_FZF_VERSION="0.60.0"
+
+# forgit-fzf separator used between the visible label and hidden payload.
+_ffsep=$'\x1f\x1e'
 
 FORGIT_FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
@@ -217,17 +220,91 @@ _forgit_list_files() {
 #
 # Always includes modified and unmerged files. Includes untracked files when
 # status.showUntrackedFiles is true or unset. Never includes staged files.
+#
+# The output is formatted for `forgit add` and contains two fields separated by
+# `$_ffsep`:
+#   1. the human-readable status line shown in fzf
+#   2. the absolute path payload used by preview/edit/add actions
+# fzf only shows field 1 and uses field 2 for actions.
+#
+# Keeping the display text separate from the payload avoids reparsing quoted
+# `git status` output, which breaks for filenames containing backslashes.
 _forgit_worktree_changes() {
-    local changed unmerged untracked show_untracked
+    local changed reset rootdir show_untracked unmerged untracked
     changed=$(git config --get-color color.status.changed red)
     unmerged=$(git config --get-color color.status.unmerged red)
     untracked=$(git config --get-color color.status.untracked red)
+    reset=$(git config --get-color '' reset)
     show_untracked=$(git config status.showUntrackedFiles)
+    rootdir=$(git rev-parse --show-toplevel)
 
-    git -c color.status=always -c status.relativePaths=true status --porcelain -zs --untracked="${show_untracked:-all}" |
+    git -c color.status=always status --porcelain -zs --untracked="${show_untracked:-all}" |
         tr '\0' '\n' |
+        _forgit_restore_untracked_color "$untracked" "$reset" |
         grep -F -e "$changed" -e "$unmerged" -e "$untracked" |
-        sed -E 's/^(..[^[:space:]]*)[[:space:]]+(.*)$/[\1]  \2/'
+        _forgit_build_status_entries "$rootdir"
+}
+
+# Normalize plain `?? path` rows from older Git versions before the add-list
+# color filter runs.
+#
+# Input:
+#   stdin         - one status line per entry
+#   $1 untracked  - color sequence to apply to the `??` marker
+#   $2 reset      - reset sequence appended after the colored marker
+#
+# Output:
+#   Writes the input lines back to stdout, but rewrites plain `?? path` rows as
+#   colored `??` rows so untracked entries remain visible after filtering.
+_forgit_restore_untracked_color() {
+    local reset untracked
+    untracked=$1
+    reset=$2
+
+    awk -v untracked="$untracked" -v reset="$reset" '
+        /^\?\? / { sub(/^\?\? /, untracked "??" reset " ") }
+        { print }
+    '
+}
+
+# Build fzf-friendly entries from colored porcelain status lines.
+#
+# Input:
+#   stdin      - colored porcelain `git status --porcelain -z` rows, converted
+#                to one line per entry
+#   $1 rootdir - absolute repo root used to build the hidden payload
+#
+# Output:
+#   Writes one line per entry with two `$_ffsep`-separated fields:
+#     1. the human-readable status line shown in fzf
+#     2. the absolute-path payload used by preview/edit/add actions
+_forgit_build_status_entries() {
+    local cwd rootdir
+    rootdir=$1
+    cwd=$(pwd -P)
+
+    # Use a single Perl process so path normalization stays portable while the
+    # full add-list transformation still runs as one batch pipeline stage.
+    perl -MCwd=realpath -MFile::Spec -e '
+        use strict;
+        use warnings;
+
+        my ($rootdir, $cwd, $separator) = @ARGV;
+        my $normalized_rootdir = realpath($rootdir);
+        my $normalized_cwd = realpath($cwd);
+
+        while (my $line = <STDIN>) {
+            chomp $line;
+            next unless $line =~ /^(..[^[:space:]]*)( )(.*)$/;
+
+            my ($status, $repo_path) = ($1, $3);
+            my $absolute_path = "$normalized_rootdir/$repo_path";
+            my $display_path = File::Spec->abs2rel(realpath($absolute_path) // $absolute_path, $normalized_cwd);
+            $display_path = "." if $display_path eq q{};
+
+            print "[$status]  ${display_path}${separator}${normalized_rootdir}/${repo_path}\n";
+        }
+    ' "$rootdir" "$cwd" "$_ffsep"
 }
 
 _forgit_is_submodule() {
@@ -496,7 +573,8 @@ _forgit_show() {
 }
 
 _forgit_add_preview() {
-    file=$(echo "$1" | _forgit_get_single_file_from_add_line)
+    local file
+    file=$1
     # $file can be a directory when status.showUntrackedFiles is set to 'normal'
     # When this is the case and the directory is not a submodule show the content of the directory and return
     if [[ -d "$file"  ]] && ! _forgit_is_submodule "$file"; then
@@ -516,17 +594,9 @@ _forgit_git_add() {
     git add "${_forgit_add_git_opts[@]}" "$@"
 }
 
-_forgit_get_single_file_from_add_line() {
-    # NOTE: paths listed by 'git status -su' mixed with quoted and unquoted style
-    # remove indicators | remove original path for rename case | remove surrounding quotes
-    sed 's/^.*]  //' |
-    sed 's/.* -> //' |
-    sed -e 's/^\"//' -e 's/\"$//'
-}
-
 _forgit_edit_add_file() {
-    local input_line=$1
-    filename=$(echo "$input_line" | _forgit_get_single_file_from_add_line)
+    local filename
+    filename=$1
     $EDITOR "$filename" >/dev/tty </dev/tty
 }
 
@@ -539,15 +609,18 @@ _forgit_add() {
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
-        -0 -m --nth 2..,..
-        --preview=\"$FORGIT preview add_preview {}\"
-        --bind=\"alt-e:execute($FORGIT edit_add_file {})+refresh-preview\"
+        --delimiter=$_ffsep
+        # Show only the formatted label in fzf, but return the hidden absolute
+        # path payload so downstream actions never need to parse status lines.
+        -0 -m --with-nth=1 --accept-nth=2
+        --preview=\"$FORGIT preview add_preview {2}\"
+        --bind=\"alt-e:execute($FORGIT edit_add_file {2})+refresh-preview\"
         $FORGIT_ADD_FZF_OPTS
     "
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(_forgit_worktree_changes | FZF_DEFAULT_OPTS="$opts" fzf | _forgit_get_single_file_from_add_line)
+    done < <(_forgit_worktree_changes | FZF_DEFAULT_OPTS="$opts" fzf)
     [[ "${#files[@]}" -gt 0 ]] && _forgit_git_add "$@" "${files[@]}" && git status -s && return
     echo 'Nothing to add.'
 }
