@@ -52,6 +52,7 @@ To run the same checks as CI, make sure these tools are available locally:
 - `curl`
 - `bashunit` as `lib/bashunit`
 - `rumdl`
+- `actionlint`
 
 If `lib/bashunit` is not available yet, install it once with:
 
@@ -72,6 +73,7 @@ zsh forgit.plugin.zsh
 fish conf.d/forgit.plugin.fish
 shfmt --write .
 rumdl check .
+actionlint
 ```
 
 In your pull request, report which shells and operating systems you tested.

@@ -24,3 +24,7 @@ repos:
   rev: v0.1.68
   hooks:
     - id: rumdl-fmt  # Auto-format and fail if issues remain
+- repo: https://github.com/rhysd/actionlint
+  rev: v1.7.12
+  hooks:
+  - id: actionlint

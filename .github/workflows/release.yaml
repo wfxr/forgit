@@ -29,7 +29,7 @@ jobs:
             VERSION=$(date +'%y.%m.0')
           fi
           echo "VERSION=$VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Generate Changelog
         id: changelog
@@ -66,7 +66,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create Package
-        run: tar -czf forgit-${{ needs.changelog.outputs.version }}.tar.gz --exclude LICENSE --exclude README.md --exclude cliff.toml *
+        run: tar -czf forgit-${{ needs.changelog.outputs.version }}.tar.gz --exclude LICENSE --exclude README.md --exclude cliff.toml ./*
 
       - name: Release
         uses: softprops/action-gh-release@v2
