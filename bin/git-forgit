@@ -1596,7 +1596,7 @@ _forgit_worktree_add() {
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index $header_opt
-        --preview=\"$FORGIT branch_preview {}\"
+        --preview=\"$FORGIT preview branch_preview {}\"
         $FORGIT_WORKTREE_ADD_FZF_OPTS
     "
     branch=$(_forgit_branch_list "${_forgit_worktree_add_branch_git_opts[@]:---all}" |
