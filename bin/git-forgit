@@ -39,8 +39,11 @@ _forgit_inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null 2>&1
 _forgit_inside_git_dir() { git rev-parse --is-inside-git-dir >/dev/null 2>&1; }
 _forgit_inside_git_repo() { _forgit_inside_work_tree || _forgit_inside_git_dir; }
 # tac is not available on OSX, tail -r is not available on Linux, so we use either of them
-_forgit_reverse_lines() { tac 2> /dev/null || tail -r; }
-_forgit_strip_ansi() { local ESC=$'\033'; sed "s/${ESC}\[[0-9;]*m//g"; }
+_forgit_reverse_lines() { tac 2>/dev/null || tail -r; }
+_forgit_strip_ansi() {
+    local ESC=$'\033'
+    sed "s/${ESC}\[[0-9;]*m//g"
+}
 
 _forgit_previous_commit() {
     # "SHA~" is invalid when the commit is the first commit, but we can use "--root" instead
@@ -54,10 +57,10 @@ _forgit_previous_commit() {
 _forgit_contains_non_flags() {
     while (("$#")); do
         case "$1" in
-        -*) shift ;;
-        *)
-            return 0
-            ;;
+            -*) shift ;;
+            *)
+                return 0
+                ;;
         esac
     done
     return 1
@@ -98,7 +101,7 @@ _forgit_parse_array() {
     ${IFS+"false"} && unset old_IFS || old_IFS="$IFS"
     # read the value of the second argument
     # into an array that has the name of the first argument
-    IFS=" " read -r -a "$1" <<< "$2"
+    IFS=" " read -r -a "$1" <<<"$2"
     ${old_IFS+"false"} && unset IFS || IFS="$old_IFS"
 }
 
@@ -108,18 +111,18 @@ _forgit_quote_files() {
     local files add
     files=()
     add=false
-    while (( "$#" )); do
+    while (("$#")); do
         case "$1" in
             --)
-            add=true
-            shift
-            ;;
+                add=true
+                shift
+                ;;
             *)
-            if [ $add == true ]; then
-                files+=("'$1'")
-            fi
-            shift
-            ;;
+                if [ $add == true ]; then
+                    files+=("'$1'")
+                fi
+                shift
+                ;;
         esac
     done
     echo "${files[*]}"
@@ -130,19 +133,19 @@ _forgit_log_format=${FORGIT_LOG_FORMAT:-%C(auto)%h%d %s %C(black)%C(bold)%cr%Cre
 _forgit_log_preview_options=("--graph" "--pretty=format:$_forgit_log_format" "--color=always" "--abbrev-commit" "--date=relative")
 _forgit_fullscreen_context=${FORGIT_FULLSCREEN_CONTEXT:-10}
 _forgit_preview_context=${FORGIT_PREVIEW_CONTEXT:-3}
-_forgit_dir_view=${FORGIT_DIR_VIEW:-$(hash tree &> /dev/null && echo 'tree' || echo 'find')}
+_forgit_dir_view=${FORGIT_DIR_VIEW:-$(hash tree &>/dev/null && echo 'tree' || echo 'find')}
 
 _forgit_pager() {
     local pager
     # Preview mode must be marked explicitly by forgit. Inferred signals such
     # as FZF_PREVIEW_COLUMNS or a non-TTY stdout also show up in execute/fullscreen
     # paths, which would incorrectly route Enter actions to FORGIT_PREVIEW_PAGER.
-    if [[ -n "$FORGIT_IN_PREVIEW" ]] && [[ -n "$FORGIT_PREVIEW_PAGER" ]]; then
+    if [[ -n $FORGIT_IN_PREVIEW ]] && [[ -n $FORGIT_PREVIEW_PAGER ]]; then
         pager="$FORGIT_PREVIEW_PAGER"
     else
         pager=$(_forgit_get_pager "$1")
     fi
-    [[ -z "${pager}" ]] && exit 1
+    [[ -z ${pager} ]] && exit 1
     eval "${pager} ${*:2}"
 }
 
@@ -171,7 +174,7 @@ _forgit_get_pager() {
 }
 
 _forgit_is_file_tracked() {
-    git ls-files "$1" --error-unmatch &> /dev/null
+    git ls-files "$1" --error-unmatch &>/dev/null
 }
 
 # List branches with current branch first (for use as fzf header)
@@ -185,7 +188,7 @@ _forgit_is_file_tracked() {
 _forgit_branch_list() {
     local current
     current=$(git branch --show-current)
-    if [[ -n "$current" ]]; then
+    if [[ -n $current ]]; then
         _forgit_print_dim "* $current"
     else
         _forgit_print_dim "* (HEAD detached at $(git rev-parse --short HEAD))"
@@ -361,7 +364,10 @@ _forgit_log() {
 # git reflog viewer
 _forgit_reflog() {
     _forgit_inside_work_tree || return 1
-    _forgit_contains_non_flags "$@" && { git reflog "$@"; return $?; }
+    _forgit_contains_non_flags "$@" && {
+        git reflog "$@"
+        return $?
+    }
     local opts reflog_format
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -426,7 +432,7 @@ _forgit_diff_view() {
     repo=$(git rev-parse --show-toplevel)
     cd "$repo" || return 1
     if [ $# -gt 2 ]; then
-        IFS=" " read -r -a commits <<< "${*:3}"
+        IFS=" " read -r -a commits <<<"${*:3}"
     fi
     echo "$input_line" | _forgit_get_files_from_diff_line | xargs -0 \
         "$FORGIT" exec_diff "${commits[@]}" -U"$diff_context" -- | _forgit_pager diff
@@ -453,7 +459,7 @@ _forgit_diff() {
     commits=()
     files=()
     [[ $# -ne 0 ]] && {
-        if git rev-parse "$1" -- &>/dev/null ; then
+        if git rev-parse "$1" -- &>/dev/null; then
             if [[ $# -gt 1 ]] && git rev-parse "$2" -- &>/dev/null; then
                 commits=("$1" "$2") && files=("${@:3}")
             else
@@ -511,7 +517,7 @@ _forgit_show_preview() {
     local input_line=$1
     local diff_context=$2
     local commit=$3
-    if [[ "$FZF_PREVIEW_LABEL" =~ "Diff" ]]; then
+    if [[ $FZF_PREVIEW_LABEL =~ "Diff" ]]; then
         _forgit_show_view "${input_line}" "${diff_context}" "${commit}"
     else
         git show --quiet --color=always "${FZF_PROMPT%% *}"
@@ -543,7 +549,7 @@ _forgit_show() {
     local files opts commit escaped_commit
     files=()
     if [[ $# -ne 0 ]]; then
-        if git rev-parse "$1" -- &>/dev/null ; then
+        if git rev-parse "$1" -- &>/dev/null; then
             commit="$1" && files=("${@:2}")
         else
             commit="HEAD" && files=("$@")
@@ -577,11 +583,11 @@ _forgit_add_preview() {
     file=$1
     # $file can be a directory when status.showUntrackedFiles is set to 'normal'
     # When this is the case and the directory is not a submodule show the content of the directory and return
-    if [[ -d "$file"  ]] && ! _forgit_is_submodule "$file"; then
+    if [[ -d $file ]] && ! _forgit_is_submodule "$file"; then
         eval "$_forgit_dir_view \"$file\""
         return 0
     fi
-    if (git status -s -- "$file" | grep '^??') &>/dev/null; then  # diff with /dev/null for untracked files
+    if (git status -s -- "$file" | grep '^??') &>/dev/null; then # diff with /dev/null for untracked files
         git diff --color=always --no-index -- /dev/null "$file" | _forgit_pager diff | sed '2 s/added:/untracked:/'
     else
         git diff --color=always -- "$file" | _forgit_pager diff
@@ -605,7 +611,10 @@ _forgit_add() {
     _forgit_inside_work_tree || return 1
     local files opts
     # Add files if passed as arguments
-    _forgit_contains_non_flags "$@" && { _forgit_git_add "$@" && git status -s; return $?; }
+    _forgit_contains_non_flags "$@" && {
+        _forgit_git_add "$@" && git status -s
+        return $?
+    }
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -621,7 +630,7 @@ _forgit_add() {
     while IFS='' read -r file; do
         files+=("$file")
     done < <(_forgit_worktree_changes | FZF_DEFAULT_OPTS="$opts" fzf)
-    [[ "${#files[@]}" -gt 0 ]] && _forgit_git_add "$@" "${files[@]}" && git status -s && return
+    [[ ${#files[@]} -gt 0 ]] && _forgit_git_add "$@" "${files[@]}" && git status -s && return
     echo 'Nothing to add.'
 }
 
@@ -640,7 +649,10 @@ _forgit_git_reset_head() {
 _forgit_reset_head() {
     _forgit_inside_work_tree || return 1
     local files opts rootdir
-    [[ $# -ne 0 ]] && { _forgit_git_reset_head "$@" && git status --short; return $?; }
+    [[ $# -ne 0 ]] && {
+        _forgit_git_reset_head "$@" && git status --short
+        return $?
+    }
     rootdir=$(git rev-parse --show-toplevel)
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -678,7 +690,10 @@ _forgit_stash_show_enter() {
 _forgit_stash_show() {
     _forgit_inside_work_tree || return 1
     local opts
-    [[ $# -ne 0 ]] && { "${FORGIT}" show "$@"; return $?; }
+    [[ $# -ne 0 ]] && {
+        "${FORGIT}" show "$@"
+        return $?
+    }
     _forgit_stash_show_git_opts=()
     _forgit_parse_array _forgit_stash_show_git_opts "$FORGIT_STASH_SHOW_GIT_OPTS"
     opts="
@@ -713,18 +728,21 @@ _forgit_git_stash_push() {
 _forgit_stash_push() {
     _forgit_inside_work_tree || return 1
     local msg args
-    args=( "$@" )
-    while (( "$#" )); do
+    args=("$@")
+    while (("$#")); do
         case "$1" in
             # allow message as argument
-            -m|--message)
-            msg="$2"
-            shift 2
-            ;;
+            -m | --message)
+                msg="$2"
+                shift 2
+                ;;
             # ignore -u as it's used implicitly
-            -u|--include-untracked) shift ;;
+            -u | --include-untracked) shift ;;
             # pass to git directly when encountering anything else
-            *) _forgit_git_stash_push "${args[@]}"; return $?
+            *)
+                _forgit_git_stash_push "${args[@]}"
+                return $?
+                ;;
         esac
     done
     local opts files
@@ -740,14 +758,14 @@ _forgit_stash_push() {
         files+=("$file")
     done < <(_forgit_list_files --exclude-standard --modified --others |
         FZF_DEFAULT_OPTS="$opts" fzf --exit-0)
-    [[ "${#files[@]}" -eq 0 ]] && echo "Nothing to stash" && return 1
+    [[ ${#files[@]} -eq 0 ]] && echo "Nothing to stash" && return 1
     _forgit_git_stash_push ${msg:+-m "$msg"} -u "${files[@]}"
 }
 
 _forgit_clean_preview() {
     local path
     path=$1
-    if [[ -d "$path" ]]; then
+    if [[ -d $path ]]; then
         eval "$_forgit_dir_view \"$path\""
     else
         git diff --color=always /dev/null "$path" | _forgit_pager diff
@@ -771,12 +789,15 @@ _forgit_clean_select_files() {
 # git clean selector
 _forgit_clean() {
     _forgit_inside_work_tree || return 1
-    _forgit_contains_non_flags "$@" && { git clean -q "$@"; return $?; }
+    _forgit_contains_non_flags "$@" && {
+        git clean -q "$@"
+        return $?
+    }
     local files
     _forgit_clean_git_opts=()
     _forgit_parse_array _forgit_clean_git_opts "$FORGIT_CLEAN_GIT_OPTS"
     files=$(_forgit_clean_select_files "$@")
-    [[ -n "$files" ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean "${_forgit_clean_git_opts[@]}" -xdff '%' && git status --short && return
+    [[ -n $files ]] && echo "$files" | tr '\n' '\0' | xargs -0 -I% git clean "${_forgit_clean_git_opts[@]}" -xdff '%' && git status --short && return
     echo 'Nothing to clean.'
 }
 
@@ -790,7 +811,7 @@ _forgit_cherry_pick() {
     local base target opts fzf_selection fzf_exitval
 
     base=$(git branch --show-current)
-    [[ -z "$base" ]] && echo "Current commit is not on a branch." && return 1
+    [[ -z $base ]] && echo "Current commit is not on a branch." && return 1
 
     [[ -z $1 ]] && echo "Please specify target branch" && return 1
     target="$1"
@@ -812,7 +833,7 @@ _forgit_cherry_pick() {
         FZF_DEFAULT_OPTS="$opts" fzf)
     fzf_exitval=$?
     [[ $fzf_exitval != 0 ]] && return $fzf_exitval
-    [[ -z "$fzf_selection" ]] && return $fzf_exitval
+    [[ -z $fzf_selection ]] && return $fzf_exitval
 
     commits=()
     while IFS='' read -r commit; do
@@ -836,7 +857,7 @@ _forgit_cherry_pick_from_branch() {
     local opts branch exitval input_branch args base
 
     base=$(git branch --show-current)
-    [[ -z "$base" ]] && echo "Current commit is not on a branch." && return 1
+    [[ -z $base ]] && echo "Current commit is not on a branch." && return 1
 
     args=("$@")
     if [[ $# -ne 0 ]]; then
@@ -850,8 +871,7 @@ _forgit_cherry_pick_from_branch() {
         "
     # loop until either the branch selector is closed or a commit to be cherry
     # picked has been selected from within a branch
-    while true
-    do
+    while true; do
         if [[ -z $input_branch ]]; then
             branch="$(_forgit_branch_list --all | FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)"
         else
@@ -859,7 +879,7 @@ _forgit_cherry_pick_from_branch() {
         fi
 
         unset input_branch
-        [[ -z "$branch" ]] && return 1
+        [[ -z $branch ]] && return 1
 
         _forgit_cherry_pick "$branch"
 
@@ -870,7 +890,10 @@ _forgit_cherry_pick_from_branch() {
 
 _forgit_rebase() {
     _forgit_inside_work_tree || return 1
-    _forgit_contains_non_flags "$@" && { git rebase "$@"; return $?; }
+    _forgit_contains_non_flags "$@" && {
+        git rebase "$@"
+        return $?
+    }
     local opts graph target_commit prev_commit
     graph=()
     [[ $_forgit_log_graph_enable == true ]] && graph=(--graph)
@@ -885,10 +908,11 @@ _forgit_rebase() {
     "
     target_commit=$(
         git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
-        _forgit_emojify |
-        FZF_DEFAULT_OPTS="$opts" fzf |
-        _forgit_extract_sha)
-    if [[ -n "$target_commit" ]]; then
+            _forgit_emojify |
+            FZF_DEFAULT_OPTS="$opts" fzf |
+            _forgit_extract_sha
+    )
+    if [[ -n $target_commit ]]; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
         git rebase -i "${_forgit_rebase_git_opts[@]}" "$@" "$prev_commit"
     fi
@@ -932,11 +956,12 @@ _forgit_edit_commit() {
     "
     target_commit=$(
         git log "${graph[@]}" --color=always --format="$_forgit_log_format" "$@" |
-        _forgit_emojify |
-        FZF_DEFAULT_OPTS="$opts" fzf |
-        _forgit_extract_sha)
+            _forgit_emojify |
+            FZF_DEFAULT_OPTS="$opts" fzf |
+            _forgit_extract_sha
+    )
     # GIT_EDITOR=: is needed to skip the editor
-    if [[ -n "$target_commit" ]] && GIT_EDITOR=: git commit "${git_opts[@]}" "$action" "$target_commit"; then
+    if [[ -n $target_commit ]] && GIT_EDITOR=: git commit "${git_opts[@]}" "$action" "$target_commit"; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
         # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
@@ -961,10 +986,11 @@ _forgit_reword() {
     "
     target_commit=$(
         git log "${graph[@]}" --color=always --format="$_forgit_log_format" "$@" |
-        _forgit_emojify |
-        FZF_DEFAULT_OPTS="$opts" fzf |
-        _forgit_extract_sha)
-    if [[ -n "$target_commit" ]] && git commit "${git_opts[@]}" --fixup=reword:"$target_commit"; then
+            _forgit_emojify |
+            FZF_DEFAULT_OPTS="$opts" fzf |
+            _forgit_extract_sha
+    )
+    if [[ -n $target_commit ]] && git commit "${git_opts[@]}" --fixup=reword:"$target_commit"; then
         prev_commit=$(_forgit_previous_commit "$target_commit")
         # rebase will fail if there are unstaged changes so --autostash is needed to temporarily stash them
         # GIT_SEQUENCE_EDITOR=: is needed to skip the editor
@@ -986,7 +1012,10 @@ _forgit_git_checkout_file() {
 _forgit_checkout_file() {
     _forgit_inside_work_tree || return 1
     local files opts
-    _forgit_contains_non_flags "$@" && { _forgit_git_checkout_file "$@"; return $?; }
+    _forgit_contains_non_flags "$@" && {
+        _forgit_git_checkout_file "$@"
+        return $?
+    }
     [[ $(_forgit_list_files --modified | wc -l) -eq 0 ]] && echo 'Nothing to checkout.' && return 1
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -999,7 +1028,7 @@ _forgit_checkout_file() {
         files+=("$file")
     done < <(_forgit_list_files --modified |
         FZF_DEFAULT_OPTS="$opts" fzf)
-    [[ "${#files[@]}" -gt 0 ]] && _forgit_git_checkout_file "$@" "${files[@]}"
+    [[ ${#files[@]} -gt 0 ]] && _forgit_git_checkout_file "$@" "${files[@]}"
 }
 
 # git checkout-file from commit selector
@@ -1025,7 +1054,7 @@ _forgit_checkout_file_from_commit() {
     commit=$(_forgit_git_log "$_forgit_log_format" "$branch" "$@" |
         FZF_DEFAULT_OPTS="$opts" fzf |
         _forgit_extract_sha)
-    [[ -n "$commit" ]] || return 0
+    [[ -n $commit ]] || return 0
 
     # select the file interactively
     opts="
@@ -1040,11 +1069,11 @@ _forgit_checkout_file_from_commit() {
         --prompt=\"${commit} > \"
     "
     file=$(_forgit_git_show "$commit" | FZF_DEFAULT_OPTS="$opts" fzf)
-    [[ -n "$file" ]] || return 0
+    [[ -n $file ]] || return 0
 
     # special case: when the file was deleted in the commit
     # check out the file from the previous commit.
-    [[ "$file" =~ ^\[D\] ]] && commit="$commit~"
+    [[ $file =~ ^\[D\] ]] && commit="$commit~"
     file=$(echo "$file" | _forgit_get_single_file_from_diff_line)
 
     _forgit_git_checkout_file "$commit" -- "$file"
@@ -1061,7 +1090,7 @@ _forgit_checkout_branch() {
     _forgit_inside_work_tree || return 1
     # if called with arguments, check if branch exists, else create a new one
     if [[ $# -ne 0 ]]; then
-        if [[ "$*" == "-" ]] || git show-branch "$@" &>/dev/null; then
+        if [[ $* == "-" ]] || git show-branch "$@" &>/dev/null; then
             git switch "$@"
         else
             git switch -c "$@"
@@ -1082,10 +1111,10 @@ _forgit_checkout_branch() {
     _forgit_parse_array _forgit_checkout_branch_branch_git_opts "$FORGIT_CHECKOUT_BRANCH_BRANCH_GIT_OPTS"
     branch="$(_forgit_branch_list "${_forgit_checkout_branch_branch_git_opts[@]:---all}" |
         FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)"
-    [[ -z "$branch" ]] && return 1
+    [[ -z $branch ]] && return 1
 
     # track the remote branch if possible
-    if [[ "$branch" == "remotes/"* ]]; then
+    if [[ $branch == "remotes/"* ]]; then
         if git branch | grep -qw "${branch#remotes/*/}"; then
             # hack to force creating a new branch which tracks the remote if a local branch already exists
             _forgit_git_checkout_branch -b "track/${branch#remotes/*/}" --track "$branch"
@@ -1107,7 +1136,7 @@ _forgit_switch_branch() {
     _forgit_inside_work_tree || return 1
     # if called with arguments, check if branch exists, else create a new one
     if [[ $# -ne 0 ]]; then
-        if [[ "$*" == "-" ]] || git show-branch "$@" &>/dev/null; then
+        if [[ $* == "-" ]] || git show-branch "$@" &>/dev/null; then
             git switch "$@"
         else
             git switch -c "$@"
@@ -1128,10 +1157,10 @@ _forgit_switch_branch() {
     _forgit_parse_array _forgit_switch_branch_branch_git_opts "$FORGIT_SWITCH_BRANCH_BRANCH_GIT_OPTS"
     branch="$(_forgit_branch_list "${_forgit_switch_branch_branch_git_opts[@]:---all}" |
         FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)"
-    [[ -z "$branch" ]] && return 1
+    [[ -z $branch ]] && return 1
 
     # track the remote branch if possible
-    if [[ "$branch" == "remotes/"* ]]; then
+    if [[ $branch == "remotes/"* ]]; then
         if git branch | grep -qw "${branch#remotes/*/}"; then
             # hack to force creating a new branch which tracks the remote if a local branch already exists
             _forgit_git_switch_branch --create "track/${branch#remotes/*/}" --track "$branch"
@@ -1153,7 +1182,10 @@ _forgit_git_checkout_tag() {
 _forgit_checkout_tag() {
     _forgit_inside_work_tree || return 1
     local opts tag
-    [[ $# -ne 0 ]] && { _forgit_git_checkout_tag "$@"; return $?; }
+    [[ $# -ne 0 ]] && {
+        _forgit_git_checkout_tag "$@"
+        return $?
+    }
     [[ $(git tag -l | wc -l) -eq 0 ]] && echo 'Nothing to checkout: there are no tags.' && return 1
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1162,7 +1194,7 @@ _forgit_checkout_tag() {
         $FORGIT_CHECKOUT_TAG_FZF_OPTS
     "
     tag="$(git tag -l --sort=-v:refname | FZF_DEFAULT_OPTS="$opts" fzf)"
-    [[ -z "$tag" ]] && return 1
+    [[ -z $tag ]] && return 1
     _forgit_git_checkout_tag "$tag"
 }
 
@@ -1182,7 +1214,10 @@ _forgit_git_checkout_commit() {
 _forgit_checkout_commit() {
     _forgit_inside_work_tree || return 1
     local opts graph commit
-    [[ $# -ne 0 ]] && { _forgit_git_checkout_commit "$@"; return $?; }
+    [[ $# -ne 0 ]] && {
+        _forgit_git_checkout_commit "$@"
+        return $?
+    }
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         +s +m --tiebreak=index
@@ -1215,7 +1250,10 @@ _forgit_git_branch_delete() {
 _forgit_branch_delete() {
     _forgit_inside_work_tree || return 1
     local opts
-    [[ $# -ne 0 ]] && { _forgit_git_branch_delete "$@"; return $?; }
+    [[ $# -ne 0 ]] && {
+        _forgit_git_branch_delete "$@"
+        return $?
+    }
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1223,8 +1261,7 @@ _forgit_branch_delete() {
         --preview=\"$FORGIT preview branch_preview {}\"
         $FORGIT_BRANCH_DELETE_FZF_OPTS
     "
-    for branch in $(_forgit_branch_list | FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)
-    do
+    for branch in $(_forgit_branch_list | FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name); do
         _forgit_git_branch_delete "$branch"
     done
 }
@@ -1245,7 +1282,10 @@ _forgit_git_revert() {
 _forgit_revert_commit() {
     _forgit_inside_work_tree || return 1
     local opts commits IFS
-    [[ $# -ne 0 ]] && { _forgit_git_revert "$@"; return $?; }
+    [[ $# -ne 0 ]] && {
+        _forgit_git_revert "$@"
+        return $?
+    }
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1267,12 +1307,13 @@ _forgit_revert_commit() {
         commits+=("$commit")
     done < <(
         git log "${graph[@]}" --color=always --format="$_forgit_log_format" |
-        _forgit_emojify |
-        nl |
-        FZF_DEFAULT_OPTS="$opts" fzf |
-        sort -n -k 1 |
-        cut -f2- |
-        sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/')
+            _forgit_emojify |
+            nl |
+            FZF_DEFAULT_OPTS="$opts" fzf |
+            sort -n -k 1 |
+            cut -f2- |
+            sed 's/^[^a-f^0-9]*\([a-f0-9]*\).*/\1/'
+    )
 
     [ ${#commits[@]} -eq 0 ] && return 1
 
@@ -1299,7 +1340,10 @@ _forgit_git_blame() {
 _forgit_blame() {
     _forgit_inside_work_tree || return 1
     local opts flags file
-    _forgit_contains_non_flags "$@" && { _forgit_git_blame "$@"; return $?; }
+    _forgit_contains_non_flags "$@" && {
+        _forgit_git_blame "$@"
+        return $?
+    }
     flags=()
     while IFS='' read -r flag; do
         flags+=("$flag")
@@ -1312,7 +1356,7 @@ _forgit_blame() {
     # flags is not quoted here, which is fine given that they are retrieved
     # with git rev-parse and can only contain flags
     file=$(FZF_DEFAULT_OPTS="$opts" fzf)
-    [[ -z "$file" ]] && return 1
+    [[ -z $file ]] && return 1
     _forgit_git_blame "$file" "${flags[@]}"
 }
 
@@ -1335,8 +1379,8 @@ _forgit_path_preview() {
 }
 
 _forgit_ignore() {
-    [ -d "$FORGIT_GI_REPO_LOCAL" ] \
-    || _forgit_repo_update "$FORGIT_GI_REPO_REMOTE" "$FORGIT_GI_REPO_LOCAL"
+    [ -d "$FORGIT_GI_REPO_LOCAL" ] ||
+        _forgit_repo_update "$FORGIT_GI_REPO_REMOTE" "$FORGIT_GI_REPO_LOCAL"
     local IFS args opts
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1363,8 +1407,8 @@ export FORGIT_ATTR_REPO_LOCAL=${FORGIT_ATTR_REPO_LOCAL:-${XDG_CACHE_HOME:-$HOME/
 export FORGIT_ATTR_TEMPLATES=${FORGIT_ATTR_TEMPLATES:-$FORGIT_ATTR_REPO_LOCAL}
 
 _forgit_attributes() {
-    [ -d "$FORGIT_ATTR_REPO_LOCAL" ] \
-    || _forgit_repo_update "$FORGIT_ATTR_REPO_REMOTE" "$FORGIT_ATTR_REPO_LOCAL"
+    [ -d "$FORGIT_ATTR_REPO_LOCAL" ] ||
+        _forgit_repo_update "$FORGIT_ATTR_REPO_REMOTE" "$FORGIT_ATTR_REPO_LOCAL"
     local IFS args opts
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1389,7 +1433,7 @@ _forgit_repo_update() {
     local remote path
     remote=$1
     path=$2
-    if [[ -d "$path" ]]; then
+    if [[ -d $path ]]; then
         _forgit_info 'Updating repo...'
         (cd "$path" && git pull --no-rebase --ff) || return 1
     else
@@ -1405,7 +1449,7 @@ _forgit_path_get() {
     shift 2
     for item in "$@"; do
         if filename=$(find -L "$path" -type f \( -iname "${item}$ext" -o -iname "${item}" \) -print -quit); then
-            [[ -z "$filename" ]] && _forgit_warn "No template found for '$item'." && continue
+            [[ -z $filename ]] && _forgit_warn "No template found for '$item'." && continue
             header="${filename##*/}" && header="${header%"$ext"}"
             echo "### $header" && cat "$filename" && echo
         fi
@@ -1416,7 +1460,7 @@ _forgit_paths_list() {
     local path ext
     path=$1
     ext=$2
-    find "$path" -name "*$ext" -print |sed -e "s#$ext\$##" -e 's#.*/##' -e '/^$/d' | sort -fu
+    find "$path" -name "*$ext" -print | sed -e "s#$ext\$##" -e 's#.*/##' -e '/^$/d' | sort -fu
 }
 
 # Get the root path of the main worktree (not the current worktree)
@@ -1458,9 +1502,9 @@ _forgit_worktree_list() {
             "")
                 relative_date=$(git log -1 --format='%cr' "$head" 2>/dev/null)
                 local current_marker=" " lock_marker=" "
-                [[ "$worktree" == "$current_worktree" ]] && current_marker="*"
-                [[ -n "$prunable" ]] && lock_marker="$prunable"
-                [[ -n "$locked" ]] && lock_marker="$locked"
+                [[ $worktree == "$current_worktree" ]] && current_marker="*"
+                [[ -n $prunable ]] && lock_marker="$prunable"
+                [[ -n $locked ]] && lock_marker="$locked"
                 printf "[%s%s] %s ${_cyan}(%s)${_reset} ${_gray}%s${_reset}\n" \
                     "$current_marker" "$lock_marker" "$worktree" "${branch:-HEAD}" "$relative_date"
                 ;;
@@ -1491,7 +1535,7 @@ _forgit_worktree_toggle_lock() {
     local line="$1" worktree stripped
     worktree=$(echo "$line" | _forgit_extract_worktree_path)
     stripped=$(echo "$line" | _forgit_strip_ansi)
-    if [[ "${stripped:2:1}" == "L" ]]; then
+    if [[ ${stripped:2:1} == "L" ]]; then
         git worktree unlock "$worktree"
     else
         git worktree lock "$worktree"
@@ -1502,11 +1546,11 @@ _forgit_worktree_toggle_lock() {
 _forgit_worktree_preview() {
     local worktree
     worktree=$(echo "$1" | _forgit_extract_worktree_path)
-    [[ ! -d "$worktree" ]] && echo "Worktree directory not found: $worktree" && return 1
+    [[ ! -d $worktree ]] && echo "Worktree directory not found: $worktree" && return 1
 
     local status_output
     status_output=$(git -c color.status=always -C "$worktree" status -s 2>/dev/null)
-    [[ -n "$status_output" ]] && echo "$status_output" && echo ""
+    [[ -n $status_output ]] && echo "$status_output" && echo ""
     git -C "$worktree" log --oneline -n 200 --color=always 2>/dev/null
 }
 
@@ -1523,7 +1567,10 @@ _forgit_git_worktree_delete() {
 _forgit_worktree() {
     _forgit_inside_git_repo || return 1
     local opts worktree
-    [[ $# -ne 0 ]] && { git worktree "$@"; return $?; }
+    [[ $# -ne 0 ]] && {
+        git worktree "$@"
+        return $?
+    }
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1534,7 +1581,7 @@ _forgit_worktree() {
         $FORGIT_WORKTREE_FZF_OPTS
     "
     worktree=$(_forgit_worktree_list | FZF_DEFAULT_OPTS="$opts" fzf)
-    [[ -z "$worktree" ]] && return 1
+    [[ -z $worktree ]] && return 1
     echo "$worktree" | _forgit_extract_worktree_path
 }
 
@@ -1542,11 +1589,14 @@ _forgit_worktree() {
 _forgit_worktree_delete() {
     _forgit_inside_git_repo || return 1
     local opts worktrees
-    [[ $# -ne 0 ]] && { _forgit_git_worktree_delete "$@"; return $?; }
+    [[ $# -ne 0 ]] && {
+        _forgit_git_worktree_delete "$@"
+        return $?
+    }
 
     local candidates
     candidates=$(_forgit_worktree_list_deletable)
-    if [[ -z "$candidates" ]]; then
+    if [[ -z $candidates ]]; then
         echo "Nothing to delete."
         return 1
     fi
@@ -1562,7 +1612,7 @@ _forgit_worktree_delete() {
 
     worktrees=()
     while IFS='' read -r line; do
-        [[ -n "$line" ]] && worktrees+=("$(echo "$line" | _forgit_extract_worktree_path)")
+        [[ -n $line ]] && worktrees+=("$(echo "$line" | _forgit_extract_worktree_path)")
     done < <(echo "$candidates" | FZF_DEFAULT_OPTS="$opts" fzf)
 
     [[ ${#worktrees[@]} -eq 0 ]] && return 1
@@ -1591,7 +1641,7 @@ _forgit_worktree_add() {
     _forgit_parse_array _forgit_worktree_add_branch_git_opts "$FORGIT_WORKTREE_ADD_BRANCH_GIT_OPTS"
 
     local header_opt=""
-    [[ -z "$new_branch" ]] && header_opt="--header-lines=1"
+    [[ -z $new_branch ]] && header_opt="--header-lines=1"
 
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
@@ -1601,12 +1651,12 @@ _forgit_worktree_add() {
     "
     branch=$(_forgit_branch_list "${_forgit_worktree_add_branch_git_opts[@]:---all}" |
         FZF_DEFAULT_OPTS="$opts" fzf | _forgit_extract_branch_name)
-    [[ -z "$branch" ]] && return 1
+    [[ -z $branch ]] && return 1
 
     # Strip remotes/<remote>/ prefix for remote branches
     local local_branch="${branch#remotes/*/}"
 
-    if [[ -n "$new_branch" ]]; then
+    if [[ -n $new_branch ]]; then
         # gwa <new-branch>: create new branch from selected base
         local target="$wt_dir/$new_branch"
         git worktree add -b "$new_branch" "$target" "$branch" >&2 && echo "$target"
@@ -1623,14 +1673,14 @@ check_prequisites() {
 
     # Check if fzf is installed
     installed_fzf_version=$(fzf --version 2>/dev/null | awk '{print $1}')
-    if [[ -z "$installed_fzf_version" ]]; then
+    if [[ -z $installed_fzf_version ]]; then
         echo "fzf is not installed. Please install fzf first."
         exit 1
     fi
 
     # Check fzf version
     higher_fzf_version=$(printf '%s\n' "$REQUIRED_FZF_VERSION" "$installed_fzf_version" | sort -V | tail -n1)
-    if [[ "$higher_fzf_version" != "$installed_fzf_version" ]]; then
+    if [[ $higher_fzf_version != "$installed_fzf_version" ]]; then
         echo "fzf version $REQUIRED_FZF_VERSION or higher is required. You have $installed_fzf_version."
         exit 1
     fi
@@ -1651,7 +1701,7 @@ main() {
 
     # shellcheck disable=SC2076
     if [[ ! " ${PUBLIC_COMMANDS[*]} " =~ " ${cmd} " ]] && [[ ! " ${PRIVATE_COMMANDS[*]} " =~ " ${cmd} " ]]; then
-        if [[ -z "$cmd" ]]; then
+        if [[ -z $cmd ]]; then
             printf "forgit: missing command\n\n"
         else
             printf "forgit: '%s' is not a valid forgit command.\n\n" "$cmd"
@@ -1718,7 +1768,7 @@ PRIVATE_COMMANDS=(
 
 # Check if the script is being sourced. This is necessary for unit tests where
 # we do not want to execute the main function.
-if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+if [[ ${BASH_SOURCE[0]} != "$0" ]]; then
     return 0
 fi
 

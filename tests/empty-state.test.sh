@@ -13,7 +13,7 @@ function set_up_before_script() {
     git config user.email "test@example.com"
     git config user.name "Test User"
     # Create an initial commit so we have a valid repo
-    echo "initial" > README.md
+    echo "initial" >README.md
     git add README.md
     git commit -q -m "Initial commit"
 }

@@ -62,6 +62,7 @@ lib/bashunit .
 bash forgit.plugin.sh
 zsh forgit.plugin.zsh
 fish conf.d/forgit.plugin.fish
+shfmt --write .
 ```
 
 In your pull request, report which shells and operating systems you tested.

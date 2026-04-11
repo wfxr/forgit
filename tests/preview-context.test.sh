@@ -22,15 +22,15 @@ function test_forgit_pager_uses_preview_pager_only_in_explicit_preview_context()
 
     without_marker=$(
         FORGIT_DIFF_PAGER="printf diff" \
-        FORGIT_PREVIEW_PAGER="printf preview" \
-        FZF_PREVIEW_COLUMNS=80 \
-        _forgit_pager diff
+            FORGIT_PREVIEW_PAGER="printf preview" \
+            FZF_PREVIEW_COLUMNS=80 \
+            _forgit_pager diff
     )
     with_marker=$(
         FORGIT_DIFF_PAGER="printf diff" \
-        FORGIT_PREVIEW_PAGER="printf preview" \
-        FORGIT_IN_PREVIEW=1 \
-        _forgit_pager diff
+            FORGIT_PREVIEW_PAGER="printf preview" \
+            FORGIT_IN_PREVIEW=1 \
+            _forgit_pager diff
     )
 
     assert_same "diff" "$without_marker"
