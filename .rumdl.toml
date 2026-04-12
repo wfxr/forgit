@@ -1,0 +1,26 @@
+# rumdl configuration file
+
+# Global configuration options
+[global]
+
+# List of file/directory patterns to exclude from linting
+exclude = [
+    # Common directories to exclude
+    ".git",
+    ".github",
+]
+
+# Respect .gitignore files when scanning directories
+respect-gitignore = true
+
+# Disable rules
+# MD033: inline HTML
+disable = [ "MD033" ]
+
+# Rule-specific configurations
+
+[MD003]
+style = "setext"  # Heading style (atx, atx_closed, setext)
+
+[MD013]
+line-length = 120  # Maximum characters per line

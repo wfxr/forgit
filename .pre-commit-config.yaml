@@ -20,3 +20,7 @@ repos:
         (curl -fsSL https://wfxr.mit-license.org/2017/license.txt && echo) > ./LICENSE &&
             git add ./LICENSE || { git checkout ./LICENSE && exit 1; }
       '
+- repo: https://github.com/rvben/rumdl-pre-commit
+  rev: v0.1.68
+  hooks:
+    - id: rumdl-fmt  # Auto-format and fail if issues remain

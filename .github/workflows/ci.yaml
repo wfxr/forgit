@@ -88,3 +88,9 @@ jobs:
       with:
         shfmt-version: 3.13.1
     - run: shfmt --diff .
+
+  rumdl-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: rvben/rumdl@v0.1.68
