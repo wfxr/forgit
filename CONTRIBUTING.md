@@ -51,6 +51,7 @@ To run the same checks as CI, make sure these tools are available locally:
 - `shellcheck`
 - `curl`
 - `bashunit` as `lib/bashunit`
+- `shfmt`
 - `rumdl`
 - `actionlint`
 
