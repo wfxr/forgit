@@ -1667,7 +1667,7 @@ _forgit_worktree_add() {
     fi
 }
 
-check_prequisites() {
+check_prerequisites() {
     local installed_fzf_version
     local higher_fzf_version
 
@@ -1690,7 +1690,7 @@ main() {
     local cmd="$1"
     shift
 
-    check_prequisites
+    check_prerequisites
 
     # Set shell for fzf preview commands
     SHELL="$(which bash)"
