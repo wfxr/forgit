@@ -69,7 +69,7 @@ jobs:
         run: tar -czf forgit-${{ needs.changelog.outputs.version }}.tar.gz --exclude LICENSE --exclude README.md --exclude cliff.toml ./*
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           # The release action implicitly creates the tag if it does not exist.
           tag_name: ${{ needs.changelog.outputs.version }}
