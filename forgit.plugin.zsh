@@ -33,7 +33,7 @@ unexported_vars=0
 # Set posix mode in bash to only get variables, see #256.
 [[ -n $BASH_VERSION ]] && builtin set -o posix
 builtin set | command awk -F '=' '{ print $1 }' | command grep FORGIT_ | while builtin read -r var; do
-    if ! builtin export | command grep -q "\(^$var=\|^export $var=\)"; then
+    if ! builtin export | command grep -Eq "(^$var=|^export $var=)"; then
         if [[ $unexported_vars == 0 ]]; then
             forgit::warn "Config options have to be exported in future versions of forgit."
             forgit::warn "Please update your config accordingly:"
