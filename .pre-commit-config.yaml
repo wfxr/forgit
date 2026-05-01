@@ -21,7 +21,7 @@ repos:
             git add ./LICENSE || { git checkout ./LICENSE && exit 1; }
       '
 - repo: https://github.com/rvben/rumdl-pre-commit
-  rev: v0.1.80
+  rev: v0.1.86
   hooks:
     - id: rumdl-fmt  # Auto-format and fail if issues remain
 - repo: https://github.com/rhysd/actionlint
