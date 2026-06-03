@@ -21,6 +21,7 @@
 - [ ] Breaking change
 - [ ] Test
 - [ ] Documentation change
+- [ ] CI change
 
 ## Test environment
 
