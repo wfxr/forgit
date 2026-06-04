@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: rvben/rumdl@v0.2.3
+      - uses: rvben/rumdl@v0.2.7
 
   # Lint GitHub Actions workflows
   actionlint:
