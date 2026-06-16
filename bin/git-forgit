@@ -219,6 +219,12 @@ _forgit_list_files() {
     git ls-files -z "$@" "$rootdir" | tr '\0' '\n' | uniq
 }
 
+_forgit_list_staged_files() {
+    local up
+    up="$(git rev-parse --show-cdup)"
+    git diff --name-only --cached -z | tr '\0' '\n' | awk -v up="$up" '{ print up $0 }'
+}
+
 # Print changed files in the worktree
 #
 # Always includes modified and unmerged files. Includes untracked files when
@@ -672,6 +678,74 @@ _forgit_reset_head() {
         _forgit_git_reset_head "$rootdir/$file"
     done
     git status --short
+}
+
+_forgit_restore_preview() {
+    git diff --color=always "$@" | _forgit_pager diff
+}
+
+_forgit_git_restore() {
+    _forgit_restore_git_opts=()
+    _forgit_parse_array _forgit_restore_git_opts "$FORGIT_RESTORE_GIT_OPTS"
+    git restore "${_forgit_restore_git_opts[@]}" "$@"
+}
+
+_forgit_parse_restore_flags() {
+    local staged worktree preview_arg
+    staged=false
+    worktree=false
+
+    for arg in "$@"; do
+        case "$arg" in
+            -S | --staged) staged=true ;;
+            -W | --worktree) worktree=true ;;
+        esac
+    done
+
+    if [[ $staged == true && $worktree != true ]]; then
+        preview_arg=--staged
+    elif [[ $staged == true && $worktree == true ]]; then
+        preview_arg=HEAD
+    fi
+
+    printf '%s\t%s\t%s' "$staged" "$worktree" "$preview_arg"
+}
+
+# git restore selector
+_forgit_restore() {
+    _forgit_inside_work_tree || return 1
+    _forgit_contains_non_flags "$@" && {
+        _forgit_git_restore "$@"
+        return $?
+    }
+    local files opts staged worktree candidates preview_arg
+    IFS=$'\t' read -r staged worktree preview_arg < <(_forgit_parse_restore_flags "$@")
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        -m -0
+        --preview=\"$FORGIT preview restore_preview $preview_arg -- {}\"
+        $FORGIT_RESTORE_FZF_OPTS
+    "
+
+    candidates=()
+    if [[ $staged == true ]]; then
+        while IFS='' read -r file; do
+            candidates+=("$file")
+        done < <(_forgit_list_staged_files)
+    fi
+    if [[ $worktree == true || $staged != true ]]; then
+        while IFS='' read -r file; do
+            candidates+=("$file")
+        done < <(_forgit_list_files --modified)
+    fi
+
+    [[ ${#candidates[@]} -eq 0 ]] && echo "Nothing to restore." && return 1
+
+    files=()
+    while IFS='' read -r file; do
+        files+=("$file")
+    done < <(printf '%s\n' "${candidates[@]}" | sort -u | FZF_DEFAULT_OPTS="$opts" fzf)
+    [[ ${#files[@]} -gt 0 ]] && _forgit_git_restore "$@" -- "${files[@]}"
 }
 
 _forgit_stash_show_preview() {
@@ -1737,6 +1811,7 @@ PUBLIC_COMMANDS=(
     "reflog"
     "rebase"
     "reset_head"
+    "restore"
     "revert_commit"
     "show"
     "stash_show"
