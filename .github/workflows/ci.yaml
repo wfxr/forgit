@@ -27,6 +27,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v6
+    - uses: TypedDevs/bashunit@v0
+      with:
+          version: '0.40.0'
+          verify-checksum: 'true'
 
     # Runs a single command using the runners shell
     - name: Install prerequisites
@@ -40,7 +44,6 @@ jobs:
           sudo apt -y update
           sudo apt -y install --no-install-recommends zsh fish shellcheck
         fi
-        curl -s https://bashunit.typeddevs.com/install.sh | bash -s 0.31.0
 
     - name: Show version
       run: |
@@ -54,7 +57,7 @@ jobs:
       run: shellcheck forgit.plugin.sh bin/git-forgit
 
     - name: Unit tests
-      run: lib/bashunit .
+      run: bashunit tests
 
     - name: Test bash
       run: bash forgit.plugin.sh
