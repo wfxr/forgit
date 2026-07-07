@@ -15,8 +15,8 @@ end
 # backwards compatibility:
 # export all user-defined FORGIT variables to make them available in git-forgit
 set unexported_vars 0
-set | awk -F ' ' '{ print $1 }' | grep FORGIT_ | while read var
-    if not set -x | grep -q "^$var\b"
+for var in (set -n | string match -er '^FORGIT_')
+    if not set -xn | string match -qr "^$var\$"
         if test $unexported_vars = 0
             forgit::warn "Config options have to be exported in future versions of forgit."
             forgit::warn "Please update your config accordingly:"
