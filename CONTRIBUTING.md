@@ -58,7 +58,7 @@ To run the same checks as CI, make sure these tools are available locally:
 If `lib/bashunit` is not available yet, install it once with:
 
 ```sh
-curl --silent --fail --location https://bashunit.typeddevs.com/install.sh | bash -s 0.40.0
+curl --silent --fail --location https://bashunit.typeddevs.com/install.sh | bash
 ```
 
 Local Validation
