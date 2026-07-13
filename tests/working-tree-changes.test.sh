@@ -44,6 +44,28 @@ function test_forgit_worktree_changes_contains_untracked() {
     assert_contains "untracked_file.txt" "$output"
 }
 
+function test_forgit_list_files_matches_modified_files_until_untracked_files_exist() {
+    local list_files_output modified_files_output
+
+    list_files_output=$(_forgit_list_files --modified)
+    modified_files_output=$(_forgit_list_modified_files)
+
+    assert_same "$modified_files_output" "$list_files_output"
+    assert_contains "modified file.txt" "$list_files_output"
+
+    touch new_untracked_file.txt
+
+    list_files_output=$(_forgit_list_files --exclude-standard --modified --others)
+    modified_files_output=$(_forgit_list_modified_files)
+
+    assert_contains "modified file.txt" "$list_files_output"
+    assert_contains "new_untracked_file.txt" "$list_files_output"
+    assert_contains "modified file.txt" "$modified_files_output"
+    assert_not_contains "new_untracked_file.txt" "$modified_files_output"
+
+    rm new_untracked_file.txt
+}
+
 function test_forgit_worktree_changes_excludes_staged() {
     local output
 
@@ -112,6 +134,47 @@ function test_forgit_build_status_entries_uses_cwd_relative_display_paths_for_si
     output=$(_forgit_worktree_changes)
 
     assert_contains "../dir1/file.txt" "$output"
+}
+
+function test_forgit_list_modified_files_uses_cwd_relative_paths_for_sibling_entries() {
+    local output
+
+    mkdir -p dir1 dir2
+    touch dir1/file.txt
+    git add .
+    git commit -m "add dirs" --quiet
+    echo modified >dir1/file.txt
+    cd dir2 || return 1
+
+    output=$(_forgit_list_modified_files)
+
+    assert_same "../dir1/file.txt" "$output"
+}
+
+function test_forgit_rewrite_repo_paths_for_cwd_rewrites_repo_relative_paths() {
+    local output rootdir
+
+    mkdir -p dir1 dir2
+    touch dir1/file.txt
+    rootdir=$(git rev-parse --show-toplevel)
+    cd dir2 || return 1
+
+    output=$(printf 'dir1/file.txt\n' | _forgit_rewrite_repo_paths_for_cwd "$rootdir")
+
+    assert_same "../dir1/file.txt" "$output"
+}
+
+function test_forgit_rewrite_repo_paths_for_cwd_formats_status_entries() {
+    local output rootdir
+
+    mkdir -p dir1 dir2
+    touch dir1/file.txt
+    rootdir=$(git rev-parse --show-toplevel)
+    cd dir2 || return 1
+
+    output=$(printf ' M dir1/file.txt\n' | _forgit_rewrite_repo_paths_for_cwd "$rootdir" status_entries "$_ffsep")
+
+    assert_same "[ M]  ../dir1/file.txt${_ffsep}${rootdir}/dir1/file.txt" "$output"
 }
 
 function test_forgit_build_status_entries_uses_cwd_relative_display_paths_from_logical_symlink_paths() {
