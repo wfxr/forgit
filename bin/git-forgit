@@ -1123,12 +1123,13 @@ _forgit_git_checkout_file() {
 # git checkout-file selector
 _forgit_checkout_file() {
     _forgit_inside_work_tree || return 1
-    local files opts
+    local files opts modified_files
     _forgit_contains_non_flags "$@" && {
         _forgit_git_checkout_file "$@"
         return $?
     }
-    [[ $(_forgit_list_modified_files | wc -l) -eq 0 ]] && echo 'Nothing to checkout.' && return 1
+    modified_files="$(_forgit_list_modified_files)"
+    [[ -z $modified_files ]] && echo 'Nothing to checkout.' && return 1
     opts="
         $FORGIT_FZF_DEFAULT_OPTS
         -m -0
@@ -1138,7 +1139,7 @@ _forgit_checkout_file() {
     files=()
     while IFS='' read -r file; do
         files+=("$file")
-    done < <(_forgit_list_modified_files |
+    done < <(printf '%s\n' "$modified_files" |
         FZF_DEFAULT_OPTS="$opts" fzf)
     [[ ${#files[@]} -gt 0 ]] && _forgit_git_checkout_file "$@" "${files[@]}"
 }
