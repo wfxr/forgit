@@ -432,7 +432,7 @@ For the repository-specific contribution workflow, local validation steps, and c
 ⭐ Star History
 ----------------
 
-[![Star History Chart](https://api.star-history.com/svg?repos=wfxr/forgit&type=date&legend=top-left)](https://www.star-history.com/?repos=wfxr%2Fforgit&type=date&legend=top-left)
+[![Star History Chart](https://star-history.dera.page/svg?repos=wfxr/forgit&type=date&legend=top-left)](https://star-history.dera.page/#wfxr/forgit&type=date&legend=top-left)
 
 📃 License
 -----------
