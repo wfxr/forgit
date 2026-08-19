@@ -317,9 +317,14 @@ variables:
 | `FORGIT_BLAME_PAGER`      | `git config pager.blame` _or_ `$FORGIT_PAGER`    |
 | `FORGIT_IGNORE_PAGER`     | `bat -l gitignore --color always` _or_ `cat`     |
 | `FORGIT_ATTRIBUTES_PAGER` | `bat -l gitattributes --color always` _or_ `cat` |
-| `FORGIT_PREVIEW_PAGER`    | Normal pager resolution<sup>*</sup>              |
+| `FORGIT_ENTER_PAGER`      | `less -R -+F -+E`<sup>1</sup>                    |
+| `FORGIT_PREVIEW_PAGER`    | Normal pager resolution<sup>2</sup>              |
 
-<sup>*</sup> If your pager is a TUI program (e.g., `diffnav`, `tig`), fzf preview panes will be blank because they run
+<sup>1</sup> `FORGIT_ENTER_PAGER` controls the full-screen pager opened by the Enter key. Its default inherits options
+from `LESS`, enables safe ANSI color handling with `-R`, and disables `-F` and `-E` so the pager remains open for short
+output. Setting `FORGIT_ENTER_PAGER` replaces the default command.
+
+<sup>2</sup> If your pager is a TUI program (e.g., `diffnav`, `tig`), fzf preview panes will be blank because they run
 without a TTY. Set `FORGIT_PREVIEW_PAGER` to a non-interactive pager (e.g., `delta`) to fix this. When set, it
 overrides all other `FORGIT_*_PAGER` settings in fzf preview context.
 
