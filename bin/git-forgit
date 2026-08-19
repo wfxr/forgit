@@ -171,7 +171,7 @@ _forgit_get_pager() {
         ignore) echo -n "${FORGIT_IGNORE_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitignore --color=always' || echo 'cat')}" ;;
         attributes) echo -n "${FORGIT_ATTRIBUTES_PAGER:-$(hash bat &>/dev/null && echo 'bat -l gitattributes --color=always' || echo 'cat')}" ;;
         blame) echo -n "${FORGIT_BLAME_PAGER:-$(git config pager.blame || _forgit_get_pager)}" ;;
-        enter) echo -n "${FORGIT_ENTER_PAGER:-"LESS='-r' less"}" ;;
+        enter) echo -n "${FORGIT_ENTER_PAGER:-"less -R -+F -+E"}" ;;
         *) echo "pager not found: $1" >&2 ;;
     esac
 }
