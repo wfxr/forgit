@@ -371,17 +371,19 @@ export FORGIT_LOG_FZF_OPTS='
 
 ### Other Options
 
-| Option                         | Description                                                                                                                    | Default                                       |
-|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `FORGIT_LOG_FORMAT`            | git log format                                                                                                                 | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
-| `FORGIT_GLO_FORMAT`            | override log format for `glo` command                                                                                          | `$FORGIT_LOG_FORMAT`                          |
-| `FORGIT_LOG_GRAPH_ENABLE`     | enable log graph display                                                                                                       | `true`                                        |
-| `FORGIT_COPY_CMD`             | command for copying to clipboard                                                                                               | `pbcopy`                                      |
-| `FORGIT_PREVIEW_CONTEXT`       | lines of diff context in preview mode                                                                                          | 3                                             |
-| `FORGIT_FULLSCREEN_CONTEXT`    | lines of diff context in full-screen mode                                                                                      | 10                                            |
-| `FORGIT_DIR_VIEW`              | command used to preview directories                                                                                            | `tree` if available, otherwise `find`         |
-| `FORGIT_CLEAN_LIST_FILES_OPTS` | arguments passed to `git ls-files` together with `--others` to determine which files are shown when invoking `forgit clean`    |                                               |
-| `FORGIT_WORKTREE_ADD_DIR`      | directory where new worktrees are created                                                                                      | `<repo-root>/.wt`                             |
+| Option                                      | Description                                                                                                                      | Default                                       |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `FORGIT_LOG_FORMAT`                         | git log format                                                                                                                   | `%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset` |
+| `FORGIT_GLO_FORMAT`                         | override log format for `glo` command                                                                                            | `$FORGIT_LOG_FORMAT`                          |
+| `FORGIT_LOG_GRAPH_ENABLE`                   | enable log graph display                                                                                                         | `true`                                        |
+| `FORGIT_COPY_CMD`                           | command for copying to clipboard                                                                                                 | `pbcopy`                                      |
+| `FORGIT_PREVIEW_CONTEXT`                    | lines of diff context in preview mode                                                                                            | 3                                             |
+| `FORGIT_FULLSCREEN_CONTEXT`                 | lines of diff context in full-screen mode                                                                                        | 10                                            |
+| `FORGIT_DIR_VIEW`                           | command used to preview directories                                                                                              | `tree` if available, otherwise `find`         |
+| `FORGIT_CLEAN_LIST_FILES_OPTS`              | arguments passed to `git ls-files` together with `--others` to determine which files are shown when invoking `forgit clean`      |                                               |
+| `FORGIT_WORKTREE_ADD_DIR`                   | directory where new worktrees are created                                                                                        | `<repo-root>/.wt`                             |
+| `FORGIT_CHECKOUT_BRANCH_AUTO_CREATE_BRANCH` | prevents forgit from auto creating a new branch with `gcb <BRANCH_NAME>` when `<BRANCH_NAME>` does not exist when set to `false` |                                               |
+| `FORGIT_SWITCH_AUTO_CREATE_BRANCH`          | prevents forgit from auto creating a new branch with `gsw <BRANCH_NAME>` when `<BRANCH_NAME>` does not exist when set to `false` |                                               |
 
 ⌨ Keybindings
 ---------------

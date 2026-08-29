@@ -1202,8 +1202,9 @@ _forgit_git_checkout_branch() {
 _forgit_checkout_branch() {
     _forgit_inside_work_tree || return 1
     # if called with arguments, check if branch exists, else create a new one
+    # this behavior can be disabled by setting FORGIT_CHECKOUT_BRANCH_AUTO_CREATE_BRANCH to false
     if [[ $# -ne 0 ]]; then
-        if [[ $* == "-" ]] || git show-branch "$@" &>/dev/null; then
+        if [[ $FORGIT_CHECKOUT_BRANCH_AUTO_CREATE_BRANCH == false ]] || [[ $* == "-" ]] || git show-branch "$@" &>/dev/null; then
             git switch "$@"
         else
             git switch -c "$@"
@@ -1248,8 +1249,9 @@ _forgit_git_switch_branch() {
 _forgit_switch_branch() {
     _forgit_inside_work_tree || return 1
     # if called with arguments, check if branch exists, else create a new one
+    # this behavior can be disabled by setting FORGIT_SWITCH_AUTO_CREATE_BRANCH to false
     if [[ $# -ne 0 ]]; then
-        if [[ $* == "-" ]] || git show-branch "$@" &>/dev/null; then
+        if [[ $FORGIT_SWITCH_AUTO_CREATE_BRANCH == false ]] || [[ $* == "-" ]] || git show-branch "$@" &>/dev/null; then
             git switch "$@"
         else
             git switch -c "$@"
