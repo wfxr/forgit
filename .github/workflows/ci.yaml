@@ -27,7 +27,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v7
-    - uses: TypedDevs/bashunit@0.40.0
+    - uses: TypedDevs/bashunit@0.50.1
       with:
           verify-checksum: 'true'
 
