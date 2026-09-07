@@ -381,7 +381,7 @@ export FORGIT_LOG_FZF_OPTS='
 | `FORGIT_FULLSCREEN_CONTEXT`                 | lines of diff context in full-screen mode                                                                                        | 10                                            |
 | `FORGIT_DIR_VIEW`                           | command used to preview directories                                                                                              | `tree` if available, otherwise `find`         |
 | `FORGIT_CLEAN_LIST_FILES_OPTS`              | arguments passed to `git ls-files` together with `--others` to determine which files are shown when invoking `forgit clean`      |                                               |
-| `FORGIT_WORKTREE_ADD_DIR`                   | directory where new worktrees are created                                                                                        | `<repo-root>/.wt`                             |
+| `FORGIT_WORKTREE_ADD_DIR`                   | directory where new worktrees are created (a relative path is resolved against the main worktree root)                           | `.wt`                                         |
 | `FORGIT_CHECKOUT_BRANCH_AUTO_CREATE_BRANCH` | prevents forgit from auto creating a new branch with `gcb <BRANCH_NAME>` when `<BRANCH_NAME>` does not exist when set to `false` |                                               |
 | `FORGIT_SWITCH_AUTO_CREATE_BRANCH`          | prevents forgit from auto creating a new branch with `gsw <BRANCH_NAME>` when `<BRANCH_NAME>` does not exist when set to `false` |                                               |
 

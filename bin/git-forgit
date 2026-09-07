@@ -1583,6 +1583,20 @@ _forgit_main_worktree_root() {
     git worktree list --porcelain | sed -n 's/^worktree //p;q'
 }
 
+# Get the directory in which new worktrees are created
+# A relative FORGIT_WORKTREE_ADD_DIR is resolved against the root of the main
+# worktree, so that a single setting is valid in every repository. Anchoring it
+# to the main worktree rather than the current one also keeps adding a worktree
+# from a linked worktree from nesting the directory any deeper.
+_forgit_worktree_add_dir() {
+    local dir="${FORGIT_WORKTREE_ADD_DIR:-.wt}"
+    if [[ $dir == /* ]]; then
+        echo "$dir"
+    else
+        echo "$(_forgit_main_worktree_root)/$dir"
+    fi
+}
+
 # Parse git worktree list --porcelain output and format it for display
 # Output format: [XY] /path/to/worktree (branch) 3 hours ago
 #   X: '*' = current worktree, ' ' = other
@@ -1740,8 +1754,8 @@ _forgit_worktree_delete() {
 _forgit_worktree_add() {
     _forgit_inside_git_repo || return 1
 
-    # Default to main worktree root, not current worktree's root
-    local wt_dir="${FORGIT_WORKTREE_ADD_DIR:-$(_forgit_main_worktree_root)/.wt}"
+    local wt_dir
+    wt_dir=$(_forgit_worktree_add_dir)
 
     # Two or more arguments: pass through to git directly
     if [[ $# -ge 2 ]]; then
