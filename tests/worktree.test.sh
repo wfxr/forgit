@@ -10,7 +10,7 @@ function set_up_before_script() {
     unset FORGIT_WORKTREE_ADD_DIR
 
     # Create a temporary git repository for testing
-    MAIN_WORKTREE_ROOT="$(bashunit::temp_dir)/main"
+    MAIN_WORKTREE_ROOT="$(cd -P -- "$(bashunit::temp_dir)" && pwd)/main"
     git init -q "$MAIN_WORKTREE_ROOT"
     cd "$MAIN_WORKTREE_ROOT" || return 1
     git config user.email "test@example.com"
