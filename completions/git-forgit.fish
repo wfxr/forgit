@@ -20,8 +20,29 @@ function __fish_forgit_worktrees
     git worktree list --porcelain 2>/dev/null | string match -r '^worktree .+' | string replace 'worktree ' ''
 end
 
-# Load helper functions in git completion file
-not functions -q __fish_git && source $__fish_data_dir/completions/git.fish
+# Load git completion functions
+function __fish_forgit_load_git_completions
+    if functions -q __fish_git
+        return 0
+    end
+
+    # Fish >= 4.2.0 ships git completions in its binary
+    if set --local git_completions (status get-file completions/git.fish)
+        printf '%s\n' $git_completions | source
+        return 0
+    end
+
+    # Older fish versions ship completions in a file
+    set --local git_completions_file "$__fish_data_dir/completions/git.fish"
+    if test -f "$git_completions_file"
+        source "$git_completions_file"
+        return 0
+    end
+
+    return 1
+end
+
+__fish_forgit_load_git_completions || exit
 
 # No file completion by default
 complete -c git-forgit -x
