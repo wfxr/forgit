@@ -95,7 +95,7 @@ zplug 'wfxr/forgit'
 zgen load 'wfxr/forgit'
 
 # for antigen
-antigen bundle 'wfxr/forgit'
+antigen bundle 'wfxr/forgit@main'
 
 # for fisher (requires fisher v4.4.3 or higher)
 fisher install wfxr/forgit
