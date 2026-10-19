@@ -33,9 +33,12 @@ unexported_vars=0
 # Set posix mode in bash to only get variables, see #256.
 [[ -n $BASH_VERSION ]] && builtin set -o posix
 # Read the export listing once instead of piping it into grep per variable, see #560.
+# Bash 3.2 uses declare -x even in POSIX mode; newer Bash uses export and Zsh neither.
 exported_vars=$'\n'"$(builtin export)"
 builtin set | command awk -F '=' '{ print $1 }' | command grep FORGIT_ | while builtin read -r var; do
-    if [[ $exported_vars != *$'\n'"$var="* && $exported_vars != *$'\n'"export $var="* ]]; then
+    if [[ $exported_vars != *$'\n'"$var="* &&
+        $exported_vars != *$'\n'"export $var="* &&
+        $exported_vars != *$'\n'"declare -x $var="* ]]; then
         if [[ $unexported_vars == 0 ]]; then
             forgit::warn "Config options have to be exported in future versions of forgit."
             forgit::warn "Please update your config accordingly:"
