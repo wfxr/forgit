@@ -13,3 +13,17 @@ function test_sourcing_plugin_with_pipefail_does_not_warn_about_exported_config(
 
     assert_empty "$output"
 }
+
+function test_sourcing_plugin_does_not_warn_about_exported_config() {
+    output=$(bash -c 'export FORGIT_TEST_OPTION="already exported"; source forgit.plugin.sh' 2>&1)
+
+    assert_empty "$output"
+}
+
+function test_sourcing_plugin_warns_about_unexported_config() {
+    output=$(bash -c 'FORGIT_TEST_OPTION="not exported"; export FORGIT_TEST_OPTION_OTHER="already exported"; source forgit.plugin.sh' 2>&1)
+
+    assert_contains "export FORGIT_TEST_OPTION" "$output"
+    assert_not_contains "export FORGIT_TEST_OPTION_OTHER" "$output"
+    assert_not_contains "export FORGIT_INSTALL_DIR" "$output"
+}
