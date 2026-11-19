@@ -39,7 +39,6 @@ jobs:
         if [[ "${{ matrix.os }}" == macos* ]]; then
           brew install zsh fish shellcheck
         elif [[ "${{ matrix.os }}" == ubuntu* ]]; then
-          sudo apt-add-repository -y ppa:fish-shell/release-3
           sudo apt -y update
           sudo apt -y install --no-install-recommends zsh fish shellcheck
         fi
